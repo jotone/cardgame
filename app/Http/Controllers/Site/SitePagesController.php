@@ -81,7 +81,67 @@ class SitePagesController extends BaseController
 		$user = Auth::user();
 
 		$hash = md5(getenv('SECRET_MD5_KEY').$user->id);
-		$battle_field = BattleFieldController::battleInfo(unserialize($battle_data->battle_field));
+
+		$users_data = [];
+		foreach($battle_members as $key => $value){
+			$battle_user = User::find($value->user_id);
+			$user_identificator = ($value->user_id == $battle_data->creator_id)? 'p1' : 'p2';
+			$card_background = \DB::table('tbl_fraction')->select('card_img')->where('slug','=',$battle_user->user_current_deck)->first();
+			if($value->user_id == $user->id){
+				$users_data['user'] = [
+					'id'			=> $value->user_id,
+					'login'			=> $battle_user->login,
+					'player'		=> $user_identificator,					//Идентификатор поля пользователя
+					'magic_effects'	=> unserialize($value->magic_effects),	//Список активных маг. эффектов
+					'energy'		=> $battle_user->user_energy,					//Колличество энергии пользователя
+					'deck'			=> unserialize($value->user_deck),		//Колода пользователя
+					'hand'			=> unserialize($value->user_hand),		//Рука пользователя
+					'discard'		=> unserialize($value->user_discard),	//Отбой пользователя
+					'current_deck'	=> $battle_user->user_current_deck,			//Название фракции текущей колоды пользоватля
+					'card_source'	=> $value->card_source,					//Источник карт (рука/колода/отбой) текущего хода
+					'player_source'	=> $value->player_source,				//Источник карт игрока (свои/противника) текущего хода
+					'cards_to_play'	=> unserialize($value->card_to_play),	//Массив определенных условиями действия карт при отыгрыше из колоды или отбое
+					'round_passed'	=> $value->round_passed,				//Маркер паса
+					'addition_data'	=> unserialize($value->addition_data),
+					'battle_member_id'=> $value->id,						//ID текущей битвы
+					'turn_expire'	=> $value->turn_expire,
+					'time_shift'	=> $value->time_shift,
+					'pseudonim'		=> 'user',
+					'card_images'	=> [
+						'back'			=> $card_background->card_img,
+						'flag'			=> BattleFieldController::getFractionFlag($battle_user->user_current_deck)
+					]
+				];
+			}else{
+				$users_data['opponent'] = [
+					'id'			=> $value->user_id,
+					'login'			=> $battle_user->login,
+					'player'		=> $user_identificator,
+					'magic_effects'	=> unserialize($value->magic_effects),
+					'energy'		=> $battle_user->user_energy,
+					'deck'			=> unserialize($value->user_deck),
+					'hand'			=> unserialize($value->user_hand),
+					'discard'		=> unserialize($value->user_discard),
+					'current_deck'	=> $battle_user->user_current_deck,
+					'card_source'	=> $value->card_source,
+					'player_source'	=> $value->player_source,
+					'cards_to_play'	=> unserialize($value->card_to_play),
+					'round_passed'	=> $value->round_passed,
+					'addition_data'	=> unserialize($value->addition_data),
+					'battle_member_id'=> $value->id,
+					'turn_expire'	=> $value->turn_expire,
+					'time_shift'	=> $value->time_shift,
+					'pseudonim'		=> 'opponent',
+					'card_images'	=> [
+						'back'			=> $card_background->card_img,
+						'flag'			=> BattleFieldController::getFractionFlag($battle_user->user_current_deck)
+					]
+				];
+			}
+		}
+
+		$battle_info = BattleFieldController::battleInfo($battle_data, unserialize($battle_data->battle_field), $users_data, unserialize($battle_data->magic_usage));
+		$field_status = $battle_info['field_status'];
 
 		$battle = [
 			'creator_id'		=> $battle_data->creator_id,
@@ -91,7 +151,6 @@ class SitePagesController extends BaseController
 			'first_turn_user_id'=> $battle_data->first_turn_user_id,
 			'round_count'		=> $battle_data->round_count,
 			'round_status'		=> unserialize($battle_data->round_status),
-			'battle_field'		=> $battle_field,
 			'deadless_cards'	=> unserialize($battle_data->undead_cards),
 			'magic_usage'		=> unserialize($battle_data->magic_usage)
 		];
@@ -117,7 +176,8 @@ class SitePagesController extends BaseController
 			}
 
 			$deck = unserialize($battle_member->user_deck);
-			$hand = unserialize($battle_member->user_hand);
+			$hand = BattleFieldController::recontentDecks(unserialize($battle_member->user_hand));
+			BattleFieldController::sortingDeck($hand);
 			$discard = unserialize($battle_member->user_discard);
 			$counts = [
 				'deck'	=> count($deck),
@@ -129,6 +189,7 @@ class SitePagesController extends BaseController
 
 			$player = ($battle_member->user_id == $battle_data->creator_id)? 'p1': 'p2';
 
+			$enemy['player'] = ($player == 'p1')? 'p2': 'p1';
 			if($battle_member->user_id == $user['id']){
 				$ally = [
 					'login'			=> $player_data->login,
@@ -155,12 +216,14 @@ class SitePagesController extends BaseController
 					'user_energy'	=> $player_data->user_energy,
 					'player'		=> $player,
 					'wins_count'	=> count($round_status[$player]),
+					'ready'			=> $battle_member->user_ready
 				];
 			}
 		}
 
 		return view('play', [
 			'battle_data'	=> $battle,
+			'field_status'	=> $field_status,
 			'ally'			=> $ally,
 			'enemy'			=> $enemy,
 			'hash'			=> $hash,

@@ -213,11 +213,9 @@ $user = Auth::user();
 			<h5>Карты в вашем отбое:</h5>
 			<div class="pop-row">
 				<ul class="deck-cards-list">
-					@if(!empty($enemy))
-						@foreach($ally['discard'] as $card_id)
-							{!! \App\Http\Controllers\Site\BattleFieldController::cardSimpleView($card_id) !!}
-						@endforeach
-					@endif
+					@foreach($ally['discard'] as $card_id)
+						{!! \App\Http\Controllers\Site\BattleFieldController::cardSimpleView($card_id) !!}
+					@endforeach
 				</ul>
 			</div>
 		</div>
@@ -229,7 +227,7 @@ $user = Auth::user();
 			<h5>Карты в отбое противника:</h5>
 			<div class="pop-row">
 				<ul class="deck-cards-list">
-					@if(!empty($enemy))
+					@if(!empty($enemy['login']))
 						@foreach($enemy['discard'] as $card_id)
 							{!! \App\Http\Controllers\Site\BattleFieldController::cardSimpleView($card_id) !!}
 						@endforeach
