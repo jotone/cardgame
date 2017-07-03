@@ -102,7 +102,7 @@ class SitePagesController extends BaseController
 					'player_source'	=> $value->player_source,				//Источник карт игрока (свои/противника) текущего хода
 					'cards_to_play'	=> unserialize($value->card_to_play),	//Массив определенных условиями действия карт при отыгрыше из колоды или отбое
 					'round_passed'	=> $value->round_passed,				//Маркер паса
-					'addition_data'	=> unserialize($value->addition_data),
+					'addition_data'	=> $value->addition_data,
 					'battle_member_id'=> $value->id,						//ID текущей битвы
 					'turn_expire'	=> $value->turn_expire,
 					'time_shift'	=> $value->time_shift,
@@ -127,7 +127,7 @@ class SitePagesController extends BaseController
 					'player_source'	=> $value->player_source,
 					'cards_to_play'	=> unserialize($value->card_to_play),
 					'round_passed'	=> $value->round_passed,
-					'addition_data'	=> unserialize($value->addition_data),
+					'addition_data'	=> $value->addition_data,
 					'battle_member_id'=> $value->id,
 					'turn_expire'	=> $value->turn_expire,
 					'time_shift'	=> $value->time_shift,

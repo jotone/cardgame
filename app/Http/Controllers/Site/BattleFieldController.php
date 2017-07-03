@@ -680,7 +680,7 @@ class BattleFieldController extends BaseController{
 			</div>'
 			: '';
 		return '
-		<li class="content-card-item disable-select show" data-relative="'.$card['fraction'].'" data-immune="'.$has_immune.'" data-full-immune="'.$has_full_immune.'" data-cardid="'.$card['id'].'" data-slug="'.$card['caption'].'">
+		<li class="content-card-item disable-select show" data-relative="'.$card['fraction'].'" data-immune="'.$has_immune.'" data-full-immune="'.$has_full_immune.'" data-cardid="'.$card['id'].'" data-slug="'.$card['caption'].'" data-relative="'.$card['fraction'].'">
 			'.$quantity_tag.'
 			<div class="content-card-item-main '.$race_class.' '.$leader_class.' '.$special_class.'" style="background-image: url('.\URL::asset('/img/card_images/'.$card['img_url']).')" data-leader="'.$card['is_leader'].'">
 				<div class="card-load-info card-popup">
