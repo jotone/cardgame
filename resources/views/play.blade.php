@@ -485,7 +485,25 @@
 
 		<div class="mezhdyblock">
 			<div class="bor-beutifull-box">
+				<?php
+				if(!empty($field_status['mid'])){
+					$mid_cards = [];
+					foreach($field_status['mid'] as $card){
+						if(!isset($mid_cards[$card['card']['caption']])){
+							$mid_cards[$card['card']['caption']] = [
+								'card' => $card['card'],
+								'count' => 1
+							];
+						}else{
+							$mid_cards[$card['card']['caption']]['count']++;
+						}
+					}
+				}
+				?>
 				<ul id="sortable-cards-field-more" class="can-i-use-useless sort">
+					@foreach($mid_cards as $card)
+						{!! \App\Http\Controllers\Site\BattleFieldController::cardView($card['card'], -1, $card['count']) !!}
+					@endforeach
 				</ul>
 			</div>
 		</div>
