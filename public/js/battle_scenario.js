@@ -1152,28 +1152,73 @@ function processActions(result){
 					var action = result.actions.appear[player][row][item];
 					switch(action){
 						case 'support':
-							var field = $('#'+player+'.convert-cards '+ intRowToField(row));
+							var obj = {};
+								obj.field = $('#'+player+'.convert-cards '+ intRowToField(row));
+								obj.cardsMass = result.actions.cards[row];
+								obj.effectName = 'support';
+								obj.efectStrength = result.actions.modify_strength;
+								obj.effectType = 'buff';
 
-console.info("field", field)
-							field.closest('.convert-stuff').addClass('support-buff-wrap');
-							if(0 == field.find('.debuff-or-buff-anim.support-buff').length){
-								field.append('<div class="debuff-or-buff-anim support-buff"></div>');
-								var timer = setInterval(function(){
-									field.find('.debuff-or-buff-anim.support-buff').addClass('active');
-									field.closest('.convert-stuff').addClass('buff');
-									clearInterval(timer);
-								}, 500);
+							animatePositiveNegativeEffects(obj);
+
+							function animatePositiveNegativeEffects(obj) {
+
+								var field = obj.field,
+									cardsMass = obj.cardsMas,
+									effectName = obj.effectName,
+									efectStrength = obj.efectStrengt,
+									effectType = obj.effectType;
+
+								var mainRow = field.closest('.convert-stuff');
+
+								//Анимация на поле
+								mainRow.addClass(effectName+'-'+effectType+'-wrap');
+								var effectMarkup = null;
+								if(field.children('.'+effectName+'-'+effectType+'.active').length > 0){
+									//Проверить - есть ли уже разметка для такого бафа
+									effectMarkup = field.children('.'+effectName+'-'+effectType+'.active');
+								}else{
+									field.append('<div class="debuff-or-buff-anim '+effectName+'-'+effectType+'" ></div>');
+									effectMarkup = field.children('.'+effectName+'-'+effectType+'.active');
+								}
+
+
+								//мини-хук - показывать анимаци только когда закрытый попап показ карты хода
+								var timer = setInterval(function() {
+									console.count();
+									if ( !$('.troll-popup.show').length ) {
+
+
+
+										clearInterval(timer);
+									}
+								},600);
 							}
-							callAnimateStrengthModifySupport = true;
+							// console.group();
+							// console.log("field", field);
+							// console.info("cardsMass", cardsMass);
+							// console.groupEnd();
+
+
+							// field.closest('.convert-stuff').addClass('support-buff-wrap');
+							// if(0 == field.find('.debuff-or-buff-anim.support-buff').length){
+							// 	field.append('<div class="debuff-or-buff-anim support-buff"></div>');
+							// 	var timer = setInterval(function(){
+							// 		field.find('.debuff-or-buff-anim.support-buff').addClass('active');
+							// 		field.closest('.convert-stuff').addClass('buff');
+							// 		clearInterval(timer);
+							// 	}, 500);
+							// }
+							// callAnimateStrengthModifySupport = true;
 						break;
 					}
 				}
 			}
 		}
 	}
-	if(callAnimateStrengthModifySupport){
-		animateStrengthModifySupport(result);
-	}
+	// if(callAnimateStrengthModifySupport){
+	// 	animateStrengthModifySupport(result);
+	// }
 }
 
 //battle start (Socket messages)
