@@ -201,7 +201,6 @@ class BattleFieldController extends BaseController{
 			}
 		}*/
 
-		//dd($actions_array_fury);
 		//Применение "Неистовость" к картам
 		foreach($actions_array_fury as $card_id => $card_data){
 			$enemy_player = ($card_data['login'] == $users_data['user']['login'])? 'opponent': 'user';
@@ -284,6 +283,9 @@ class BattleFieldController extends BaseController{
 					}
 				}
 			}
+		}
+		if(isset($step_status['actions']['appear'])){
+			$step_status['actions']['appear'] = array_values(array_unique($step_status['actions']['appear']));
 		}
 
 		//Применение действия "Страшный" к картам
