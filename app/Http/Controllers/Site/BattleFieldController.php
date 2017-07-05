@@ -201,6 +201,7 @@ class BattleFieldController extends BaseController{
 			}
 		}*/
 
+		//dd($actions_array_fury);
 		//Применение "Неистовость" к картам
 		foreach($actions_array_fury as $card_id => $card_data){
 			$enemy_player = ($card_data['login'] == $users_data['user']['login'])? 'opponent': 'user';
@@ -251,27 +252,39 @@ class BattleFieldController extends BaseController{
 					if(($allow_fury_by_row) || ($allow_fury_by_race) || ($allow_fury_by_magic) || ($allow_fury_by_group)){
 						$card_destination = explode('/',$card_id);
 						$battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['strength'] += $action['fury_strenghtVal'];
+
 						$field_status[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['strengthModified'] += $action['fury_strenghtVal'];
 						if($action['fury_strenghtVal'] >= 0){
 							$field_status[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['buffs'][]= 'fury';
 							$field_status[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['buffs'] = array_values(array_unique($field_status[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['buffs']));
-							$step_status['actions']['appear'][$card_destination[0]][$card_destination[1]][] = 'fury-buff';
-							$step_status['actions']['cards'][$battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['caption']] = $battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['caption'];
-							$step_status['actions']['modify_strength'] = $action['fury_strenghtVal'];
-							$step_status['actions']['type'] = 'fury-buff';
+							if(
+								(!isset($battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['fury_modified'])) ||
+								($battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['fury_modified'] != 1)
+							){
+								$step_status['actions']['appear'][$card_destination[0]][$card_destination[1]][] = 'fury-buff';
+								$step_status['actions']['cards'][$card_destination[0]][$card_destination[1]][$card_destination[2]] = $battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['caption'];
+								$step_status['actions']['modify_strength'] = $action['fury_strenghtVal'];
+								$step_status['actions']['type'] = 'fury-buff';
+							}
+
 						}else{
 							$field_status[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['debuffs'][]= 'fury';
 							$field_status[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['debuffs'] = array_values(array_unique($field_status[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['debuffs']));
-							$step_status['actions']['cards'][$battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['caption']] = $battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['caption'];
-							$step_status['actions']['appear'][$card_destination[0]][$card_destination[1]][] = 'fury-debuff';
-							$step_status['actions']['modify_strength'] = $action['fury_strenghtVal'];
-							$step_status['actions']['type'] = 'fury-debuff';
+							if(
+								(!isset($battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['fury_modified'])) ||
+								($battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['fury_modified'] != 1)
+							){
+								$step_status['actions']['cards'][$card_destination[0]][$card_destination[1]][$card_destination[2]] = $battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['caption'];
+								$step_status['actions']['appear'][$card_destination[0]][$card_destination[1]][] = 'fury-debuff';
+								$step_status['actions']['modify_strength'] = $action['fury_strenghtVal'];
+								$step_status['actions']['type'] = 'fury-debuff';
+							}
 						}
+						$battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['fury_modified'] = 1;
 					}
 				}
 			}
 		}
-		$step_status['actions']['cards'] = array_values(array_unique($step_status['actions']['cards']));
 
 		//Применение действия "Страшный" к картам
 		/*foreach($actions_array_fear as $source => $cards){
