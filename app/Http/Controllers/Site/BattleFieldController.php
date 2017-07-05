@@ -263,7 +263,6 @@ class BattleFieldController extends BaseController{
 								$step_status['actions']['appear'][$card_destination[0]][$card_destination[1]][] = 'fury-buff';
 								$step_status['actions']['cards'][$card_destination[0]][$card_destination[1]][$card_destination[2]] = $battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['caption'];
 								$step_status['actions']['modify_strength'] = $action['fury_strenghtVal'];
-								$step_status['actions']['type'] = 'fury-buff';
 							}
 
 						}else{
@@ -276,7 +275,6 @@ class BattleFieldController extends BaseController{
 								$step_status['actions']['cards'][$card_destination[0]][$card_destination[1]][$card_destination[2]] = $battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['caption'];
 								$step_status['actions']['appear'][$card_destination[0]][$card_destination[1]][] = 'fury-debuff';
 								$step_status['actions']['modify_strength'] = $action['fury_strenghtVal'];
-								$step_status['actions']['type'] = 'fury-debuff';
 							}
 						}
 						$battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['fury_modified'] = 1;
@@ -285,7 +283,7 @@ class BattleFieldController extends BaseController{
 			}
 		}
 		if(isset($step_status['actions']['appear'])){
-			$step_status['actions']['appear'] = array_values(array_unique($step_status['actions']['appear']));
+			$step_status['actions']['appear'] = array_unique($step_status['actions']['appear']);
 		}
 
 		//Применение действия "Страшный" к картам
@@ -314,7 +312,7 @@ class BattleFieldController extends BaseController{
 										$card = BattleFieldController::getCardNaturalSetting($card_data['id']);
 										$allow_fear = self::checkForSimpleImmune($action['fear_ignoreImmunity'], $card['actions']);
 
-										if(($card['strength'] > 0) && ($allow_fear)){
+										if(($card_data['strength'] > 0) && ($allow_fear)){
 											if(!empty($groups)){
 												foreach($card['group'] as $group_id){
 													if(in_array($group_id, $groups)){

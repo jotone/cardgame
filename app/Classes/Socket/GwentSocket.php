@@ -175,7 +175,6 @@ class GwentSocket extends BaseSocket
 			'actions'		=> [
 				'appear'		=> [],
 				'disappear'		=> [],
-				'type'			=> '',
 				'cards'			=> []
 			],
 			'counts'		=> [],
@@ -1491,7 +1490,6 @@ class GwentSocket extends BaseSocket
 
 			case 'support'://Поддержка
 				if(!empty($step_status['played_card']['card'])){
-					$step_status['actions']['type'] = $action['caption'];
 					$groups = ((isset($action['support_actionToGroupOrAll'])) && ($action['support_actionToGroupOrAll'] != 0)) ? $action['support_actionToGroupOrAll'] : [];
 					$card_need_check = ($action['support_selfCast'] == 0)? true: false;
 					foreach($action['support_ActionRow'] as $row){
@@ -1539,12 +1537,51 @@ class GwentSocket extends BaseSocket
 							}
 						}
 					}
+					//$step_status['actions']['appear'] = json_decode(json_encode($step_status['actions']['appear']));
 				}
 			break;
 
 			case 'terrify':
-				var_dump($step_status['played_card']);
-				$step_status['actions']['type'] = $action['caption'];
+				$groups = (isset($action['fear_actionToGroupOrAll']))? $action['fear_actionToGroupOrAll']: [];
+				if($action['fear_actionTeamate'] == 1){
+					$players = ['p1','p2'];
+				}else{
+					$players = ($step_status['played_card']['move_to']['player'] == 'p1')? ['p2']: ['p1'];
+				}
+				foreach($players as $player){
+					if(!in_array($users_data[$player]['current_deck'], $action['fear_enemyRace'])){
+						foreach($action['fear_ActionRow'] as $action_row){
+							foreach($battle_field[$player][$action_row]['warrior'] as $card_iter => $card_data){
+								$card = BattleFieldController::getCardNaturalSetting($card_data['id']);
+								$allow_fear = BattleFieldController::checkForSimpleImmune($action['fear_ignoreImmunity'], $card['actions']);
+								if(($card_data['strength'] > 0) && ($allow_fear)){
+									if(!empty($groups)){
+										foreach($card['group'] as $group_id){
+											if(in_array($group_id, $groups)){
+												$step_status['actions']['cards'][$player][$action_row][$card_iter] = $card['caption'];
+												$step_status['actions']['modify_strength'] = $action['fear_strenghtValue'];
+											}
+										}
+									}else{
+										$step_status['actions']['cards'][$player][$action_row][$card_iter] = $card['caption'];
+										$step_status['actions']['modify_strength'] = $action['fear_strenghtValue'];
+									}
+								}
+							}
+						}
+					}
+				}
+				foreach($step_status['played_card']['card']['actions'] as $current_action){
+					if($current_action['caption'] == 'terrify'){
+						foreach($players as $player){
+							foreach($current_action['fear_ActionRow'] as $row){
+								$step_status['actions']['appear'][$player][$row][] = $action['caption'];
+							}
+						}
+					}
+				}
+				///$step_status['actions']['appear'] = json_decode(json_encode($step_status['actions']['appear']));
+				//var_dump($step_status['actions']['appear']);
 			break;
 
 			case 'spy'://ШПИЙОН
@@ -1566,7 +1603,6 @@ class GwentSocket extends BaseSocket
 					$users_data['user']['deck'] = array_values($users_data['user']['deck']);
 					$deck_card_count = count($users_data['user']['deck']);
 				}
-				$step_status['actions']['type'] = $action['caption'];
 			break;
 		}
 
