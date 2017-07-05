@@ -1968,9 +1968,9 @@ function animateStrengthModifySupport(result){
 				card.find('.label-power-card-wrap .card-current-value').text(cardStrength);
 				card.addClass('modified');
 
-				//setTimeout(function() {
+				setTimeout(function() {
 					card.removeClass('pulsed');
-				//}, 2000);
+				}, 2000);
 			//}, 500);
 		}
 	}
