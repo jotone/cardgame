@@ -63,7 +63,15 @@
 			<div class="convert-cards oponent" id="@if(!empty($enemy)){{ $enemy['player'] }}@endif">
 				<div class="convert-card-box">
 					<!-- Сверхдальние Юниты противника -->
-					<div class="convert-stuff">
+					<?php
+					$class = '';
+					if(isset($enemy['login'])){
+						foreach($field_status[$enemy['player']][2]['buffs'] as $buff){
+							$class .= \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff, 'wrap').' ';
+						}
+					}
+					?>
+					<div class="convert-stuff {{ $class }}">
 						<div class="convert-one-field">
 							<div class="field-for-cards" id="superRange">
 								<div class="image-inside-line">
@@ -86,6 +94,20 @@
 									</ul>
 									<!-- END OF Список сверхдальних карт-->
 								</div>
+								@if(isset($enemy['login']))
+									@if(!empty($field_status[$enemy['player']][2]['buffs']))
+										@foreach($field_status[$enemy['player']][2]['buffs'] as $buff)
+											<?php $class = \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff); ?>
+											<div class="debuff-or-buff-anim active {{ $class }}"></div>
+										@endforeach
+									@endif
+									@if(!empty($field_status[$enemy['player']][2]['debuffs']))
+										@foreach($field_status[$enemy['player']][2]['debuffs'] as $buff)
+											<?php $class = \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff); ?>
+											<div class="debuff-or-buff-anim active {{ $class }}"></div>
+										@endforeach
+									@endif
+								@endif
 							<!-- END OF Поле размещения сверхдальних карт -->
 							</div>
 						</div>
@@ -94,7 +116,15 @@
 					<!-- END OF Сверхдальние Юниты противника -->
 
 					<!-- Дальние Юниты противника -->
-					<div class="convert-stuff">
+					<?php
+					$class = '';
+					if(isset($enemy['login'])){
+						foreach($field_status[$enemy['player']][1]['buffs'] as $buff){
+							$class .= \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff, 'wrap').' ';
+						}
+					}
+					?>
+					<div class="convert-stuff {{ $class }}">
 						<div class="convert-one-field">
 							<div class="field-for-cards" id="range">
 								<div class="image-inside-line">
@@ -118,6 +148,20 @@
 									</ul>
 									<!-- END OF Список дальних карт-->
 								</div>
+								@if(isset($enemy['login']))
+									@if(!empty($field_status[$enemy['player']][1]['buffs']))
+										@foreach($field_status[$enemy['player']][1]['buffs'] as $buff)
+											<?php $class = \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff); ?>
+											<div class="debuff-or-buff-anim active {{ $class }}"></div>
+										@endforeach
+									@endif
+									@if(!empty($field_status[$enemy['player']][1]['debuffs']))
+										@foreach($field_status[$enemy['player']][1]['debuffs'] as $buff)
+											<?php $class = \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff); ?>
+											<div class="debuff-or-buff-anim active {{ $class }}"></div>
+										@endforeach
+									@endif
+								@endif
 							<!-- END OF Поле размещения дальних карт -->
 							</div>
 						</div>
@@ -126,7 +170,15 @@
 					<!-- END OF Дальние Юниты противника -->
 
 					<!-- Ближние Юниты противника -->
-					<div class="convert-stuff">
+					<?php
+					$class = '';
+					if(isset($enemy['login'])){
+						foreach($field_status[$enemy['player']][0]['buffs'] as $buff){
+							$class .= \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff, 'wrap').' ';
+						}
+					}
+					?>
+					<div class="convert-stuff {{ $class }}">
 						<div class="convert-one-field">
 							<div class="field-for-cards" id="meele">
 								<div class="image-inside-line">
@@ -149,6 +201,20 @@
 									</ul>
 									<!-- END OF Список ближних карт-->
 								</div>
+								@if(isset($enemy['login']))
+									@if(!empty($field_status[$enemy['player']][0]['buffs']))
+										@foreach($field_status[$enemy['player']][0]['buffs'] as $buff)
+											<?php $class = \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff); ?>
+											<div class="debuff-or-buff-anim active {{ $class }}"></div>
+										@endforeach
+									@endif
+									@if(!empty($field_status[$enemy['player']][0]['debuffs']))
+										@foreach($field_status[$enemy['player']][0]['debuffs'] as $buff)
+											<?php $class = \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff); ?>
+											<div class="debuff-or-buff-anim active {{ $class }}"></div>
+										@endforeach
+									@endif
+								@endif
 							</div>
 						</div>
 						<div class="field-for-sum">0<!-- Сумарная сила воинов в ближнем ряду --></div>
@@ -164,7 +230,13 @@
 			<div class="convert-cards user" id="{{ $ally['player'] }}">
 				<div class="convert-card-box">
 					<!-- Ближние Юниты пользователя -->
-					<div class="convert-stuff">
+					<?php
+					$class = '';
+					foreach($field_status[$ally['player']][0]['buffs'] as $buff){
+						$class .= \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff, 'wrap').' ';
+					}
+					?>
+					<div class="convert-stuff {{ $class }}">
 						<div class="convert-one-field">
 							<div class="field-for-cards" id="meele">
 								<div class="image-inside-line">
@@ -183,6 +255,18 @@
 									</ul>
 									<!-- END OF Список ближних карт-->
 								</div>
+								@if(!empty($field_status[$ally['player']][0]['buffs']))
+									@foreach($field_status[$ally['player']][0]['buffs'] as $buff)
+										<?php $class = \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff); ?>
+										<div class="debuff-or-buff-anim active {{ $class }}"></div>
+									@endforeach
+								@endif
+								@if(!empty($field_status[$ally['player']][0]['debuffs']))
+									@foreach($field_status[$ally['player']][0]['debuffs'] as $buff)
+										<?php $class = \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff); ?>
+										<div class="debuff-or-buff-anim active {{ $class }}"></div>
+									@endforeach
+								@endif
 							</div>
 						</div>
 						<div class="field-for-sum">0<!-- Сила воинов в ближнем ряду--></div>
@@ -190,7 +274,13 @@
 					<!-- END OF Ближние Юниты пользователя -->
 
 					<!-- Дальние Юниты пользователя -->
-					<div class="convert-stuff">
+					<?php
+					$class = '';
+					foreach($field_status[$ally['player']][1]['buffs'] as $buff){
+						$class .= \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff, 'wrap').' ';
+					}
+					?>
+					<div class="convert-stuff {{ $class }}">
 						<div class="convert-one-field">
 							<div class="field-for-cards" id="range">
 								<div class="image-inside-line">
@@ -209,6 +299,18 @@
 									</ul>
 									<!-- END OF Список дальних карт-->
 								</div>
+								@if(!empty($field_status[$ally['player']][1]['buffs']))
+									@foreach($field_status[$ally['player']][1]['buffs'] as $buff)
+										<?php $class = \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff); ?>
+										<div class="debuff-or-buff-anim active {{ $class }}"></div>
+									@endforeach
+								@endif
+								@if(!empty($field_status[$ally['player']][1]['debuffs']))
+									@foreach($field_status[$ally['player']][1]['debuffs'] as $buff)
+										<?php $class = \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff); ?>
+										<div class="debuff-or-buff-anim active {{ $class }}"></div>
+									@endforeach
+								@endif
 							</div>
 						</div>
 						<div class="field-for-sum">0</div>
@@ -216,7 +318,13 @@
 					<!-- END OF Дальние Юниты пользователя -->
 
 					<!-- Сверхдальние юниты пользователя -->
-					<div class="convert-stuff">
+					<?php
+					$class = '';
+					foreach($field_status[$ally['player']][2]['buffs'] as $buff){
+						$class .= \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff, 'wrap').' ';
+					}
+					?>
+					<div class="convert-stuff {{ $class }}">
 						<div class="convert-one-field">
 							<div class="field-for-cards" id="superRange">
 								<div class="image-inside-line">
@@ -235,6 +343,18 @@
 									</ul>
 									<!-- END OF Список сверхдальнихдальних карт-->
 								</div>
+								@if(!empty($field_status[$ally['player']][2]['buffs']))
+									@foreach($field_status[$ally['player']][2]['buffs'] as $buff)
+										<?php $class = \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff); ?>
+										<div class="debuff-or-buff-anim active {{ $class }}"></div>
+									@endforeach
+								@endif
+								@if(!empty($field_status[$ally['player']][2]['debuffs']))
+									@foreach($field_status[$ally['player']][2]['debuffs'] as $buff)
+										<?php $class = \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff); ?>
+										<div class="debuff-or-buff-anim active {{ $class }}"></div>
+									@endforeach
+								@endif
 							</div>
 						</div>
 						<div class="field-for-sum">0</div>

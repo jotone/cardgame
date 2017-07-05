@@ -816,7 +816,7 @@ function fieldBuild(stepStatus, addingAnim){
 
 			for(var destination in stepStatus.added_cards[player]){
 				switch(destination){
-					case 'hand':
+					case 'hand'://SPY action
 						for(var i in stepStatus.added_cards[player]['hand']){
 							$('.user-card-stash #sortableUserCards').append(createFieldCardView(stepStatus.added_cards[player]['hand'][i], stepStatus.added_cards[player]['hand'][i]['strength']));
 							if(addingAnim){
@@ -1020,6 +1020,13 @@ function recalculateBattleStrength(){
 		for(var field in fieldData[player]){
 			if(field != 'total'){
 				$('#'+player+'.convert-cards #'+field).closest('.convert-stuff').find('.field-for-sum').text(fieldData[player][field]);
+				var pointsSum = $('#'+player+'.convert-cards #'+field).closest('.convert-stuff').find('.field-for-sum');
+				setTimeout(function() {
+					pointsSum.addClass('pulsed');
+					setTimeout(function() {
+						pointsSum.removeClass('pulsed');
+					}, 500);
+				}, 0);
 			}else{
 				$('.convert-right-info div[data-player='+player+'] .power-text').text(fieldData[player][field]);
 			}
@@ -1086,14 +1093,12 @@ function buildBattleField(added, dropped){
 }
 
 function popupActivation(result){
-	console.log(result.round_status.activate_popup);
 	switch(result.round_status.activate_popup){
 		//Задействовать popup выбора хода игрока
 		case 'activate_turn_choise':
 			if(result.round_status.current_player == $('.user-describer').attr('id')){
 				$('#selectCurrentTurn #chooseUser').empty();
 				var users = [$('.convert-right-info .user-describer').attr('id'), $('.convert-right-info .oponent-describer').attr('id')];
-				console.log(users);
 				for(var i in users){
 					$('#selectCurrentTurn #chooseUser').append('<label>' +
 						'<input type="radio" name="usersTurn" value="'+users[i]+'">' +
@@ -1119,6 +1124,52 @@ function popupActivation(result){
 				});
 			}
 		break;
+	}
+}
+
+function processActions(result){
+	var callAnimateStrengthModifySupport = false;
+	switch(result.actions.type){
+		case 'support'://Поддержка
+			if(!$.isEmptyObject(result.played_card.card)){
+				var card = result.played_card.card;
+				for(var i in card.actions){
+					if(card.actions[i]['caption'] == 'support'){
+						for(var actionRow in card.actions[i]['support_ActionRow']){
+							var field = $('#'+result.played_card.move_to.player+'.convert-cards '+ intRowToField(card.actions[i]['support_ActionRow'][actionRow]));
+							callAnimateStrengthModifySupport = true;
+						}
+					}
+				}
+			}
+		break;
+	}
+
+	if(!$.isEmptyObject(result.actions.appear)){
+		for(var player in result.actions.appear){
+			for(var row in result.actions.appear[player]){
+				for(var i in result.actions.appear[player][row]){
+					switch(result.actions.appear[player][row][i]){
+						case 'support':
+							var field = $('#'+player+'.convert-cards '+ intRowToField(row));
+							field.closest('.convert-stuff').addClass('support-buff-wrap');
+							if(0 == field.find('.debuff-or-buff-anim.support-buff').length){
+								field.append('<div class="debuff-or-buff-anim support-buff"></div>');
+								var timer = setInterval(function(){
+									field.find('.debuff-or-buff-anim.support-buff').addClass('active');
+									field.closest('.convert-stuff').addClass('buff');
+									clearInterval(timer);
+								}, 500);
+							}
+							callAnimateStrengthModifySupport = true;
+						break;
+					}
+				}
+			}
+		}
+	}
+	if(callAnimateStrengthModifySupport){
+		animateStrengthModifySupport(result);
 	}
 }
 
@@ -1228,11 +1279,11 @@ function startBattle() {
 				setTimeout(function() {
 					buildBattleField(result.added_cards, result.dropped_cards);
 					setDecksValues(result.counts, result.images);
-					recalculateBattleStrength();
 					showCardOnDesc();
+					recalculateBattleStrength();
 
 					resultPopupShow(result.round_status.status.result + '! Подождите, идет подготовка нового раунда.');
-					changeTurnIndicator(null);
+					changeTurnIndicator(result.round_status.current_player);
 					$('#sortableUserCards').empty();
 					for(var i in result.user_hand){
 						$('#sortableUserCards').append(createFieldCardView(result.user_hand[i], result.user_hand[i]['strength']));
@@ -1253,6 +1304,7 @@ function startBattle() {
 						hidePreloader();
 					}, 3000);
 				}, 501);
+
 			break;
 
 			//Игра закончена
@@ -1312,6 +1364,7 @@ function startBattle() {
 						//},1000)
 					}else{
 						fieldBuild(result, true);
+						processActions(result);
 					}
 
 					changeTurnIndicator(result.round_status.current_player); //смена индикатора хода
@@ -1897,4 +1950,29 @@ function detailCardPopupOnOverloading(cardDetailOverloadingMarkup, card, strengt
 			},1000)
 		},2000)
 	},2000);
+}
+
+//Анимация при задействовании поддержки
+function animateStrengthModifySupport(result){
+	var field = result.played_card.move_to.player;
+	for(var row in result.actions.cards){
+		for(var i in result.actions.cards[row]){
+			var currentCard = result.actions.cards[row][i];
+			var rowId = intRowToField(row);
+			//setTimeout(function(){
+				var card = $('#'+field+'.convert-cards '+rowId+' li[data-slug='+currentCard+']:not(.modified):first');
+				card.addClass('pulsed');
+
+				var cardStrength = parseInt(card.find('.label-power-card-wrap .card-current-value').text());
+				cardStrength += parseInt(result.actions.modify_strength);
+				card.find('.label-power-card-wrap .card-current-value').text(cardStrength);
+				card.addClass('modified');
+
+				//setTimeout(function() {
+					card.removeClass('pulsed');
+				//}, 2000);
+			//}, 500);
+		}
+	}
+	$('#'+field+'.convert-cards li').removeClass('modified');
 }

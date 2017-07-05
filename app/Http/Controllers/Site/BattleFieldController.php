@@ -7,6 +7,7 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Facades\Crypt;
 
 class BattleFieldController extends BaseController{
+
 	public static function resetBattleFieldCardsStrength($battle_field){
 		foreach($battle_field as $field => $rows){
 			if($field != 'mid'){
@@ -21,7 +22,7 @@ class BattleFieldController extends BaseController{
 		return $battle_field;
 	}
 
-	public static function battleInfo($battle, $battle_field, $users_data, $magic_usage){
+	public static function battleInfo($battle, $battle_field, $users_data, $magic_usage, $step_status){
 		$battle_field = self::resetBattleFieldCardsStrength($battle_field);
 
 		$actions_array_support = [];//Массив действий "Поддержка"
@@ -46,7 +47,7 @@ class BattleFieldController extends BaseController{
 
 		foreach($battle_field as $field => $rows){
 			if($field != 'mid'){
-				foreach ($rows as $row => $cards){
+				foreach($rows as $row => $cards){
 					foreach($cards['warrior'] as $card_iter => $card_data){
 						$card = self::cardData($card_data['id']);
 						$card['login'] = $card_data['login'];
@@ -59,7 +60,7 @@ class BattleFieldController extends BaseController{
 								case 'brotherhood':		$actions_array_brotherhood[$field][$row][$card_data['id']] = $card; break;
 								case 'inspiration':		$actions_array_inspiration[$field][$row] = $card; break;
 								case 'fury':			$actions_array_fury[$field.'/'.$row.'/'.$card_iter] = $card; break;
-								case 'support':			$actions_array_support[$field.'/'.$row.'/'.$card['caption']] = $card; break;
+								case 'support':			$actions_array_support[$field.'/'.$row.'/'.$card_iter] = $card; break;
 								case 'fear':			$actions_array_fear[$field][uniqid()] = $card; break;
 							}
 						}
@@ -90,13 +91,12 @@ class BattleFieldController extends BaseController{
 		}
 
 		//Применение "Поддержка" к картам
-		/*foreach($actions_array_support as $card_path => $action_card){
-			$player = ($action_card['login'] == $users_data['user']['login'])? $users_data['user']['player']: $users_data['opponent']['player'];
+		foreach($actions_array_support as $card_path => $action_card){
+			$player = ($action_card['login'] == $users_data['user']['login'])? $users_data['user']['player'] : $users_data['opponent']['player'];
 
 			foreach($action_card['actions'] as $action_iter => $action_data){
 				if($action_data['caption'] == 'support'){
-					$self_cast = ($action_data['support_selfCast'] == 0)? false: true;
-					$groups = ( (isset($action_data['support_actionToGroupOrAll'])) && ($action_data['support_actionToGroupOrAll'] != 0))? $action_data['support_actionToGroupOrAll']: [];
+					$groups = ((isset($action_data['support_actionToGroupOrAll'])) && ($action_data['support_actionToGroupOrAll'] != 0))? $action_data['support_actionToGroupOrAll'] : [];
 
 					foreach($action_data['support_ActionRow'] as $row){
 						$field_status[$player][$row]['buffs'][] = 'support';
@@ -115,53 +115,52 @@ class BattleFieldController extends BaseController{
 
 							if($allow_support){
 								if(!empty($groups)){
-									foreach($card['group'] as $group_id){
+									foreach ($card['group'] as $group_id){
 										if(in_array($group_id, $groups)){
-											if(($card_data['id'] == $action_card['id']) && ($card_path == $player.'/'.$row.'/'.$card['caption'])){
-												if($self_cast){
-													$strength = $card['strength'] + $action_data['support_strenghtValue'];
-												}else{
-													$strength = $card['strength'];
-													$self_cast = true;
-												}
-											}else{
-												$strength = $card['strength'] + $action_data['support_strenghtValue'];
-											}
+											$strength = ( ($action_data['support_selfCast'] == 1) || ($card_path != $player.'/'.$row.'/'.$card_iter) )
+												? $card_data['strength'] + $action_data['support_strenghtValue']
+												: $card_data['strength'];
 
-											$field_status[$player][$row]['warrior'][$card_iter]['buffs'][]= 'support';
+											$field_status[$player][$row]['warrior'][$card_iter]['buffs'][] = 'support';
 
 											$battle_field[$player][$row]['warrior'][$card_iter]['strength'] = $strength;
 											$field_status[$player][$row]['warrior'][$card_iter]['strengthModified'] = $strength;
+
+											if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
+												if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
+													$step_status['played_card']['strength'] = $strength;
+												}
+											}
 
 											$field_status[$player][$row]['warrior'][$card_iter]['buffs'] = array_values(array_unique($field_status[$player][$row]['warrior'][$card_iter]['buffs']));
 										}
 									}
 								}else{
-									if(($card_data['id'] == $action_card['id']) && ($card_path == $player.'/'.$row.'/'.$card['caption'])){
-										if($self_cast){
-											$strength = $card['strength'] + $action_data['support_strenghtValue'];
-										}else{
-											$strength = $card['strength'];
-											$self_cast = true;
-										}
-									}else{
-										$strength = $card['strength'] + $action_data['support_strenghtValue'];
-									}
+									$strength = ( ($action_data['support_selfCast'] == 1) || ($card_path != $player.'/'.$row.'/'.$card_iter) )
+										? $card_data['strength'] + $action_data['support_strenghtValue']
+										: $card_data['strength'];
 
-									$field_status[$player][$row]['warrior'][$card_iter]['buffs'][]= 'support';
+									$field_status[$player][$row]['warrior'][$card_iter]['buffs'][] = 'support';
 
 									$battle_field[$player][$row]['warrior'][$card_iter]['strength'] = $strength;
 									$field_status[$player][$row]['warrior'][$card_iter]['strengthModified'] = $strength;
 
+									if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
+										if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
+											$step_status['played_card']['strength'] = $strength;
+										}
+									}
+
 									$field_status[$player][$row]['warrior'][$card_iter]['buffs'] = array_values(array_unique($field_status[$player][$row]['warrior'][$card_iter]['buffs']));
 								}
+
 							}
 						}
 						$field_status[$player][$row]['buffs'] = array_values(array_unique($field_status[$player][$row]['buffs']));
 					}
 				}
 			}
-		}*/
+		}
 
 		//Применение МЭ "Поддержка" к картам
 		/*foreach($magic_usage as $player => $magic_data){
@@ -533,7 +532,8 @@ class BattleFieldController extends BaseController{
 		}*/
 		return [
 			'battle_field' => $battle_field,
-			'field_status' => $field_status
+			'field_status' => $field_status,
+			'step_status' => $step_status
 		];
 	}
 
@@ -748,5 +748,30 @@ class BattleFieldController extends BaseController{
 			}
 		}
 		return $allow_to_use;
+	}
+
+	public static function getBuffClass($buff, $wrap = ''){
+		switch($buff){
+			case 'terrify':
+				$class = 'terrify-debuff';
+				if(!empty($wrap)){
+					$class .= '-'.$wrap.' debuff';
+				}
+			break;
+			case 'support':
+				$class = 'support-buff';
+				if(!empty($wrap)){
+					$class .= '-'.$wrap.' buff';
+				}
+			break;
+			case 'inspiration':
+				$class = 'inspiration-buff';
+				if(!empty($wrap)){
+					$class .= '-'.$wrap.' buff';
+				}
+			break;
+			default: $class = '';
+		}
+		return $class;
 	}
 }
