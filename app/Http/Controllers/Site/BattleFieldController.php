@@ -323,12 +323,7 @@ class BattleFieldController extends BaseController{
 				}
 			}
 		}
-		if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
-			$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
-			if(isset($step_status['actions']['cards'][$player])){
-				unset($step_status['actions']['cards'][$player]);
-			}
-		}
+
 		/*if(isset($step_status['actions']['appear'])){
 			$temp = [];
 			foreach($step_status['actions']['appear'] as $player => $rows){
@@ -571,18 +566,24 @@ class BattleFieldController extends BaseController{
 								$field_status[$player][$row]['warrior'][$card_iter]['buffs'][] = 'brotherhood';
 								$field_status[$player][$row]['warrior'][$card_iter]['buffs'] = array_values(array_unique($field_status[$player][$row]['warrior'][$card_iter]['buffs']));
 								$field_status[$player][$row]['warrior'][$card_iter]['strengthModified'] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'];
-
-
 							}
 						}
 					}
 				}
 			}
 		}
-		if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) && (!empty($actions_array_brotherhood))){
-			$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
-			if(isset($step_status['actions']['cards'][$player])){
-				unset($step_status['actions']['cards'][$player]);
+		if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
+			foreach($step_status['played_card']['card']['actions'] as $action){
+				switch($action['caption']){
+					case 'brotherhood':
+					case 'fury':
+					case 'support':
+						$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
+						if(isset($step_status['actions']['cards'][$player])){
+							unset($step_status['actions']['cards'][$player]);
+						}
+					break;
+				}
 			}
 		}
 		// /Применение "Боевое братство" к картам
