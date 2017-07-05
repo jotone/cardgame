@@ -1148,10 +1148,13 @@ function processActions(result){
 	if(!$.isEmptyObject(result.actions.appear)){
 		for(var player in result.actions.appear){
 			for(var row in result.actions.appear[player]){
-				for(var i in result.actions.appear[player][row]){
-					switch(result.actions.appear[player][row][i]){
+				for(var item in result.actions.appear[player][row]){
+					var action = result.actions.appear[player][row][item];
+					switch(action){
 						case 'support':
 							var field = $('#'+player+'.convert-cards '+ intRowToField(row));
+
+console.info("field", field)
 							field.closest('.convert-stuff').addClass('support-buff-wrap');
 							if(0 == field.find('.debuff-or-buff-anim.support-buff').length){
 								field.append('<div class="debuff-or-buff-anim support-buff"></div>');
