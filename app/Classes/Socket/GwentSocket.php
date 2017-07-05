@@ -430,7 +430,8 @@ class GwentSocket extends BaseSocket
 								$battle_field['mid'][] = [
 									'id'		=> $current_card_id,
 									'caption'	=> $current_card['caption'],
-									'login'		=> $this->users_data['user']['login']];
+									'login'		=> $this->users_data['user']['login']
+								];
 							}else{
 								//Если логика карт предусматривает сразу уходить в отбой
 								foreach($current_card['actions'] as $i => $action){
@@ -1539,6 +1540,10 @@ class GwentSocket extends BaseSocket
 						}
 					}
 				}
+			break;
+
+			case 'terrify':
+				var_dump($step_status['played_card']);
 			break;
 
 			case 'spy'://ШПИЙОН
