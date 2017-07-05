@@ -486,8 +486,8 @@
 		<div class="mezhdyblock">
 			<div class="bor-beutifull-box">
 				<?php
+				$mid_cards = [];
 				if(!empty($field_status['mid'])){
-					$mid_cards = [];
 					foreach($field_status['mid'] as $card){
 						if(!isset($mid_cards[$card['card']['caption']])){
 							$mid_cards[$card['card']['caption']] = [

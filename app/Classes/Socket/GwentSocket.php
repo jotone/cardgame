@@ -1504,13 +1504,13 @@ class GwentSocket extends BaseSocket
 										if(in_array($group_id, $groups)){
 											if($card_need_check){
 												if($card['id'] != Crypt::decrypt($step_status['played_card']['card']['id'])){
-													$step_status['actions']['cards'][$row][] = $card['caption'];
+													$step_status['actions']['cards'][$row][$card_iter] = $card['caption'];
 													$step_status['actions']['modify_strength'] = $action['support_strenghtValue'];
 												}else{
 													$card_need_check = false;
 												}
 											}else{
-												$step_status['actions']['cards'][$row][] = $card['caption'];
+												$step_status['actions']['cards'][$row][$card_iter] = $card['caption'];
 												$step_status['actions']['modify_strength'] = $action['support_strenghtValue'];
 											}
 										}
@@ -1520,12 +1520,12 @@ class GwentSocket extends BaseSocket
 										if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])) {
 											$card_need_check = false;
 										}else{
-											$step_status['actions']['cards'][$row][] = $card['caption'];
+											$step_status['actions']['cards'][$row][$card_iter] = $card['caption'];
 											$step_status['actions']['modify_strength'] = $action['support_strenghtValue'];
 
 										}
 									}else{
-										$step_status['actions']['cards'][$row][] = $card['caption'];
+										$step_status['actions']['cards'][$row][$card_iter] = $card['caption'];
 										$step_status['actions']['modify_strength'] = $action['support_strenghtValue'];
 									}
 								}
@@ -1544,6 +1544,7 @@ class GwentSocket extends BaseSocket
 
 			case 'terrify':
 				var_dump($step_status['played_card']);
+				$step_status['actions']['type'] = $action['caption'];
 			break;
 
 			case 'spy'://ШПИЙОН
