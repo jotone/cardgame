@@ -1246,7 +1246,6 @@ class GwentSocket extends BaseSocket
 						}
 					}
 				}
-				var_dump($card_to_kill);
 
 				foreach($card_to_kill as $player => $row_data){
 					foreach($row_data as $row_iter => $cards_to_kill){
