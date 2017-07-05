@@ -1154,19 +1154,17 @@ function processActions(result){
 						case 'support':
 							var obj = {};
 								obj.field = $('#'+player+'.convert-cards '+ intRowToField(row));
-								obj.cardsMass = result.actions.cards[row];
+								obj.cardsMass = result.actions.cards[player][row];
 								obj.effectName = 'support';
-								obj.efectStrength = result.actions.modify_strength;
 								obj.effectType = 'buff';
 
 							animatePositiveNegativeEffects(obj);
 
 							function animatePositiveNegativeEffects(obj) {
-
+console.info("obj", obj)
 								var field = obj.field,
 									cardsMass = obj.cardsMas,
 									effectName = obj.effectName,
-									efectStrength = obj.efectStrengt,
 									effectType = obj.effectType;
 
 								var mainRow = field.closest('.convert-stuff');
