@@ -1131,17 +1131,17 @@ function processActions(result){
 	var callAnimateStrengthModifySupport = false;
 	switch(result.actions.type){
 		case 'support'://Поддержка
-			if(!$.isEmptyObject(result.played_card.card)){
-				var card = result.played_card.card;
-				for(var i in card.actions){
-					if(card.actions[i]['caption'] == 'support'){
-						for(var actionRow in card.actions[i]['support_ActionRow']){
-							var field = $('#'+result.played_card.move_to.player+'.convert-cards '+ intRowToField(card.actions[i]['support_ActionRow'][actionRow]));
-							callAnimateStrengthModifySupport = true;
-						}
-					}
-				}
-			}
+			// if(!$.isEmptyObject(result.played_card.card)){
+			// 	var card = result.played_card.card;
+			// 	for(var i in card.actions){
+			// 		if(card.actions[i]['caption'] == 'support'){
+			// 			for(var actionRow in card.actions[i]['support_ActionRow']){
+			// 				var field = $('#'+result.played_card.move_to.player+'.convert-cards '+ intRowToField(card.actions[i]['support_ActionRow'][actionRow]));
+			// 				callAnimateStrengthModifySupport = true;
+			// 			}
+			// 		}
+			// 	}
+			// }
 		break;
 	}
 
@@ -1194,7 +1194,10 @@ function startBattle() {
 	};
 	conn.onmessage = function(e){
 		var result = JSON.parse(e.data);
+		//console.group('Action');
+		console.group(result.message);
 		console.log(result);
+		console.groupEnd();
 
 		switch(result.message){
 			case 'usersAreJoined':
