@@ -1161,12 +1161,12 @@ function processActions(result){
 							animatePositiveNegativeEffects(obj);
 
 							function animatePositiveNegativeEffects(obj) {
-console.info("obj", obj)
 								var field = obj.field,
-									cardsMass = obj.cardsMas,
+									cardsMass = obj.cardsMass,
 									effectName = obj.effectName,
 									effectType = obj.effectType;
 
+console.info("cardsMass", cardsMass)
 								var mainRow = field.closest('.convert-stuff');
 
 								//Анимация на поле
@@ -1186,7 +1186,31 @@ console.info("obj", obj)
 									console.count();
 									if ( !$('.troll-popup.show').length ) {
 
+										//Выборка нужных карт
+										var cardNeedArray = null;
+										if (typeof cardsMass !== 'undefined') {
 
+											var $cards = field.find('.content-card-item');
+											for(var c in cardsMass){
+												var $card = $($cards[c]);
+												if (
+													(effectType == 'debuff' && $card.is('[data-immune=0]') && $card.is('[data-full-immune=0]') ) || (effectType == 'buff' && $card.is('[data-full-immune=0]'))
+												) {
+													var strength = parseInt(cardsMass[c]['strength']);
+													var strengthMod = parseInt(cardsMass[c]['strModif']);
+													var operation = cardsMass[c]['operation'];
+													if (strength !== NaN && strength !== strengthMod) {
+
+console.info("$card", $card)
+
+console.info("strength", strength)
+
+console.info("strengthMod", strengthMod)
+													}
+												}
+
+											};
+										}
 
 										clearInterval(timer);
 									}
