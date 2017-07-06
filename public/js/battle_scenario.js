@@ -1129,8 +1129,8 @@ function popupActivation(result){
 
 function processActions(result){
 	var callAnimateStrengthModifySupport = false;
-	switch(result.actions.type){
-		case 'support'://Поддержка
+	//switch(result.actions.type){
+		//case 'support'://Поддержка
 			// if(!$.isEmptyObject(result.played_card.card)){
 			// 	var card = result.played_card.card;
 			// 	for(var i in card.actions){
@@ -1142,8 +1142,8 @@ function processActions(result){
 			// 		}
 			// 	}
 			// }
-		break;
-	}
+		//break;
+	//}
 
 	if(!$.isEmptyObject(result.actions.appear)){
 		for(var player in result.actions.appear){
