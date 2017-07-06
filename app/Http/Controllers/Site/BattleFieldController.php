@@ -765,10 +765,7 @@ class BattleFieldController extends BaseController{
 				}
 			}
 		}
-<<<<<<< HEAD
 
-=======
->>>>>>> 40914951dbdb1356078418c3efb27d5ef8d55f7f
 		return [
 			'battle_field' => $battle_field,
 			'field_status' => $field_status,
