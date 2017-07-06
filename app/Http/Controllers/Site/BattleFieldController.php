@@ -490,12 +490,35 @@ class BattleFieldController extends BaseController{
 							foreach($battle_field[$player] as $rows => $cards){
 								foreach($cards['warrior'] as $card_iter => $card){
 									if(Crypt::decrypt($card_data['id']) == $card['id']){
-										$step_status['actions']['cards'][$player][$rows][$card_iter] = [
-											'card'		=> $card['caption'],
-											'strength'	=> $battle_field[$player][$rows]['warrior'][$card_iter]['strength'],
-											'strModif'	=> $battle_field[$player][$rows]['warrior'][$card_iter]['strength'] * $mult_same,
-											'operation'	=> 'x'.$mult_same
-										];
+										$support_action = false;
+
+										if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
+											foreach($step_status['played_card']['card']['actions'] as $temp_action){
+												if($temp_action['caption'] == 'brotherhood'){
+													$support_action = true;
+													break;
+												}
+											}
+										}
+
+										if($support_action){
+											if(Crypt::decrypt($step_status['played_card']['card']['id']) == $card['id']){
+												$step_status['actions']['cards'][$player][$rows][$card_iter] = [
+													'card'		=> $card['caption'],
+													'strength'	=> $battle_field[$player][$rows]['warrior'][$card_iter]['strength'],
+													'strModif'	=> $battle_field[$player][$rows]['warrior'][$card_iter]['strength'] * $mult_same,
+													'operation'	=> 'x'.$mult_same
+												];
+											}
+										}else{
+											$step_status['actions']['cards'][$player][$rows][$card_iter] = [
+												'card'		=> $card['caption'],
+												'strength'	=> $battle_field[$player][$rows]['warrior'][$card_iter]['strength'],
+												'strModif'	=> $battle_field[$player][$rows]['warrior'][$card_iter]['strength'] * $mult_same,
+												'operation'	=> 'x'.$mult_same
+											];
+										}
+
 										$battle_field[$player][$rows]['warrior'][$card_iter]['strength'] *= $mult_same;
 										$field_status[$player][$rows]['warrior'][$card_iter]['strengthModified'] *= $mult_same;
 									}

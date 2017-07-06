@@ -1256,7 +1256,7 @@ class GwentSocket extends BaseSocket
 									$users_data[$player]['discard'][] = $card_data['id'];
 									$card = BattleFieldController::cardData($card_data['id']);
 
-									$step_status['dropped_cards'][$player][$row_iter]['warrior'][] = $card['caption'];
+									$step_status['dropped_cards'][$player][$row_iter]['warrior'][$card_iter] = $card['caption'];
 									$step_status['added_cards'][$player]['discard'][] = $card;
 
 									unset($battle_field[$player][$row_iter]['warrior'][$card_iter]);
