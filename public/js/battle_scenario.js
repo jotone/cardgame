@@ -1161,7 +1161,7 @@ function processActions(result){
 						case 'support':
 							var obj = {};
 								obj.field = $('#'+player+'.convert-cards '+ intRowToField(row));
-								obj.cardsMass = result.actions.cards[player][row];
+								obj.cardsMass = (!$.isEmptyObject(result.actions.cards))? result.actions.cards[player][row]: null;
 								obj.effectName = 'support';
 								obj.effectType = 'buff';
 
@@ -1170,7 +1170,7 @@ function processActions(result){
 						case 'brotherhood':
 							var obj = {};
 								obj.field = $('#'+player+'.convert-cards '+ intRowToField(row));
-								obj.cardsMass = result.actions.cards[player][row];
+								obj.cardsMass = (!$.isEmptyObject(result.actions.cards))? result.actions.cards[player][row]: null;
 								obj.effectName = 'brotherhood';
 								obj.effectType = 'buff';
 
