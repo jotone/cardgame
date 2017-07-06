@@ -920,9 +920,9 @@ function fieldBuild(stepStatus, addingAnim){
 									var card = stepStatus.dropped_cards[player][row][type][position];
 
 									// Узнаю какие карты нужно удалить и даю им класс ready-to-die
-									var currentCardDelate = $('.convert-battle-front #'+player+'.convert-cards '+rowId+' .cards-row-wrap li[data-slug="'+card+'"]:not(.ready-to-die)').first();
-									currentCardDelate.addClass('ready-to-die');
-									checkIfNeedRemoveBuffOnRow(player,row, stepStatus, 'support');
+									var currentCardDelete = $('.convert-battle-front #'+player+'.convert-cards '+rowId+' .cards-row-wrap li[data-slug="'+card+'"]:not(.ready-to-die)').first();
+									currentCardDelete.addClass('ready-to-die');
+									checkIfNeedRemoveBuffOnRow(player, row, stepStatus, 'support');
 								}
 							}
 						}

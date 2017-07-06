@@ -519,6 +519,7 @@ class BattleFieldController extends BaseController{
 											];
 										}
 
+										$field_status[$player][$rows]['warrior'][$card_iter]['buffs'][] = 'brotherhood';
 										$battle_field[$player][$rows]['warrior'][$card_iter]['strength'] *= $mult_same;
 										$field_status[$player][$rows]['warrior'][$card_iter]['strengthModified'] *= $mult_same;
 									}
@@ -687,6 +688,7 @@ class BattleFieldController extends BaseController{
 			for($i = 0; $i<$n; $i++){
 				$action = $step_status['played_card']['card']['actions'][$i];
 				switch($action['caption']){
+					case 'killer': break;
 					case 'support':
 						$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
 						if(isset($step_status['actions']['cards'][$player])){
@@ -743,7 +745,7 @@ class BattleFieldController extends BaseController{
 							unset($step_status['actions']['cards'][$player]);
 						}
 						$stop = true;
-						break;
+					break;
 					default:
 						if($i == ($n-1)){
 							$step_status['actions']['appear'] = [];
