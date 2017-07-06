@@ -1254,10 +1254,13 @@ class GwentSocket extends BaseSocket
 							foreach($battle_field[$player][$row_iter]['warrior'] as $card_iter => $card_data){
 								if( ($card_to_kill['id'] == $card_data['id']) && ($card_to_kill['strength'] == $card_data['strength']) ){
 									$users_data[$player]['discard'][] = $card_data['id'];
-									$card = BattleFieldController::getCardNaturalSetting($card_data['id']);
+									$card = BattleFieldController::cardData($card_data['id']);
+
 									$step_status['dropped_cards'][$player][$row_iter]['warrior'][] = $card['caption'];
-									$step_status['added_cards'][$player]['discard'] = $card;
+									$step_status['added_cards'][$player]['discard'][] = $card;
+
 									unset($battle_field[$player][$row_iter]['warrior'][$card_iter]);
+
 									$battle_field[$player][$row_iter]['warrior'] = array_values($battle_field[$player][$row_iter]['warrior']);
 									if($action['killer_killAllOrSingle'] == 0){
 										break 4;
