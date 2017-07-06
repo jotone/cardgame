@@ -765,7 +765,6 @@ class BattleFieldController extends BaseController{
 				}
 			}
 		}
-		var_dump($step_status);
 		return [
 			'battle_field' => $battle_field,
 			'field_status' => $field_status,
