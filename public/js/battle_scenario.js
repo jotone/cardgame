@@ -1160,6 +1160,15 @@ function processActions(result){
 
 							animatePositiveNegativeEffects(obj);
 						break;
+						case 'brotherhood':
+							var obj = {};
+								obj.field = $('#'+player+'.convert-cards '+ intRowToField(row));
+								obj.cardsMass = result.actions.cards[player][row];
+								obj.effectName = 'brotherhood';
+								obj.effectType = 'buff';
+
+							animatePositiveNegativeEffects(obj);
+						break;
 					}
 				}
 			}
@@ -2028,13 +2037,14 @@ console.info("$card", $card)
 						var strengthMod = parseInt(cardsMass[c]['strModif']);
 						var operation = cardsMass[c]['operation'];
 						if (strength !== NaN && strength !== strengthMod) {
+							console.count();
 
+console.info("$card,effectName,effectType,strength,strengthMod,operation", $card,effectName,effectType,strength,strengthMod,operation)
 							animateCardStrengthPulsing($card,effectName,effectType,strength,strengthMod,operation);
 
 						}
 					}
 
-console.info("effectType", effectType)
 					switch(effectType){
 						case 'buff':
 							$card.addClass('buffed '+effectName+'-buffed');
@@ -2051,8 +2061,8 @@ console.info("effectType", effectType)
 				pointsSum.addClass('pulsed');
 				setTimeout(function() {
 					pointsSum.removeClass('pulsed');
-				}, 600);
-			}, 100);
+				}, 500);
+			}, 0);
 
 			mainRow.addClass(effectType);
 			clearInterval(timer);
@@ -2081,7 +2091,8 @@ function animateCardStrengthPulsing(card,effectName,effectType,strength,strength
 
 				break;
 			case 'x':
-
+				operationType = 'x';
+				newValue = operation.substr(1);
 				break;
 		}
 

@@ -117,20 +117,20 @@
 
 /* card buffed-debuffed */
 
-	.buffed-or-debuffed .label-power-card { z-index: 1; }
-	.buffed-or-debuffed.buffed .card-load-info:before, .buffed-or-debuffed.debuffed .card-load-info:before { content: ''; display: block; position: absolute; z-index: 0; top: 10px; left: 6px; width: 10px; height: 15px; border-radius: 50%; }
+	.content-card-item .label-power-card { z-index: 1; }
+	.content-card-item.buffed .card-load-info:before, .content-card-item.debuffed .card-load-info:before { content: ''; display: block; position: absolute; z-index: 0; top: 10px; left: 6px; width: 10px; height: 15px; border-radius: 50%; }
 
-	.buffed-or-debuffed.buffed.debuffed .card-load-info:before { box-shadow: 0 0 20px 10px rgba(0, 178, 222, .9); }
+	.content-card-item.buffed.debuffed .card-load-info:before { box-shadow: 0 0 20px 10px rgba(0, 178, 222, .9); }
 
 	/* buffed */
 
-		.buffed-or-debuffed.buffed .card-load-info:before  { box-shadow: 0 0 11px 10px rgba(64, 158, 0, 0.70);}
+		.content-card-item.buffed .card-load-info:before  { box-shadow: 0 0 11px 10px rgba(64, 158, 0, 0.70);}
 
 	/* /buffed */
 
 	/* debuffed */
 
-		.buffed-or-debuffed.debuffed .card-load-info:before  { box-shadow: 0 0 20px 10px rgba(189, 2, 2, .9); }
+		.content-card-item.debuffed .card-load-info:before  { box-shadow: 0 0 20px 10px rgba(189, 2, 2, .9); }
 
 	/* /debuffed */
 
