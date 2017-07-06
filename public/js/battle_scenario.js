@@ -2019,6 +2019,8 @@ function animatePositiveNegativeEffects(obj) {
 				var $cards = field.find('.content-card-item');
 				for(var c in cardsMass){
 					var $card = $($cards[c]);
+
+console.info("$card", $card)
 					if (
 						(effectType == 'debuff' && $card.is('[data-immune=0]') && $card.is('[data-full-immune=0]') ) || (effectType == 'buff' && $card.is('[data-full-immune=0]'))
 					) {
@@ -2030,6 +2032,16 @@ function animatePositiveNegativeEffects(obj) {
 							animateCardStrengthPulsing($card,effectName,effectType,strength,strengthMod,operation);
 
 						}
+					}
+
+console.info("effectType", effectType)
+					switch(effectType){
+						case 'buff':
+							$card.addClass('buffed '+effectName+'-buffed');
+							break;
+						case 'debuff':
+							$card.addClass('debuffed '+effectName+'-debuffed');
+							break;
 					}
 
 				};
@@ -2080,7 +2092,7 @@ function animateCardStrengthPulsing(card,effectName,effectType,strength,strength
 		setTimeout(function(){
 			card.removeClass('pulsed');//пульсация - конец
 			recalculateBattleStrength();//пересчет сил на поле боя
-		},2000)
+		},2000);
 
 
 	},500)
