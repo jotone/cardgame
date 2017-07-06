@@ -1021,12 +1021,12 @@ function recalculateBattleStrength(){
 			if(field != 'total'){
 				$('#'+player+'.convert-cards #'+field).closest('.convert-stuff').find('.field-for-sum').text(fieldData[player][field]);
 				var pointsSum = $('#'+player+'.convert-cards #'+field).closest('.convert-stuff').find('.field-for-sum');
-				setTimeout(function() {
-					pointsSum.addClass('pulsed');
-					setTimeout(function() {
-						pointsSum.removeClass('pulsed');
-					}, 500);
-				}, 0);
+				// setTimeout(function() {
+				// 	pointsSum.addClass('pulsed');
+				// 	setTimeout(function() {
+				// 		pointsSum.removeClass('pulsed');
+				// 	}, 500);
+				// }, 0);
 			}else{
 				$('.convert-right-info div[data-player='+player+'] .power-text').text(fieldData[player][field]);
 			}
@@ -1128,7 +1128,7 @@ function popupActivation(result){
 }
 
 function processActions(result){
-	var callAnimateStrengthModifySupport = false;
+	//var callAnimateStrengthModifySupport = false;
 	//switch(result.actions.type){
 		//case 'support'://Поддержка
 			// if(!$.isEmptyObject(result.played_card.card)){
@@ -1159,88 +1159,19 @@ function processActions(result){
 								obj.effectType = 'buff';
 
 							animatePositiveNegativeEffects(obj);
-
-							function animatePositiveNegativeEffects(obj) {
-								var field = obj.field,
-									cardsMass = obj.cardsMass,
-									effectName = obj.effectName,
-									effectType = obj.effectType;
-
-console.info("cardsMass", cardsMass)
-								var mainRow = field.closest('.convert-stuff');
-
-								//Анимация на поле
-								mainRow.addClass(effectName+'-'+effectType+'-wrap');
-								var effectMarkup = null;
-								if(field.children('.'+effectName+'-'+effectType+'.active').length > 0){
-									//Проверить - есть ли уже разметка для такого бафа
-									effectMarkup = field.children('.'+effectName+'-'+effectType+'.active');
-								}else{
-									field.append('<div class="debuff-or-buff-anim '+effectName+'-'+effectType+'" ></div>');
-									effectMarkup = field.children('.'+effectName+'-'+effectType+'.active');
-								}
-
-
-								//мини-хук - показывать анимаци только когда закрытый попап показ карты хода
-								var timer = setInterval(function() {
-									console.count();
-									if ( !$('.troll-popup.show').length ) {
-
-										//Выборка нужных карт
-										var cardNeedArray = null;
-										if (typeof cardsMass !== 'undefined') {
-
-											var $cards = field.find('.content-card-item');
-											for(var c in cardsMass){
-												var $card = $($cards[c]);
-												if (
-													(effectType == 'debuff' && $card.is('[data-immune=0]') && $card.is('[data-full-immune=0]') ) || (effectType == 'buff' && $card.is('[data-full-immune=0]'))
-												) {
-													var strength = parseInt(cardsMass[c]['strength']);
-													var strengthMod = parseInt(cardsMass[c]['strModif']);
-													var operation = cardsMass[c]['operation'];
-													if (strength !== NaN && strength !== strengthMod) {
-
-console.info("$card", $card)
-
-console.info("strength", strength)
-
-console.info("strengthMod", strengthMod)
-													}
-												}
-
-											};
-										}
-
-										clearInterval(timer);
-									}
-								},600);
-							}
-							// console.group();
-							// console.log("field", field);
-							// console.info("cardsMass", cardsMass);
-							// console.groupEnd();
-
-
-							// field.closest('.convert-stuff').addClass('support-buff-wrap');
-							// if(0 == field.find('.debuff-or-buff-anim.support-buff').length){
-							// 	field.append('<div class="debuff-or-buff-anim support-buff"></div>');
-							// 	var timer = setInterval(function(){
-							// 		field.find('.debuff-or-buff-anim.support-buff').addClass('active');
-							// 		field.closest('.convert-stuff').addClass('buff');
-							// 		clearInterval(timer);
-							// 	}, 500);
-							// }
-							// callAnimateStrengthModifySupport = true;
 						break;
 					}
 				}
 			}
 		}
 	}
-	// if(callAnimateStrengthModifySupport){
-	// 	animateStrengthModifySupport(result);
-	// }
+
+	if(!$.isEmptyObject(result.actions.disappear)){
+	}
+	if ( $.isEmptyObject(result.actions.appear) && $.isEmptyObject(result.actions.disappear)) {
+		recalculateBattleStrength();
+	}
+
 }
 
 //battle start (Socket messages)
@@ -1443,7 +1374,7 @@ function startBattle() {
 					changeTurnIndicator(result.round_status.current_player); //смена индикатора хода
 
 					setDecksValues(result.counts, result.images);
-					recalculateBattleStrength();
+
 					detailCardPopupOnStartStep(result.played_card['card'], result.played_card['strength']);
 				}else{
 
@@ -2048,4 +1979,110 @@ function animateStrengthModifySupport(result){
 		}
 	}
 	$('#'+field+'.convert-cards li').removeClass('modified');
+}
+
+
+
+function animatePositiveNegativeEffects(obj) {
+	var field = obj.field,
+		cardsMass = obj.cardsMass,
+		effectName = obj.effectName,
+		effectType = obj.effectType;
+
+	var mainRow = field.closest('.convert-stuff');
+	var pointsSum = mainRow.find('.field-for-sum');
+
+	//Анимация на поле
+	mainRow.addClass(effectName+'-'+effectType+'-wrap');
+	var effectMarkup = null;
+	if(field.children('.'+effectName+'-'+effectType+'.active').length > 0){
+		//Проверить - есть ли уже разметка для такого бафа
+		effectMarkup = field.children('.'+effectName+'-'+effectType+'.active');
+	}else{
+		field.append('<div class="debuff-or-buff-anim '+effectName+'-'+effectType+'" ></div>');
+		effectMarkup = field.children('.'+effectName+'-'+effectType);
+	}
+
+
+	//мини-хук - показывать анимаци только когда закрытый попап показ карты хода
+	var timer = setInterval(function() {
+		if ( !$('.troll-popup.show').length ) {
+
+			//запуск анимации на поле
+			effectMarkup.addClass('active');
+
+			//Выборка нужных карт
+			var cardNeedArray = null;
+
+			if (typeof cardsMass !== 'undefined' || ( Array.isArray(cardNeedArray) && cardNeedArray.length > 0 ) ) {
+
+				var $cards = field.find('.content-card-item');
+				for(var c in cardsMass){
+					var $card = $($cards[c]);
+					if (
+						(effectType == 'debuff' && $card.is('[data-immune=0]') && $card.is('[data-full-immune=0]') ) || (effectType == 'buff' && $card.is('[data-full-immune=0]'))
+					) {
+						var strength = parseInt(cardsMass[c]['strength']);
+						var strengthMod = parseInt(cardsMass[c]['strModif']);
+						var operation = cardsMass[c]['operation'];
+						if (strength !== NaN && strength !== strengthMod) {
+
+							animateCardStrengthPulsing($card,effectName,effectType,strength,strengthMod,operation);
+
+						}
+					}
+
+				};
+			}
+
+			setTimeout(function() {
+				pointsSum.addClass('pulsed');
+				setTimeout(function() {
+					pointsSum.removeClass('pulsed');
+				}, 600);
+			}, 100);
+
+			mainRow.addClass(effectType);
+			clearInterval(timer);
+		}
+	},600);
+}
+
+function animateCardStrengthPulsing(card,effectName,effectType,strength,strengthMod,operation) {
+
+	setTimeout(function(){
+		var currentValue = card.find('.card-current-value');
+		currentValue.text(strength);//на всякий - вставляем обычное значение карты
+		card.addClass('pulsed');//пульсация - начало
+
+		var buffDebuffHolder = card.find('.buff-debuff-value');
+		var newValue = null;
+		var operationType = '';
+
+		switch(operation.charAt(0)){
+			case '+':
+				operationType = '+'
+				newValue = strengthMod - strength;
+
+				break;
+			case '-':
+
+				break;
+			case 'x':
+
+				break;
+		}
+
+		buffDebuffHolder.attr('data-math-simb', operationType );//вст + или - или х2 х3 ...
+		buffDebuffHolder.text(newValue);
+		currentValue.text(strengthMod);
+
+		setTimeout(function(){
+			card.removeClass('pulsed');//пульсация - конец
+			recalculateBattleStrength();//пересчет сил на поле боя
+		},2000)
+
+
+	},500)
+
 }
