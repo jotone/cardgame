@@ -499,7 +499,7 @@ class GwentSocket extends BaseSocket
 					//Применение действий
 					$add_time = true;
 					foreach($current_actions as $action_iter => $action){
-						$action_result = self::actionProcessing($action, $battle_field, $this->users_data, $this->step_status, $user_turn_id, $msg, $this->magic_usage);
+						$action_result = self::actionProcessing($action, $battle_field, $this->users_data, $this->step_status, $user_turn_id, $msg, $this->magic_usage, $battle);
 						$this->step_status	= $action_result['step_status'];
 						$this->users_data	= $action_result['users_data'];
 						$battle_field		= $action_result['battle_field'];
@@ -522,6 +522,11 @@ class GwentSocket extends BaseSocket
 					$this->step_status = $battle_info['step_status'];
 					$battle_field = $battle_info['battle_field'];
 					$round_passed_summ = $this->users_data['user']['round_passed'] + $this->users_data['opponent']['round_passed'];
+					var_dump(empty($this->step_status['actions']['disappear']));
+					if(!empty($this->step_status['actions']['disappear'])){
+						var_dump('yeah');
+						$this->step_status['actions']['cards_strength'] = $battle_info['cards_strength'];
+					}
 					if($round_passed_summ < 1){
 						if($add_time === true){
 							$turn_expire = $msg->timing + $timing_settings['additional_time'];
@@ -1055,7 +1060,7 @@ class GwentSocket extends BaseSocket
 		return $deck;
 	}
 
-	protected static function actionProcessing($action, $battle_field, $users_data, $step_status, $user_turn_id, $msg, $magic_usage){
+	protected static function actionProcessing($action, $battle_field, $users_data, $step_status, $user_turn_id, $msg, $magic_usage, $battle){
 		switch($action['caption']){
 			/*case 'block_magic'://БЛОКИРОВКА МАГИИ
 				$magic_usage[$users_data['opponent']['player']][0] = ['id' => $msg->magic, 'allow'=>'0'];
@@ -1127,6 +1132,7 @@ class GwentSocket extends BaseSocket
 			break;*/
 
 			case 'killer'://УБИЙЦА
+				$field_buffs = BattleFieldController::getBattleBuffs($battle_field);
 				//Может ли бить своих
 				$players = ( (isset($action['killer_atackTeamate'])) && ($action['killer_atackTeamate']== 1) )? $players = ['p1', 'p2'] : [$users_data['opponent']['player']];
 				//наносит удат по группе
@@ -1271,6 +1277,21 @@ class GwentSocket extends BaseSocket
 										break;
 									}
 								}
+							}
+						}
+					}
+				}
+				$step_status['actions']['disappear'] = [];
+				$new_field_buffs = BattleFieldController::getBattleBuffs($battle_field);
+				foreach($field_buffs as $field => $rows){
+					if(!isset($new_field_buffs[$field])){
+						$step_status['actions']['disappear'][$field] = $field_buffs[$field];
+					}else{
+						foreach($rows as $row => $row_data){
+							if(isset($new_field_buffs[$field][$row])){
+								$step_status['actions']['disappear'][$field][$row] = array_diff($field_buffs[$field][$row], $new_field_buffs[$field][$row]);
+							}else{
+								$step_status['actions']['disappear'][$field][$row] = $field_buffs[$field][$row];
 							}
 						}
 					}

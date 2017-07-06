@@ -141,6 +141,7 @@ class SitePagesController extends BaseController
 		}
 
 		$battle_info = BattleFieldController::battleInfo($battle_data, unserialize($battle_data->battle_field), $users_data, unserialize($battle_data->magic_usage), []);
+		//dd(BattleFieldController::getBattleBuffs(unserialize($battle_data->battle_field)));
 		$field_status = $battle_info['field_status'];
 
 		$battle = [
