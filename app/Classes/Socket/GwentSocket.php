@@ -1504,7 +1504,6 @@ class GwentSocket extends BaseSocket
 						$step_status['actions']['appear'][$step_status['played_card']['move_to']['player']][$row][] = $action['caption'];
 					}
 				}
-				var_dump($step_status['actions']['appear']);
 			break;
 
 			case 'terrify':

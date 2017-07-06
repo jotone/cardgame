@@ -750,7 +750,7 @@ class BattleFieldController extends BaseController{
 							}
 						}
 						$stop = true;
-						break;
+					break;
 					default:
 						if($i == ($n-1)){
 							$step_status['actions']['appear'] = [];
