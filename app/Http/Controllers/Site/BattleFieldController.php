@@ -323,25 +323,6 @@ class BattleFieldController extends BaseController{
 				}
 			}
 		}
-		if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
-			$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
-			if(isset($step_status['actions']['cards'][$player])){
-				unset($step_status['actions']['cards'][$player]);
-			}
-		}
-		/*if(isset($step_status['actions']['appear'])){
-			$temp = [];
-			foreach($step_status['actions']['appear'] as $player => $rows){
-				foreach($rows as $row => $buffs){
-					foreach($buffs as $i => $buff){
-						$temp[$player][$row][$buff] = $buff;
-					}
-					$temp[$player][$row] = array_values(array_unique($temp[$player][$row]));
-				}
-			}
-
-			$step_status['actions']['appear'] = $temp;
-		}*/
 
 		//Применение действия "Страшный" к картам
 		foreach($actions_array_fear as $source => $cards){
@@ -359,7 +340,6 @@ class BattleFieldController extends BaseController{
 
 						//Карта действует на группу
 						$groups = (isset($action['fear_actionToGroupOrAll']))? $action['fear_actionToGroupOrAll']: [];
-
 						foreach($players as $player){
 							if(!in_array($users_data[$player]['current_deck'], $action['fear_enemyRace'])){
 								foreach($action['fear_ActionRow'] as $action_row){
@@ -385,9 +365,9 @@ class BattleFieldController extends BaseController{
 														$field_status[$field][$action_row]['warrior'][$card_iter]['debuffs'] = array_values(array_unique($field_status[$field][$action_row]['warrior'][$card_iter]['debuffs']));
 
 														if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
-															foreach($step_status['played_card']['card']['actions'] as $action){
-																if($action['caption'] == 'terrify'){
-																	$step_status['actions']['cards'][$player][$action_row][$card_iter] = [
+															foreach($step_status['played_card']['card']['actions'] as $inner_action){
+																if($inner_action['caption'] == 'terrify'){
+																	$step_status['actions']['cards'][$field][$action_row][$card_iter] = [
 																		'card' => $card['caption'],
 																		'strength' => $card_data['strength'],
 																		'strModif' => $strength
@@ -419,9 +399,9 @@ class BattleFieldController extends BaseController{
 													}
 												}
 												if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
-													foreach($step_status['played_card']['card']['actions'] as $action){
-														if($action['caption'] == 'terrify'){
-															$step_status['actions']['cards'][$player][$action_row][$card_iter] = [
+													foreach($step_status['played_card']['card']['actions'] as $inner_action){
+														if($inner_action['caption'] == 'terrify'){
+															$step_status['actions']['cards'][$field][$action_row][$card_iter] = [
 																'card' => $card['caption'],
 																'strength' => $card_data['strength'],
 																'strModif' => $strength
@@ -509,7 +489,6 @@ class BattleFieldController extends BaseController{
 											'strength'	=> $battle_field[$player][$rows]['warrior'][$card_iter]['strength'],
 											'strModif'	=> $battle_field[$player][$rows]['warrior'][$card_iter]['strength'] * $mult_same
 										];
-
 										$battle_field[$player][$rows]['warrior'][$card_iter]['strength'] *= $mult_same;
 										$field_status[$player][$rows]['warrior'][$card_iter]['strengthModified'] *= $mult_same;
 									}
@@ -561,28 +540,77 @@ class BattleFieldController extends BaseController{
 					foreach($battle_field[$player] as $row => $cards){
 						foreach($cards['warrior'] as $card_iter => $card){
 							if(in_array($card['id'], $cards_ids)){
-								$step_status['actions']['cards'][$player][$rows][$card_iter] = [
-									'card'		=> $card['caption'],
-									'strength'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'],
-									'strModif'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'] * $mult_same
-								];
+								$card = self::getCardNaturalSetting($card['id']);
+								
+								if( (isset($step_status['played_card']['card'])) && (in_array($group_data[0], $card['group'])) ){
+									if(in_array($group_data[0], $step_status['played_card']['card']['group'])) {
+										$step_status['actions']['cards'][$player][$row][$card_iter] = [
+											'card' => $card['caption'],
+											'strength' => $battle_field[$player][$row]['warrior'][$card_iter]['strength'],
+											'strModif' => $battle_field[$player][$row]['warrior'][$card_iter]['strength'] * $mult_group
+										];
+									}
+								}
+
 								$battle_field[$player][$row]['warrior'][$card_iter]['strength'] *= $mult_group;
 
 								$field_status[$player][$row]['warrior'][$card_iter]['buffs'][] = 'brotherhood';
 								$field_status[$player][$row]['warrior'][$card_iter]['buffs'] = array_values(array_unique($field_status[$player][$row]['warrior'][$card_iter]['buffs']));
 								$field_status[$player][$row]['warrior'][$card_iter]['strengthModified'] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'];
-
-
 							}
 						}
 					}
 				}
 			}
 		}
-		if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) && (!empty($actions_array_brotherhood))){
-			$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
-			if(isset($step_status['actions']['cards'][$player])){
-				unset($step_status['actions']['cards'][$player]);
+
+		if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
+			foreach($step_status['played_card']['card']['actions'] as $action){
+				switch($action['caption']){
+					case 'brotherhood':
+						$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
+						if(isset($step_status['actions']['cards'][$player])){
+							unset($step_status['actions']['cards'][$player]);
+						}
+						foreach($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']] as $row => $data){
+							if($row != $step_status['played_card']['move_to']['row']){
+								unset($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']][$row]);
+							}
+						}
+					break;
+					case 'fury':
+						$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
+						if(isset($step_status['actions']['cards'][$player])){
+							unset($step_status['actions']['cards'][$player]);
+						}
+					break;
+					case 'support':
+						$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
+						if(isset($step_status['actions']['cards'][$player])){
+							unset($step_status['actions']['cards'][$player]);
+						}
+						if(isset($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']])){
+							foreach($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']] as $row => $data){
+								if(!in_array($row, $action['support_ActionRow'])){
+										unset($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']][$row]);
+								}
+							}
+						}
+					break;
+					case 'terrify':
+						if($step_status['played_card']['move_to']['player'] != 'mid'){
+							if($action['fear_actionTeamate'] == 0){
+								if(isset($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']])) {
+									unset($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']]);
+								}
+							}
+						}
+					break;
+					default:
+						$step_status['actions']['appear'] = [];
+						$step_status['actions']['disappear'] = [];
+						$step_status['actions']['cards'] = [];
+				}
 			}
 		}
 		// /Применение "Боевое братство" к картам
