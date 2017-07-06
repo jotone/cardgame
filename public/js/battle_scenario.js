@@ -333,14 +333,14 @@ function setDecksValues(counts, images){
 
 	//Создание отображения карты в списке
 	function createFieldCardView(cardData, strength) {
-		var immune=false;
-		var full_immune = false;
+		var immune = '0';
+		var full_immune = '0';
 		cardData.actions.forEach(function(item) {
 			if ( item.hasOwnProperty('immumity_type') ) {
-				if ( item.immunity_type == "1" ) {
-					full_immune = true;
-				} else {
-					immune = true;
+				if( item.immunity_type == "1" ){
+					full_immune = '1';
+				}else{
+					immune = '1';
 				}
 			}
 		});
@@ -884,7 +884,8 @@ function fieldBuild(stepStatus, addingAnim){
 					case 'discard':
 						for(var i in stepStatus.dropped_cards[player][row]){
 							var card = stepStatus.dropped_cards[player][row][i];
-							$('#'+type+'-'+row+' ul.deck-cards-list li[data-slug='+card+']:first').remove();
+                            console.log(card)
+							//$('#'+type+'-'+row+' ul.deck-cards-list li[data-slug='+card+']:first').remove();
 						}
 					break;
 					case 'hand':

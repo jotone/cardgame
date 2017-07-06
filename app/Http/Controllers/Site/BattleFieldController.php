@@ -822,6 +822,22 @@ class BattleFieldController extends BaseController{
 	}
 
 	public static function cardView($card, $strength_override = -1, $quantity = 0){
+		$buffs_classes = '';
+		if(isset($card['card'])){
+			if(!empty($card['buffs'])){
+				$buffs_classes .= ' buffed';
+				foreach($card['buffs'] as $buff){
+					$buffs_classes .= ' '.$buff.'-buffed';
+				}
+			}
+			if(!empty($card['debuffs'])){
+				$buffs_classes .= ' debuffed';
+				foreach($card['debuffs'] as $buff){
+					$buffs_classes .= ' '.$buff.'-debuffed';
+				}
+			}
+			$card = $card['card'];
+		}
 		$has_immune = 0;
 		$has_full_immune = 0;
 		foreach($card['actions'] as $action){
@@ -882,7 +898,7 @@ class BattleFieldController extends BaseController{
 			</div>'
 			: '';
 		return '
-		<li class="content-card-item disable-select show" data-relative="'.$card['fraction'].'" data-immune="'.$has_immune.'" data-full-immune="'.$has_full_immune.'" data-cardid="'.$card['id'].'" data-slug="'.$card['caption'].'" data-relative="'.$card['fraction'].'">
+		<li class="content-card-item disable-select show'.$buffs_classes.'" data-relative="'.$card['fraction'].'" data-immune="'.$has_immune.'" data-full-immune="'.$has_full_immune.'" data-cardid="'.$card['id'].'" data-slug="'.$card['caption'].'" data-relative="'.$card['fraction'].'">
 			'.$quantity_tag.'
 			<div class="content-card-item-main '.$race_class.' '.$leader_class.' '.$special_class.'" style="background-image: url('.\URL::asset('/img/card_images/'.$card['img_url']).')" data-leader="'.$card['is_leader'].'">
 				<div class="card-load-info card-popup">

@@ -88,7 +88,7 @@
 									<ul class="cards-row-wrap">
 										@if(!empty($enemy['login']))
 											@foreach($field_status[$enemy['player']][2]['warrior'] as $card_data)
-												{!! \App\Http\Controllers\Site\BattleFieldController::cardView($card_data['card'], $card_data['strengthModified']) !!}
+												{!! \App\Http\Controllers\Site\BattleFieldController::cardView($card_data, $card_data['strengthModified']) !!}
 											@endforeach
 										@endif
 									</ul>
@@ -142,7 +142,7 @@
 									<ul class="cards-row-wrap">
 										@if(!empty($enemy['login']))
 											@foreach($field_status[$enemy['player']][1]['warrior'] as $card_data)
-												{!! \App\Http\Controllers\Site\BattleFieldController::cardView($card_data['card'], $card_data['strengthModified']) !!}
+												{!! \App\Http\Controllers\Site\BattleFieldController::cardView($card_data, $card_data['strengthModified']) !!}
 											@endforeach
 										@endif
 									</ul>
@@ -195,7 +195,7 @@
 									<ul class="cards-row-wrap">
 										@if(!empty($enemy['login']))
 											@foreach($field_status[$enemy['player']][0]['warrior'] as $card_data)
-												{!! \App\Http\Controllers\Site\BattleFieldController::cardView($card_data['card'], $card_data['strengthModified']) !!}
+												{!! \App\Http\Controllers\Site\BattleFieldController::cardView($card_data, $card_data['strengthModified']) !!}
 											@endforeach
 										@endif
 									</ul>
@@ -250,7 +250,7 @@
 									<!-- Список ближних карт-->
 									<ul class="cards-row-wrap">
 										@foreach($field_status[$ally['player']][0]['warrior'] as $card_data)
-											{!! \App\Http\Controllers\Site\BattleFieldController::cardView($card_data['card'], $card_data['strengthModified']) !!}
+											{!! \App\Http\Controllers\Site\BattleFieldController::cardView($card_data, $card_data['strengthModified']) !!}
 										@endforeach
 									</ul>
 									<!-- END OF Список ближних карт-->
@@ -294,7 +294,7 @@
 									<!-- Список дальних карт-->
 									<ul class="cards-row-wrap">
 										@foreach($field_status[$ally['player']][1]['warrior'] as $card_data)
-											{!! \App\Http\Controllers\Site\BattleFieldController::cardView($card_data['card'], $card_data['strengthModified']) !!}
+											{!! \App\Http\Controllers\Site\BattleFieldController::cardView($card_data, $card_data['strengthModified']) !!}
 										@endforeach
 									</ul>
 									<!-- END OF Список дальних карт-->
@@ -338,7 +338,7 @@
 									<!-- Список сверхдальних карт-->
 									<ul class="cards-row-wrap">
 										@foreach($field_status[$ally['player']][2]['warrior'] as $card_data)
-											{!! \App\Http\Controllers\Site\BattleFieldController::cardView($card_data['card'], $card_data['strengthModified']) !!}
+											{!! \App\Http\Controllers\Site\BattleFieldController::cardView($card_data, $card_data['strengthModified']) !!}
 										@endforeach
 									</ul>
 									<!-- END OF Список сверхдальнихдальних карт-->
