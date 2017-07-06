@@ -1033,6 +1033,18 @@ class BattleFieldController extends BaseController{
 				if(!empty($rows)){
 					//~!!!
 				}
+			}else{
+				foreach($rows as $row => $row_data){
+					foreach($row_data as $type => $cards){
+						if($type == 'special'){
+							//!!!
+						}else{
+							foreach($cards as $card_iter => $card_data){
+
+							}
+						}
+					}
+				}
 			}
 		}
 	}

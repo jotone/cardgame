@@ -953,8 +953,6 @@ class GwentSocket extends BaseSocket
 			$users_data['opponent']['login'] => $users_data['opponent']['card_images'],
 		];
 
-		$step_status['actions'] = json_decode(json_encode($step_status['actions']));
-
 		$result = $step_status;
 		$result['message'] = 'userMadeAction';
 		$result['battleInfo'] = $msg->ident->battleId;
