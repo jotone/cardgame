@@ -1126,7 +1126,7 @@ class GwentSocket extends BaseSocket
 				$step_status['actions'][] = $action['caption'];
 			break;*/
 
-			/*case 'killer'://УБИЙЦА
+			case 'killer'://УБИЙЦА
 				//Может ли бить своих
 				$players = ( (isset($action['killer_atackTeamate'])) && ($action['killer_atackTeamate']== 1) )? $players = ['p1', 'p2'] : [$users_data['opponent']['player']];
 				//наносит удат по группе
@@ -1149,7 +1149,8 @@ class GwentSocket extends BaseSocket
 								$rows_strength[$player][$row] = $card_data['strength'];
 							}
 							if(!empty($groups)){
-								foreach($card_data['card']['groups'] as $group_id){
+								$card = BattleFieldController::getCardNaturalSetting($card_data['id']);
+								foreach($card['group'] as $group_id){
 									if(in_array($group_id, $groups)){
 										$cards_to_destroy[$player][$row][] = [
 											'id'		=> $card_data['id'],
@@ -1172,7 +1173,7 @@ class GwentSocket extends BaseSocket
 								}
 							}else{
 								$card = BattleFieldController::getCardNaturalSetting($card_data['id']);
-								$allow_by_immune = self::checkForSimpleImmune($action['killer_ignoreKillImmunity'], $card['actions']);
+								$allow_by_immune = BattleFieldController::checkForSimpleImmune($action['killer_ignoreKillImmunity'], $card['actions']);
 								if($allow_by_immune){
 									$cards_to_destroy[$player][$row][] = [
 										'id'		=> $card_data['id'],
@@ -1269,9 +1270,9 @@ class GwentSocket extends BaseSocket
 					}
 				}
 				if(count($card_to_kill) > 0){
-					$step_status['actions'][] = $action['caption'];
+					//$step_status['actions']['appear'] = $action['caption'];
 				}
-			break;*/
+			break;
 
 			/*case 'master'://ПОВЕЛИТЕЛЬ
 				$cards_can_be_added = [];
