@@ -1170,6 +1170,15 @@ function processActions(result){
 
 							animatePositiveNegativeEffects(obj);
 						break;
+						case 'inspiration':
+							var obj = {};
+								obj.field = $('#'+player+'.convert-cards '+ intRowToField(row));
+								obj.cardsMass = result.actions.cards[player][row];
+								obj.effectName = 'inspiration';
+								obj.effectType = 'buff';
+
+							animatePositiveNegativeEffects(obj);
+						break;
 					}
 				}
 			}
@@ -2026,11 +2035,10 @@ function animatePositiveNegativeEffects(obj) {
 
 			if (typeof cardsMass !== 'undefined' || ( Array.isArray(cardNeedArray) && cardNeedArray.length > 0 ) ) {
 
-				var $cards = field.find('.content-card-item');
+				var $cards = field.find('.cards-row-wrap .content-card-item');
 				for(var c in cardsMass){
 					var $card = $($cards[c]);
 
-console.info("$card", $card)
 					if (
 						(effectType == 'debuff' && $card.is('[data-immune=0]') && $card.is('[data-full-immune=0]') ) || (effectType == 'buff' && $card.is('[data-full-immune=0]'))
 					) {
@@ -2038,7 +2046,6 @@ console.info("$card", $card)
 						var strengthMod = parseInt(cardsMass[c]['strModif']);
 						var operation = cardsMass[c]['operation'];
 						if (strength !== NaN && strength !== strengthMod) {
-							console.count();
 
 console.info("$card,effectName,effectType,strength,strengthMod,operation", $card,effectName,effectType,strength,strengthMod,operation)
 							animateCardStrengthPulsing($card,effectName,effectType,strength,strengthMod,operation);
@@ -2048,6 +2055,9 @@ console.info("$card,effectName,effectType,strength,strengthMod,operation", $card
 
 					switch(effectType){
 						case 'buff':
+							if ( effectName == 'brotherhood' && Array.isArray(cardsMass) && cardsMass.length <= 1) {
+								break;
+							}
 							$card.addClass('buffed '+effectName+'-buffed');
 							break;
 						case 'debuff':

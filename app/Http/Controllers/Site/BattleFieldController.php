@@ -226,7 +226,7 @@ class BattleFieldController extends BaseController{
 				}
 			}
 		}*/
-		
+
 		//Применение "Неистовость" к картам
 		foreach($actions_array_fury as $card_id => $card_data){
 			$enemy_player = ($card_data['login'] == $users_data['user']['login'])? 'opponent': 'user';
@@ -548,7 +548,7 @@ class BattleFieldController extends BaseController{
 						foreach($cards['warrior'] as $card_iter => $card){
 							if(in_array($card['id'], $cards_ids)){
 								$card = self::getCardNaturalSetting($card['id']);
-								
+
 								if( (isset($step_status['played_card']['card'])) && (in_array($group_data[0], $card['group'])) ){
 									if(in_array($group_data[0], $step_status['played_card']['card']['group'])) {
 										$step_status['actions']['cards'][$player][$row][$card_iter] = [
@@ -719,6 +719,11 @@ class BattleFieldController extends BaseController{
 						if(isset($step_status['actions']['cards'][$player])){
 							unset($step_status['actions']['cards'][$player]);
 						}
+						foreach($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']] as $row){
+							if($row != $step_status['actions']['cards'][$step_status['played_card']['move_to']['row']){
+								unset($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']][$row]);
+							}
+						}
 						$stop = true;
 						break;
 					default:
@@ -733,6 +738,7 @@ class BattleFieldController extends BaseController{
 				}
 			}
 		}
+		var_dump($step_status);
 		return [
 			'battle_field' => $battle_field,
 			'field_status' => $field_status,
