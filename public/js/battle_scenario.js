@@ -1179,7 +1179,7 @@ function processActions(result){
 						case 'inspiration':
 							var obj = {};
 								obj.field = $('#'+player+'.convert-cards '+ intRowToField(row));
-								obj.cardsMass = result.actions.cards[player][row];
+								obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row] : null;
 								obj.effectName = 'inspiration';
 								obj.effectType = 'buff';
 
@@ -2039,7 +2039,7 @@ function animatePositiveNegativeEffects(obj) {
 			//Выборка нужных карт
 			var cardNeedArray = null;
 
-			if (typeof cardsMass !== 'undefined' || ( Array.isArray(cardNeedArray) && cardNeedArray.length > 0 ) ) {
+			if (typeof cardsMass !== 'undefined' || cardsMass !== null || ( Array.isArray(cardNeedArray) && cardNeedArray.length > 0 ) ) {
 
 				var $cards = field.find('.cards-row-wrap .content-card-item');
 				for(var c in cardsMass){
