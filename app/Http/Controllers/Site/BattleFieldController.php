@@ -1024,4 +1024,15 @@ class BattleFieldController extends BaseController{
 		}
 		return $class;
 	}
+
+	public static function searchFieldInfluences($battle_field){
+		$influence_actions = ['inspiration','support','terrify','brotherhood'];
+		foreach($battle_field as $field => $rows){
+			if($field == 'mid'){
+				if(!empty($rows)){
+					//~!!!
+				}
+			}
+		}
+	}
 }
