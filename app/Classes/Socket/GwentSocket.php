@@ -953,6 +953,8 @@ class GwentSocket extends BaseSocket
 			$users_data['opponent']['login'] => $users_data['opponent']['card_images'],
 		];
 
+		$step_status['actions'] = json_decode(json_encode($step_status['actions']));
+
 		$result = $step_status;
 		$result['message'] = 'userMadeAction';
 		$result['battleInfo'] = $msg->ident->battleId;
@@ -1275,13 +1277,6 @@ class GwentSocket extends BaseSocket
 						}
 					}
 				}
-
-				foreach($step_status['actions']['cards'] as $player => $rows){
-					foreach($rows as $row => $row_data){
-
-					}
-				}
-
 			break;
 
 			/*case 'master'://ПОВЕЛИТЕЛЬ
@@ -1504,7 +1499,6 @@ class GwentSocket extends BaseSocket
 						$step_status['actions']['appear'][$step_status['played_card']['move_to']['player']][$row][] = $action['caption'];
 					}
 				}
-				var_dump($step_status['actions']['appear']);
 			break;
 
 			case 'terrify':

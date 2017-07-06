@@ -744,13 +744,15 @@ class BattleFieldController extends BaseController{
 						if(isset($step_status['actions']['cards'][$player])){
 							unset($step_status['actions']['cards'][$player]);
 						}
-						foreach($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']] as $row){
-							if($row != $step_status['actions']['cards'][$step_status['played_card']['move_to']['row']]){
-								unset($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']][$row]);
+						foreach($step_status['actions']['cards'] as $player => $rows){
+							foreach($rows as $row => $data){
+								if($row != $step_status['actions']['cards'][$step_status['played_card']['move_to']['row']]){
+									unset($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']][$row]);
+								}
 							}
 						}
 						$stop = true;
-						break;
+					break;
 					default:
 						if($i == ($n-1)){
 							$step_status['actions']['appear'] = [];
@@ -763,7 +765,10 @@ class BattleFieldController extends BaseController{
 				}
 			}
 		}
+<<<<<<< HEAD
 
+=======
+>>>>>>> 40914951dbdb1356078418c3efb27d5ef8d55f7f
 		return [
 			'battle_field' => $battle_field,
 			'field_status' => $field_status,
@@ -1022,5 +1027,16 @@ class BattleFieldController extends BaseController{
 			default: $class = '';
 		}
 		return $class;
+	}
+
+	public static function searchFieldInfluences($battle_field){
+		$influence_actions = ['inspiration','support','terrify','brotherhood'];
+		foreach($battle_field as $field => $rows){
+			if($field == 'mid'){
+				if(!empty($rows)){
+					//~!!!
+				}
+			}
+		}
 	}
 }
