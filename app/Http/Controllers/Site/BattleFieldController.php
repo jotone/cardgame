@@ -574,7 +574,7 @@ class BattleFieldController extends BaseController{
 		// /Применение "Боевое братство" к картам
 
 		//Применение Воодушевления
-		/*foreach($actions_array_inspiration as $player => $row_data){
+		foreach($actions_array_inspiration as $player => $row_data){
 			foreach($row_data as $row => $card){
 				$field_status[$player][$row]['buffs'][] = 'inspiration';
 				foreach($card['actions'] as $action_data){
@@ -592,6 +592,12 @@ class BattleFieldController extends BaseController{
 								}
 							}
 							if($allow_inspiration){
+								$step_status['actions']['cards'][$player][$row][$card_iter] = [
+									'card'		=> $card_data['caption'],
+									'strength'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'],
+									'strModif'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'] * $action_data['inspiration_multValue'],
+									'operation'	=> 'x'.$action_data['inspiration_multValue']
+								];
 								$battle_field[$player][$row]['warrior'][$card_iter]['strength'] *= $action_data['inspiration_multValue'];
 
 								$field_status[$player][$row]['warrior'][$card_iter]['buffs'][] = 'inspiration';
@@ -603,7 +609,7 @@ class BattleFieldController extends BaseController{
 				}
 				$field_status[$player][$row]['buffs'] = array_values(array_unique($field_status[$player][$row]['buffs']));
 			}
-		}*/
+		}
 
 		//Применение МЭ "Воодушевление" к картам
 		/*foreach($magic_usage as $player => $magic_data){
@@ -665,13 +671,19 @@ class BattleFieldController extends BaseController{
 								unset($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']][$row]);
 							}
 						}
-						break;
+					break;
+					case 'inspiration':
+						$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
+						if(isset($step_status['actions']['cards'][$player])){
+							unset($step_status['actions']['cards'][$player]);
+						}
+					break;
 					case 'fury':
 						$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
 						if(isset($step_status['actions']['cards'][$player])){
 							unset($step_status['actions']['cards'][$player]);
 						}
-						break;
+					break;
 					case 'support':
 						$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
 						if(isset($step_status['actions']['cards'][$player])){
@@ -684,7 +696,7 @@ class BattleFieldController extends BaseController{
 								}
 							}
 						}
-						break;
+					break;
 					case 'terrify':
 						if($step_status['played_card']['move_to']['player'] != 'mid'){
 							if($action['fear_actionTeamate'] == 0){
@@ -693,7 +705,14 @@ class BattleFieldController extends BaseController{
 								}
 							}
 						}
-						break;
+						foreach($step_status['actions']['cards'] as $player => $rows){
+							foreach($rows as $row => $data){
+								if(!in_array($row, $action['fear_ActionRow'])){
+									unset($step_status['actions']['cards'][$player][$row]);
+								}
+							}
+						}
+					break;
 					default:
 						$step_status['actions']['appear'] = [];
 						$step_status['actions']['disappear'] = [];
