@@ -499,7 +499,6 @@ class GwentSocket extends BaseSocket
 					//Применение действий
 					$add_time = true;
 					foreach($current_actions as $action_iter => $action){
-						var_dump($action['caption']);
 						$action_result = self::actionProcessing($action, $battle_field, $this->users_data, $this->step_status, $user_turn_id, $msg, $this->magic_usage);
 						$this->step_status	= $action_result['step_status'];
 						$this->users_data	= $action_result['users_data'];
@@ -1494,6 +1493,7 @@ class GwentSocket extends BaseSocket
 						$step_status['actions']['appear'][$step_status['played_card']['move_to']['player']][$row][] = $action['caption'];
 					}
 				}
+				var_dump($step_status['actions']['appear']);
 			break;
 
 			case 'terrify':
