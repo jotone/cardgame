@@ -665,7 +665,7 @@ class GwentSocket extends BaseSocket
 					];
 
 					$clear_result	= self::clearBattleField($battle, $battle_field, $this->users_data, $this->magic_usage, $gain_cards_count, $this->step_status);
-					
+
 					$battle_field	= $clear_result['battle_field'];
 
 					$this->users_data	= $clear_result['users_data'];
@@ -1487,7 +1487,7 @@ class GwentSocket extends BaseSocket
 								}
 							}
 						}
-					}
+					}©
 				}*/
 
 				foreach($players as $player){
@@ -1497,9 +1497,10 @@ class GwentSocket extends BaseSocket
 						$step_status['added_cards'][$player]['discard'][] = $card;
 						$step_status['dropped_cards'][$player][$row]['special'] = $card['caption'];
 						$battle_field[$player][$row]['special'] = '';
+						$step_status['actions']['appear'][$player][$row][] = $action['caption'];
 					}
 				}
-				$step_status['actions']['appear'][] = $action['caption'];
+
 
 				$new_field_buffs = BattleFieldController::getBattleBuffs($battle_field);
 				foreach($field_buffs as $field => $rows){

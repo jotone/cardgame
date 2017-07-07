@@ -621,7 +621,8 @@ class BattleFieldController extends BaseController{
 							if(in_array($card['id'], $cards_ids)){
 								$card = self::getCardNaturalSetting($card['id']);
 
-								if( (isset($step_status['played_card']['card'])) && (in_array($group_data[0], $card['group'])) ){
+								if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) && (in_array($group_data[0], $card['group'])) ){
+									var_dump($step_status['played_card']['card']);
 									if(in_array($group_data[0], $step_status['played_card']['card']['group'])) {
 										if($count_group > 1) {
 											$step_status['actions']['cards'][$player][$row][$card_iter] = [
