@@ -1135,22 +1135,6 @@ function popupActivation(result){
 }
 
 function processActions(result){
-	//var callAnimateStrengthModifySupport = false;
-	//switch(result.actions.type){
-		//case 'support'://Поддержка
-			// if(!$.isEmptyObject(result.played_card.card)){
-			// 	var card = result.played_card.card;
-			// 	for(var i in card.actions){
-			// 		if(card.actions[i]['caption'] == 'support'){
-			// 			for(var actionRow in card.actions[i]['support_ActionRow']){
-			// 				var field = $('#'+result.played_card.move_to.player+'.convert-cards '+ intRowToField(card.actions[i]['support_ActionRow'][actionRow]));
-			// 				callAnimateStrengthModifySupport = true;
-			// 			}
-			// 		}
-			// 	}
-			// }
-		//break;
-	//}
 
 	if(!$.isEmptyObject(result.actions.appear)){
 		for(var player in result.actions.appear){
@@ -1218,8 +1202,6 @@ function processActions(result){
 					var action = result.actions.disappear[player][row][item];
 					var actionRow = $('#'+player+'.convert-cards '+ intRowToField(row));
 
-					console.info("item", item)
-					console.info("result.actions.disappear[player][row][item]", result.actions.disappear[player][row][item])
 
 					switch(action){
 						case 'support':
@@ -1230,8 +1212,8 @@ function processActions(result){
 								obj.effectType = 'buff';
 
 						animateDeletingPositiveNegativeEffects(obj);
-console.info("obj", obj)
 						break;
+
 						case 'brotherhood':
 							var obj = {};
 								obj.field = actionRow
@@ -1240,8 +1222,8 @@ console.info("obj", obj)
 								obj.effectType = 'buff';
 
 						animateDeletingPositiveNegativeEffects(obj);
-console.info("obj", obj)
 						break;
+
 					}
 				}
 			}
