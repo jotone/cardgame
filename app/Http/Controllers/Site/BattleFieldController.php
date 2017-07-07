@@ -402,11 +402,11 @@ class BattleFieldController extends BaseController{
 
 														if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
 															foreach($step_status['played_card']['card']['actions'] as $inner_action){
-																if($inner_action['caption'] == 'terrify'){
+																if( ($inner_action['caption'] == 'terrify') || ($inner_action['caption'] == 'support') ){
 																	$step_status['actions']['cards'][$field][$action_row][$card_iter] = [
 																		'card'		=> $card['caption'],
 																		'strength'	=> $card_data['strength'],
-																		'strModif'	=> $strength,
+																		'strModif'	=> $battle_field[$field][$action_row]['warrior'][$card_iter]['strength'],
 																		'operation'	=> '-'
 																	];
 																}
@@ -447,12 +447,12 @@ class BattleFieldController extends BaseController{
 												}
 												if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
 													foreach($step_status['played_card']['card']['actions'] as $inner_action){
-														if($inner_action['caption'] == 'terrify'){
+														if( ($inner_action['caption'] == 'terrify') || ($inner_action['caption'] == 'support') ){
 															$step_status['actions']['cards'][$field][$action_row][$card_iter] = [
 																'card'		=> $card['caption'],
 																'strength'	=> $card_data['strength'],
-																'strModif'	=> $strength,
-																'operation'	=> '-'
+																'strModif'	=> $battle_field[$field][$action_row]['warrior'][$card_iter]['strength'],
+																'operation'	=> ($inner_action['caption'] == 'terrify')? '-': '+'
 															];
 														}
 													}
@@ -622,7 +622,6 @@ class BattleFieldController extends BaseController{
 								$card = self::getCardNaturalSetting($card['id']);
 
 								if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) && (in_array($group_data[0], $card['group'])) ){
-									var_dump($step_status['played_card']['card']);
 									if(in_array($group_data[0], $step_status['played_card']['card']['group'])) {
 										if($count_group > 1) {
 											$step_status['actions']['cards'][$player][$row][$card_iter] = [
@@ -766,10 +765,10 @@ class BattleFieldController extends BaseController{
 			for($i = 0; $i<$n; $i++){
 				$action = $step_status['played_card']['card']['actions'][$i];
 				switch($action['caption']){
+					case 'cure':
 					case 'master':
 					case 'killer':
-					case 'sorrow':
-						break;
+					case 'sorrow':break;
 					case 'support':
 						$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
 						if(isset($step_status['actions']['cards'][$player])){

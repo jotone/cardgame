@@ -498,6 +498,7 @@ class GwentSocket extends BaseSocket
 
 					//Применение действий
 					$add_time = true;
+					$view_cards_strength = false;
 					foreach($current_actions as $action_iter => $action){
 						$action_result = self::actionProcessing($action, $battle_field, $this->users_data, $this->step_status, $user_turn_id, $msg, $this->magic_usage, $battle);
 						$this->step_status	= $action_result['step_status'];
@@ -513,6 +514,12 @@ class GwentSocket extends BaseSocket
 							case 'regroup':
 								$add_time = false;
 							break;
+
+							case 'cure':
+							case 'killer':
+							case 'sorrow':
+								$view_cards_strength = true;
+							break;
 						}
 					}
 					//Сортировка колод
@@ -523,13 +530,8 @@ class GwentSocket extends BaseSocket
 					$battle_field = $battle_info['battle_field'];
 					$round_passed_summ = $this->users_data['user']['round_passed'] + $this->users_data['opponent']['round_passed'];
 
-					if(!empty($this->step_status['played_card']['card'])){
-						foreach($this->step_status['played_card']['card']['actions'] as $action){
-							if( ($action['caption'] == 'killer') || ($action['caption'] == 'sorrow') || ($action['caption'] == 'cure') ){
-								$this->step_status['actions']['cards_strength'] = $battle_info['cards_strength'];
-								break;
-							}
-						}
+					if($view_cards_strength){
+						$this->step_status['actions']['cards_strength'] = $battle_info['cards_strength'];
 					}
 
 					if($round_passed_summ < 1){
@@ -1097,15 +1099,34 @@ class GwentSocket extends BaseSocket
 				$step_status['actions'][] = $action['caption'];
 			break;*/
 
-			/*case 'cure'://ИСЦЕЛЕНИЕ
+			case 'cure'://ИСЦЕЛЕНИЕ
+				$field_buffs = BattleFieldController::getBattleBuffs($battle_field);
 				foreach($battle_field['mid'] as $card_data){
 					$user_type = ($users_data['user']['login'] == $card_data['login'])? 'user': 'opponent';
 					$users_data[$user_type]['discard'][] = $card_data['id'];
-					$step_status['dropped_cards'][$users_data[$user_type]['player']]['mid'][] = BattleFieldController::getCardNaturalSetting($card_data['id']);
+					$card = BattleFieldController::cardData($card_data['id']);
+
+					$step_status['added_cards'][$users_data[$user_type]['player']]['discard'][] = $card;
+					$step_status['dropped_cards'][$users_data[$user_type]['player']]['mid'][] = $card['caption'];
 				}
 				$battle_field['mid'] = [];
-				$step_status['actions'][] = $action['caption'];
-			break;*/
+				$step_status['actions']['appear'] = $action['caption'];
+
+				$new_field_buffs = BattleFieldController::getBattleBuffs($battle_field);
+				foreach($field_buffs as $field => $rows){
+					if(!isset($new_field_buffs[$field])){
+						$step_status['actions']['disappear'][$field] = $field_buffs[$field];
+					}else{
+						foreach($rows as $row => $row_data){
+							if(isset($new_field_buffs[$field][$row])){
+								$step_status['actions']['disappear'][$field][$row] = array_diff($field_buffs[$field][$row], $new_field_buffs[$field][$row]);
+							}else{
+								$step_status['actions']['disappear'][$field][$row] = $field_buffs[$field][$row];
+							}
+						}
+					}
+				}
+			break;
 
 			/*case 'drop_card'://CБРОС КАРТ ПРОТИВНИКА В ОТБОЙ
 				for($i=0; $i < $action['enemyDropHand_cardCount']; $i++){
@@ -1501,7 +1522,6 @@ class GwentSocket extends BaseSocket
 					}
 				}
 
-
 				$new_field_buffs = BattleFieldController::getBattleBuffs($battle_field);
 				foreach($field_buffs as $field => $rows){
 					if(!isset($new_field_buffs[$field])){
@@ -1516,7 +1536,6 @@ class GwentSocket extends BaseSocket
 						}
 					}
 				}
-				var_dump($step_status['actions']['disappear']);
 			break;
 
 			case 'support'://Поддержка
