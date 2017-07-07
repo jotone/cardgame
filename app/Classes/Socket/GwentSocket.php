@@ -504,7 +504,7 @@ class GwentSocket extends BaseSocket
 						$this->users_data	= $action_result['users_data'];
 						$battle_field		= $action_result['battle_field'];
 						$user_turn_id		= $action_result['user_turn_id'];
-						$this->magic_usage		= $action_result['magic_usage'];
+						$this->magic_usage	= $action_result['magic_usage'];
 
 						switch($action['caption']){
 							case 'call':
@@ -968,7 +968,9 @@ class GwentSocket extends BaseSocket
 
 		self::sendMessageToSelf($from, $result); //Отправляем результат отправителю
 
-		$result['added_cards'] = [];
+		if(isset($result['added_cards']['hand'])){
+			$result['added_cards']['hand'] = [];
+		}
 		$result['deck_slug'] = $users_data['opponent']['current_deck'];
 		$result['timing'] = $step_status['timing']+time();
 		self::sendMessageToOthers($from, $result, $SplBattleObj[$msg->ident->battleId]);
@@ -1147,8 +1149,6 @@ class GwentSocket extends BaseSocket
 				foreach($players as $player){
 					foreach($action['killer_ActionRow'] as $row){
 						foreach($battle_field[$player][$row]['warrior'] as $card_iter => $card_data){
-							var_dump($player.' '.$row.' '.$card_iter.' '.$card_data['id'].' '.$card_data['strength']);
-
 							if(isset($rows_strength[$player][$row])){
 								$rows_strength[$player][$row] += $card_data['strength'];
 							}else{
@@ -1255,7 +1255,7 @@ class GwentSocket extends BaseSocket
 							$card = BattleFieldController::cardData($card_to_kill['id']);
 
 							$step_status['actions']['appear'][$player][$row][$card_iter] = 'killer';
-							$step_status['actions']['cards'][$player][$row]['warrior'][$card_iter] = $card['caption'];
+
 							$step_status['added_cards'][$player]['discard'][] = $card;
 							unset($battle_field[$player][$row]['warrior'][$card_iter]);
 						}
@@ -1320,7 +1320,6 @@ class GwentSocket extends BaseSocket
 						if(!empty($cards)){
 							foreach($users_data['user'][$destination] as $card_to_summon_iter => $card_to_summon){
 								$card = BattleFieldController::cardData($card_to_summon);
-								var_dump($card);
 								if(in_array($card_to_summon, $cards)){
 									if(count($card['allowed_rows']) > 1){
 										$rand = mt_rand(0, count($card['allowed_rows'])-1);
@@ -1345,6 +1344,7 @@ class GwentSocket extends BaseSocket
 					}
 					$step_status['actions']['appear'][] = $action['caption'];
 				}
+
 			break;
 
 			/*case 'obscure'://ОДУРМАНИВАНИЕ
@@ -1550,6 +1550,19 @@ class GwentSocket extends BaseSocket
 					$deck_card_count = count($users_data['user']['deck']);
 				}
 			break;
+		}
+
+		if(isset($step_status['actions']['disappear'])){
+			foreach($step_status['actions']['disappear'] as $player => $rows){
+				foreach($rows as $row => $data){
+					if(empty($step_status['actions']['disappear'][$player][$row])){
+						unset($step_status['actions']['disappear'][$player][$row]);
+					}
+				}
+				if(empty($step_status['actions']['disappear'][$player])){
+					unset($step_status['actions']['disappear'][$player]);
+				}
+			}
 		}
 
 		return [
