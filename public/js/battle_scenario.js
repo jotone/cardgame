@@ -1222,6 +1222,16 @@ function processActions(result){
 						animateDeletingPositiveNegativeEffects(obj);
 console.info("obj", obj)
 						break;
+						case 'brotherhood':
+							var obj = {};
+								obj.field = actionRow
+								obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row]: null;
+								obj.effectName = 'brotherhood';
+								obj.effectType = 'buff';
+
+						animateDeletingPositiveNegativeEffects(obj);
+console.info("obj", obj)
+						break;
 					}
 				}
 			}
@@ -1946,7 +1956,23 @@ function animateDeletingPositiveNegativeEffects(obj) {
 				},2000);
 			}
 
+			switch( Object.keys(cardsMass)[0] ){
+				case 'warrior':
 
+					var arrayIndexCards = cardsMass[Object.keys(cardsMass)[0]];
+
+					for (var item in arrayIndexCards){
+
+console.info("item", item)
+console.info("arrayIndexCards[item]", arrayIndexCards[item])
+
+					}
+
+					break;
+				case 'special':
+
+					break;
+			}
 
 
 			clearInterval(timer);
