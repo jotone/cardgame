@@ -513,20 +513,24 @@ class BattleFieldController extends BaseController{
 
 										if($support_action){
 											if(Crypt::decrypt($step_status['played_card']['card']['id']) == $card['id']){
-												$step_status['actions']['cards'][$player][$rows][$card_iter] = [
-													'card'		=> $card['caption'],
-													'strength'	=> $battle_field[$player][$rows]['warrior'][$card_iter]['strength'],
-													'strModif'	=> $battle_field[$player][$rows]['warrior'][$card_iter]['strength'] * $mult_same,
-													'operation'	=> 'x'.$mult_same
-												];
+												if($count_same > 1){
+													$step_status['actions']['cards'][$player][$rows][$card_iter] = [
+														'card'		=> $card['caption'],
+														'strength'	=> $battle_field[$player][$rows]['warrior'][$card_iter]['strength'],
+														'strModif'	=> $battle_field[$player][$rows]['warrior'][$card_iter]['strength'] * $mult_same,
+														'operation'	=> 'x'.$mult_same
+													];
+												}
 											}
 										}else{
-											$step_status['actions']['cards'][$player][$rows][$card_iter] = [
-												'card'		=> $card['caption'],
-												'strength'	=> $battle_field[$player][$rows]['warrior'][$card_iter]['strength'],
-												'strModif'	=> $battle_field[$player][$rows]['warrior'][$card_iter]['strength'] * $mult_same,
-												'operation'	=> 'x'.$mult_same
-											];
+											if($count_same > 1) {
+												$step_status['actions']['cards'][$player][$rows][$card_iter] = [
+													'card' => $card['caption'],
+													'strength' => $battle_field[$player][$rows]['warrior'][$card_iter]['strength'],
+													'strModif' => $battle_field[$player][$rows]['warrior'][$card_iter]['strength'] * $mult_same,
+													'operation' => 'x' . $mult_same
+												];
+											}
 										}
 
 										$field_status[$player][$rows]['warrior'][$card_iter]['buffs'][] = 'brotherhood';
@@ -587,12 +591,14 @@ class BattleFieldController extends BaseController{
 
 								if( (isset($step_status['played_card']['card'])) && (in_array($group_data[0], $card['group'])) ){
 									if(in_array($group_data[0], $step_status['played_card']['card']['group'])) {
-										$step_status['actions']['cards'][$player][$row][$card_iter] = [
-											'card'		=> $card['caption'],
-											'strength'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'],
-											'strModif'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'] * $mult_group,
-											'operation'	=> 'x'.$mult_group
-										];
+										if($count_group > 1) {
+											$step_status['actions']['cards'][$player][$row][$card_iter] = [
+												'card' => $card['caption'],
+												'strength' => $battle_field[$player][$row]['warrior'][$card_iter]['strength'],
+												'strModif' => $battle_field[$player][$row]['warrior'][$card_iter]['strength'] * $mult_group,
+												'operation' => 'x' . $mult_group
+											];
+										}
 									}
 								}
 
@@ -748,9 +754,11 @@ class BattleFieldController extends BaseController{
 						if(isset($step_status['actions']['cards'][$player])){
 							unset($step_status['actions']['cards'][$player]);
 						}
-						foreach($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']] as $row => $data){
-							if($row != $step_status['played_card']['move_to']['row']){
-								unset($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']][$row]);
+						if(isset($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']])){
+							foreach($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']] as $row => $data){
+								if($row != $step_status['played_card']['move_to']['row']){
+									unset($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']][$row]);
+								}
 							}
 						}
 						$stop = true;

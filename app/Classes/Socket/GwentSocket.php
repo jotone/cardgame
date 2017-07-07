@@ -1298,7 +1298,7 @@ class GwentSocket extends BaseSocket
 				}
 			break;
 
-			case 'master'://ПОВЕЛИТЕЛЬ
+			/*case 'master'://ПОВЕЛИТЕЛЬ
 				$cards_can_be_added = [];
 
 				foreach($action['master_cardSource'] as $destination){
@@ -1323,7 +1323,7 @@ class GwentSocket extends BaseSocket
 					case '2':
 						$cards_shuffle_keys = array_keys($cards_can_be_added);
 						shuffle($cards_shuffle_keys);
-						array_merge( array_flip($cards_shuffle_keys), $cards_can_be_added);
+						array_merge(array_flip($cards_shuffle_keys), $cards_can_be_added);
 					break;
 				}
 
@@ -1353,16 +1353,16 @@ class GwentSocket extends BaseSocket
 									];
 									$step_status['added_cards'][$users_data['user']['player']][$action_row][] = $card;
 
-									$step_status['dropped_cards'][$users_data['user']['player']][$destination][] = BattleFieldController::getCardNaturalSetting($card_to_summon);
+									$step_status['dropped_cards'][$users_data['user']['player']][$destination][] = $card['caption'];
 									unset($users_data['user'][$destination][$card_to_summon_iter]);
 								}
 							}
 							$users_data['user'][$destination] = array_values($users_data['user'][$destination]);
 						}
 					}
-					$step_status['actions'][] = $action['caption'];
+					$step_status['actions']['appear'][00] = $action['caption'];
 				}
-			break;
+			break;*/
 
 			/*case 'obscure'://ОДУРМАНИВАНИЕ
 				$cards_can_be_obscured = [];
