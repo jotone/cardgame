@@ -1281,7 +1281,6 @@ class GwentSocket extends BaseSocket
 
 			case 'master'://ПОВЕЛИТЕЛЬ
 				$cards_can_be_added = [];
-
 				foreach($action['master_cardSource'] as $destination){
 					foreach($users_data['user'][$destination] as $card_data){
 						$card = BattleFieldController::cardData($card_data);
@@ -1313,7 +1312,6 @@ class GwentSocket extends BaseSocket
 				for($i=0; $i<$n; $i++){
 					$cards_to_add[$cards_can_be_added[$i]['source_deck']][] = $cards_can_be_added[$i]['id'];
 				}
-				var_dump($cards_to_add);
 
 				if($n > 0){
 					foreach($cards_to_add as $destination => $cards){
@@ -1344,7 +1342,6 @@ class GwentSocket extends BaseSocket
 					}
 					$step_status['actions']['appear'][] = $action['caption'];
 				}
-
 			break;
 
 			/*case 'obscure'://ОДУРМАНИВАНИЕ
