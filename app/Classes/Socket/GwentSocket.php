@@ -504,7 +504,7 @@ class GwentSocket extends BaseSocket
 						$this->users_data	= $action_result['users_data'];
 						$battle_field		= $action_result['battle_field'];
 						$user_turn_id		= $action_result['user_turn_id'];
-						$this->magic_usage		= $action_result['magic_usage'];
+						$this->magic_usage	= $action_result['magic_usage'];
 
 						switch($action['caption']){
 							case 'call':
@@ -968,7 +968,9 @@ class GwentSocket extends BaseSocket
 
 		self::sendMessageToSelf($from, $result); //Отправляем результат отправителю
 
-		$result['added_cards'] = [];
+		if(isset($result['added_cards']['hand'])){
+			$result['added_cards']['hand'] = [];
+		}
 		$result['deck_slug'] = $users_data['opponent']['current_deck'];
 		$result['timing'] = $step_status['timing']+time();
 		self::sendMessageToOthers($from, $result, $SplBattleObj[$msg->ident->battleId]);
@@ -1253,7 +1255,7 @@ class GwentSocket extends BaseSocket
 							$card = BattleFieldController::cardData($card_to_kill['id']);
 
 							$step_status['actions']['appear'][$player][$row][$card_iter] = 'killer';
-							$step_status['actions']['cards'][$player][$row]['warrior'][$card_iter] = $card['caption'];
+
 							$step_status['added_cards'][$player]['discard'][] = $card;
 							unset($battle_field[$player][$row]['warrior'][$card_iter]);
 						}
@@ -1311,6 +1313,7 @@ class GwentSocket extends BaseSocket
 				for($i=0; $i<$n; $i++){
 					$cards_to_add[$cards_can_be_added[$i]['source_deck']][] = $cards_can_be_added[$i]['id'];
 				}
+				var_dump($cards_to_add);
 
 				if($n > 0){
 					foreach($cards_to_add as $destination => $cards){
@@ -1341,6 +1344,7 @@ class GwentSocket extends BaseSocket
 					}
 					$step_status['actions']['appear'][] = $action['caption'];
 				}
+
 			break;
 
 			/*case 'obscure'://ОДУРМАНИВАНИЕ
@@ -1546,6 +1550,19 @@ class GwentSocket extends BaseSocket
 					$deck_card_count = count($users_data['user']['deck']);
 				}
 			break;
+		}
+
+		if(isset($step_status['actions']['disappear'])){
+			foreach($step_status['actions']['disappear'] as $player => $rows){
+				foreach($rows as $row => $data){
+					if(empty($step_status['actions']['disappear'][$player][$row])){
+						unset($step_status['actions']['disappear'][$player][$row]);
+					}
+				}
+				if(empty($step_status['actions']['disappear'][$player])){
+					unset($step_status['actions']['disappear'][$player]);
+				}
+			}
 		}
 
 		return [
