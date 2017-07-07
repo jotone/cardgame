@@ -1197,6 +1197,13 @@ function processActions(result){
 
 							animatePositiveNegativeEffects(obj);
 						break;
+						case 'killer':
+
+							var card = actionRow.find('.cards-row-wrap .content-card-item')[parseInt(item)];
+
+							animationBurningCardEndDeleting(card);
+
+						break;
 					}
 				}
 			}
@@ -1211,11 +1218,14 @@ function processActions(result){
 					var action = result.actions.disappear[player][row][item];
 					var actionRow = $('#'+player+'.convert-cards '+ intRowToField(row));
 
+					console.info("item", item)
+					console.info("result.actions.disappear[player][row][item]", result.actions.disappear[player][row][item])
+
 					switch(action){
 						case 'support':
 							var obj = {};
 								obj.field = actionRow
-								obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row]: null;
+								obj.cardIndex = parseInt(item);
 								obj.effectName = 'support';
 								obj.effectType = 'buff';
 
@@ -1225,7 +1235,7 @@ console.info("obj", obj)
 						case 'brotherhood':
 							var obj = {};
 								obj.field = actionRow
-								obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row]: null;
+								obj.cardIndex = parseInt(item);
 								obj.effectName = 'brotherhood';
 								obj.effectType = 'buff';
 
@@ -1933,7 +1943,7 @@ function animateCardStrengthPulsing(card,effectName,effectType,strength,strength
 
 function animateDeletingPositiveNegativeEffects(obj) {
 	var field = obj.field,
-		cardsMass = obj.cardsMass,
+		cardIndex = obj.cardIndex,
 		effectName = obj.effectName,
 		effectType = obj.effectType;
 
@@ -1946,7 +1956,8 @@ function animateDeletingPositiveNegativeEffects(obj) {
 		if ( !$('.troll-popup.show').length ) {
 
 			mainRow.removeClass(effectName+'-'+effectType+'-wrap '+effectType);
-			if(field.children('.'+effectName+'-'+effectType+'.active').length > 0){
+
+			if(field.children('.'+effectName+'-'+effectType+'.active').length > 0){// удаляем разметку подсвечивания полей
 				var effectMarkup = field.children('.'+effectName+'-'+effectType);
 				effectMarkup.removeClass('active');
 				setTimeout(function(){
@@ -1956,29 +1967,65 @@ function animateDeletingPositiveNegativeEffects(obj) {
 				},2000);
 			}
 
-			switch( Object.keys(cardsMass)[0] ){
-				case 'warrior':
+			if (cardIndex != 'undefined') {//если мы знаем индекс карты
+				var $card = field.find('.cards-row-wrap .content-card-item').eq(cardIndex);// выборка карты
 
-					var arrayIndexCards = cardsMass[Object.keys(cardsMass)[0]];
-					var $cards = field.find('.cards-row-wrap .content-card-item');
-
-					for (var item in arrayIndexCards){
-						var $card = $($cards[item]);
-
-console.info("$card", $card)
-console.info("item", item)
-console.info("arrayIndexCards[item]", arrayIndexCards[item])
-
-					}
-
-					break;
-				case 'special':
-
-					break;
+				switch(effectType){//удаляем класы бафов-дебафов
+					case 'buff':
+						$card.removeClass('buffed '+effectName+'-buffed');
+						break;
+					case 'debuff':
+						$card.removeClass('debuffed '+effectName+'-debuffed');
+						break;
+				}
 			}
-
 
 			clearInterval(timer);
 		}
 	},600);
+}
+
+function animationBurningCardEndDeleting(card,action) {
+	var card = $(card);
+
+	if (!card.parents('.field-for-cards').hasClass('overflow-visible') ) {
+
+		card.parents('.field-for-cards').addClass('overflow-visible');
+		card.parents('.convert-stuff').css({
+			'z-index':'10'
+		});
+
+	}
+
+	switch(action){
+		case 'fade':
+			card.removeClass('show');
+			setTimeout(function() {
+				card.remove();
+
+			}, 500);
+		break;
+		default:
+			//console.log('default');
+			card.append('<span class="card-burning-item-main"><img src="/images/card-burning-item-main-2.gif" alt="" /></span>');
+			setTimeout(function(){
+				card.addClass('card-burning');
+				setTimeout(function(){
+					card.find('.content-card-item-main').fadeOut(900,function(){
+						setTimeout(function(){
+							card.removeClass('card-burning');
+							setTimeout(function(){
+
+								card.parents('.field-for-cards').removeClass('overflow-visible');
+								card.parents('.convert-stuff').removeAttr('style');
+
+								card.remove();
+
+							},1000)
+						},500)
+					});
+				},2500)
+			},300)
+	}
+
 }
