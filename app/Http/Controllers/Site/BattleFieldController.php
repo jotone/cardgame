@@ -811,7 +811,7 @@ class BattleFieldController extends BaseController{
 						}
 						foreach($step_status['actions']['cards'] as $player => $rows){
 							foreach($rows as $row => $data){
-								if($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']][$step_status['played_card']['move_to']['row']] != $row){
+								if($step_status['played_card']['move_to']['row'] != $row){
 									if(isset($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']][$row])){
 										unset($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']][$row]);
 									}

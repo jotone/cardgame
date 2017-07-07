@@ -1249,31 +1249,21 @@ class GwentSocket extends BaseSocket
 						}
 					}
 				}
-				if(count($card_to_kill) > 0){
-					$step_status['actions']['appear'] = [];
-				}
+
+				var_dump($card_to_kill);
 				foreach($card_to_kill as $player => $row_data){
-					foreach($row_data as $row_iter => $cards_to_kill){
-						foreach($cards_to_kill as $card_to_kill){
-							foreach($battle_field[$player][$row_iter]['warrior'] as $card_iter => $card_data){
-								if( ($card_to_kill['id'] == $card_data['id']) && ($card_to_kill['strength'] == $card_data['strength']) ){
-									$users_data[$player]['discard'][] = $card_data['id'];
+					foreach($row_data as $row => $cards_to_kill){
+						foreach($cards_to_kill as $card_iter => $card_to_kill){
+							$users_data[$player]['discard'][] = $card_to_kill['id'];
 
-									$card = BattleFieldController::cardData($card_data['id']);
-									$step_status['actions']['appear'][$player][$row_iter][$card_iter] = 'killer';
-									$step_status['actions']['cards'][$player][$row_iter]['warrior'][$card_iter] = $card['caption'];
-									$step_status['added_cards'][$player]['discard'][] = $card;
+							$card = BattleFieldController::cardData($card_to_kill['id']);
 
-									unset($battle_field[$player][$row_iter]['warrior'][$card_iter]);
+							$step_status['actions']['appear'][$player][$row][$card_iter] = 'killer';
+							$step_status['actions']['cards'][$player][$row]['warrior'][$card_iter] = $card['caption'];
+							$step_status['added_cards'][$player]['discard'][] = $card;
 
-									$battle_field[$player][$row_iter]['warrior'] = array_values($battle_field[$player][$row_iter]['warrior']);
-									if($action['killer_killAllOrSingle'] == 0){
-										break 4;
-									}else{
-										break;
-									}
-								}
-							}
+							unset($battle_field[$player][$row]['warrior'][$card_iter]);
+							$battle_field[$player][$row]['warrior'] = array_values($battle_field[$player][$row]['warrior']);
 						}
 					}
 				}
