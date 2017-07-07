@@ -1147,8 +1147,6 @@ class GwentSocket extends BaseSocket
 				foreach($players as $player){
 					foreach($action['killer_ActionRow'] as $row){
 						foreach($battle_field[$player][$row]['warrior'] as $card_iter => $card_data){
-							var_dump($player.' '.$row.' '.$card_iter.' '.$card_data['id'].' '.$card_data['strength']);
-
 							if(isset($rows_strength[$player][$row])){
 								$rows_strength[$player][$row] += $card_data['strength'];
 							}else{
@@ -1313,14 +1311,12 @@ class GwentSocket extends BaseSocket
 				for($i=0; $i<$n; $i++){
 					$cards_to_add[$cards_can_be_added[$i]['source_deck']][] = $cards_can_be_added[$i]['id'];
 				}
-				var_dump($cards_to_add);
 
 				if($n > 0){
 					foreach($cards_to_add as $destination => $cards){
 						if(!empty($cards)){
 							foreach($users_data['user'][$destination] as $card_to_summon_iter => $card_to_summon){
 								$card = BattleFieldController::cardData($card_to_summon);
-								var_dump($card);
 								if(in_array($card_to_summon, $cards)){
 									if(count($card['allowed_rows']) > 1){
 										$rand = mt_rand(0, count($card['allowed_rows'])-1);

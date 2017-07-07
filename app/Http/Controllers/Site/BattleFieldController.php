@@ -669,13 +669,27 @@ class BattleFieldController extends BaseController{
 								}
 							}
 							if($allow_inspiration){
-								$step_status['actions']['cards'][$player][$row][$card_iter] = [
-									'card'		=> $card_data['caption'],
-									'strength'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'],
-									'strModif'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'] * $action_data['inspiration_multValue'],
-									'operation'	=> 'x'.$action_data['inspiration_multValue']
-								];
+								if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
+									foreach($step_status['played_card']['card']['actions'] as $action){
+										if($action['caption'] != 'killer'){
+											$step_status['actions']['cards'][$player][$row][$card_iter] = [
+												'card'		=> $card_data['caption'],
+												'strength'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'],
+												'strModif'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'] * $action_data['inspiration_multValue'],
+												'operation'	=> 'x'.$action_data['inspiration_multValue']
+											];
+											break;
+										}
+									}
+								}
+
 								$battle_field[$player][$row]['warrior'][$card_iter]['strength'] *= $action_data['inspiration_multValue'];
+
+								if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
+									if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
+										$step_status['played_card']['strength'] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'];
+									}
+								}
 
 								$cards_strength[$player][$row][$card_iter] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'];
 								if(isset($step_status['added_cards'][$player][$row])){
@@ -689,6 +703,8 @@ class BattleFieldController extends BaseController{
 								$field_status[$player][$row]['warrior'][$card_iter]['buffs'][] = 'inspiration';
 								$field_status[$player][$row]['warrior'][$card_iter]['buffs'] = array_values(array_unique($field_status[$player][$row]['warrior'][$card_iter]['buffs']));
 								$field_status[$player][$row]['warrior'][$card_iter]['strengthModified'] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'];
+
+
 							}
 						}
 					}
