@@ -1841,9 +1841,9 @@ function animatePositiveNegativeEffects(obj) {
 			effectMarkup.addClass('active');
 
 			//Выборка нужных карт
-			var cardNeedArray = null;
+			//var cardNeedArray = null;
 
-			if (typeof cardsMass !== 'undefined' || cardsMass !== null || ( Array.isArray(cardNeedArray) && cardNeedArray.length > 0 ) ) {
+			if (typeof cardsMass !== 'undefined' || cardsMass !== null) {
 
 				var $cards = field.find('.cards-row-wrap .content-card-item');
 				for(var c in cardsMass){
@@ -1864,7 +1864,7 @@ function animatePositiveNegativeEffects(obj) {
 
 					switch(effectType){
 						case 'buff':
-							if ( effectName == 'brotherhood' && Array.isArray(cardsMass) && cardsMass.length <= 1) {
+							if ( effectName == 'brotherhood' && (Object.keys(cardsMass).length <= 1)) {
 								break;
 							}
 							$card.addClass('buffed '+effectName+'-buffed');
@@ -1960,9 +1960,12 @@ function animateDeletingPositiveNegativeEffects(obj) {
 				case 'warrior':
 
 					var arrayIndexCards = cardsMass[Object.keys(cardsMass)[0]];
+					var $cards = field.find('.cards-row-wrap .content-card-item');
 
 					for (var item in arrayIndexCards){
+						var $card = $($cards[item]);
 
+console.info("$card", $card)
 console.info("item", item)
 console.info("arrayIndexCards[item]", arrayIndexCards[item])
 
