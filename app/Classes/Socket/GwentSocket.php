@@ -1147,6 +1147,8 @@ class GwentSocket extends BaseSocket
 				foreach($players as $player){
 					foreach($action['killer_ActionRow'] as $row){
 						foreach($battle_field[$player][$row]['warrior'] as $card_iter => $card_data){
+							var_dump($player.' '.$row.' '.$card_iter.' '.$card_data['id'].' '.$card_data['strength']);
+
 							if(isset($rows_strength[$player][$row])){
 								$rows_strength[$player][$row] += $card_data['strength'];
 							}else{
@@ -1162,15 +1164,13 @@ class GwentSocket extends BaseSocket
 										];
 
 										if($card_data['strength'] < $strength_limit_to_kill){
-											if($player == $users_data['opponent']['player']){
-												if($max_strength < $card_data['strength']){
-													$max_strength = $card_data['strength'];// максимальная сила карты
-												}
-												if($min_strength > $card_data['strength']){
-													$min_strength = $card_data['strength'];// минимальная сила карты
-												}
-												$card_strength_set[] = $card_data['strength'];
+											if($max_strength < $card_data['strength']){
+												$max_strength = $card_data['strength'];// максимальная сила карты
 											}
+											if($min_strength > $card_data['strength']){
+												$min_strength = $card_data['strength'];// минимальная сила карты
+											}
+											$card_strength_set[] = $card_data['strength'];
 										}
 									}
 								}
@@ -1182,16 +1182,12 @@ class GwentSocket extends BaseSocket
 										'id'		=> $card_data['id'],
 										'strength'	=> $card_data['strength']
 									];
-
 									if($card_data['strength'] < $strength_limit_to_kill){
-										if($player == $users_data['opponent']['player']){
-											if($max_strength < $card_data['strength']){
-												$max_strength = $card_data['strength'];// максимальная сила карты
-											}
-											if($min_strength > $card_data['strength']){
-												$min_strength = $card_data['strength'];// минимальная сила карты
-											}
-											$card_strength_set[] = $card_data['strength'];
+										if($max_strength < $card_data['strength']){
+											$max_strength = $card_data['strength'];// максимальная сила карты
+										}
+										if($min_strength > $card_data['strength']){
+											$min_strength = $card_data['strength'];// минимальная сила карты
 										}
 									}
 								}
@@ -1199,6 +1195,7 @@ class GwentSocket extends BaseSocket
 						}
 					}
 				}
+
 				switch($action['killer_killedQuality_Selector']){
 					case '0':	$card_strength_to_kill = $min_strength; break;//Самую слабую
 					case '1':	$card_strength_to_kill = $max_strength; break;//Самую сильную
@@ -1250,7 +1247,6 @@ class GwentSocket extends BaseSocket
 					}
 				}
 
-				var_dump($card_to_kill);
 				foreach($card_to_kill as $player => $row_data){
 					foreach($row_data as $row => $cards_to_kill){
 						foreach($cards_to_kill as $card_iter => $card_to_kill){
@@ -1261,10 +1257,9 @@ class GwentSocket extends BaseSocket
 							$step_status['actions']['appear'][$player][$row][$card_iter] = 'killer';
 							$step_status['actions']['cards'][$player][$row]['warrior'][$card_iter] = $card['caption'];
 							$step_status['added_cards'][$player]['discard'][] = $card;
-
 							unset($battle_field[$player][$row]['warrior'][$card_iter]);
-							$battle_field[$player][$row]['warrior'] = array_values($battle_field[$player][$row]['warrior']);
 						}
+						$battle_field[$player][$row]['warrior'] = array_values($battle_field[$player][$row]['warrior']);
 					}
 				}
 				$step_status['actions']['disappear'] = [];
