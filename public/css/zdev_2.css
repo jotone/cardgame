@@ -134,7 +134,7 @@
 
 	/* debuffed */
 
-		.content-card-item.debuffed .card-load-info:before  { box-shadow: 0 0 20px 10px rgba(189, 2, 2, .9); }
+		/*.content-card-item.debuffed .card-load-info:before  { box-shadow: 0 0 20px 10px rgba(189, 2, 2, .9); }*/
 
 	/* /debuffed */
 
