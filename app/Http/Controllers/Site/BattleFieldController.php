@@ -24,9 +24,6 @@ class BattleFieldController extends BaseController{
 
 	public static function battleInfo($battle, $battle_field, $users_data, $magic_usage, $step_status){
 		$battle_field = self::resetBattleFieldCardsStrength($battle_field);
-		if(isset($step_status['added_cards'])){
-			var_dump($step_status['added_cards']);
-		}
 		$actions_array_support = [];//Массив действий "Поддержка"
 		$actions_array_fury = [];//Массив действий "Неистовство"
 		$actions_array_fear = [];//Массив действий "Страшный"
@@ -762,9 +759,6 @@ class BattleFieldController extends BaseController{
 			}
 		}*/
 
-		if(isset($step_status['added_cards'])){
-			var_dump($step_status['added_cards']);
-		}
 		if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
 			$stop = false;
 			$n = count($step_status['played_card']['card']['actions']);
@@ -772,7 +766,9 @@ class BattleFieldController extends BaseController{
 				$action = $step_status['played_card']['card']['actions'][$i];
 				switch($action['caption']){
 					case 'master':
-					case 'killer': break;
+					case 'killer':
+					case 'sorrow':
+						break;
 					case 'support':
 						$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
 						if(isset($step_status['actions']['cards'][$player])){
