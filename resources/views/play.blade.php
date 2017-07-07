@@ -69,6 +69,9 @@
 						foreach($field_status[$enemy['player']][2]['buffs'] as $buff){
 							$class .= \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff, 'wrap').' ';
 						}
+						foreach($field_status[$enemy['player']][2]['debuffs'] as $buff){
+							$class .= \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff, 'wrap').' ';
+						}
 					}
 					?>
 					<div class="convert-stuff {{ $class }}">
@@ -120,6 +123,9 @@
 					$class = '';
 					if(isset($enemy['login'])){
 						foreach($field_status[$enemy['player']][1]['buffs'] as $buff){
+							$class .= \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff, 'wrap').' ';
+						}
+						foreach($field_status[$enemy['player']][1]['debuffs'] as $buff){
 							$class .= \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff, 'wrap').' ';
 						}
 					}
@@ -174,6 +180,9 @@
 					$class = '';
 					if(isset($enemy['login'])){
 						foreach($field_status[$enemy['player']][0]['buffs'] as $buff){
+							$class .= \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff, 'wrap').' ';
+						}
+						foreach($field_status[$enemy['player']][0]['debuffs'] as $buff){
 							$class .= \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff, 'wrap').' ';
 						}
 					}
@@ -235,6 +244,9 @@
 					foreach($field_status[$ally['player']][0]['buffs'] as $buff){
 						$class .= \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff, 'wrap').' ';
 					}
+					foreach($field_status[$ally['player']][0]['debuffs'] as $buff){
+						$class .= \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff, 'wrap').' ';
+					}
 					?>
 					<div class="convert-stuff {{ $class }}">
 						<div class="convert-one-field">
@@ -279,6 +291,9 @@
 					foreach($field_status[$ally['player']][1]['buffs'] as $buff){
 						$class .= \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff, 'wrap').' ';
 					}
+					foreach($field_status[$ally['player']][1]['debuffs'] as $buff){
+						$class .= \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff, 'wrap').' ';
+					}
 					?>
 					<div class="convert-stuff {{ $class }}">
 						<div class="convert-one-field">
@@ -321,6 +336,9 @@
 					<?php
 					$class = '';
 					foreach($field_status[$ally['player']][2]['buffs'] as $buff){
+						$class .= \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff, 'wrap').' ';
+					}
+					foreach($field_status[$ally['player']][2]['debuffs'] as $buff){
 						$class .= \App\Http\Controllers\Site\BattleFieldController::getBuffClass($buff, 'wrap').' ';
 					}
 					?>

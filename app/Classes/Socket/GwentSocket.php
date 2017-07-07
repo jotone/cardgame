@@ -1298,7 +1298,7 @@ class GwentSocket extends BaseSocket
 				}
 			break;
 
-			/*case 'master'://ПОВЕЛИТЕЛЬ
+			case 'master'://ПОВЕЛИТЕЛЬ
 				$cards_can_be_added = [];
 
 				foreach($action['master_cardSource'] as $destination){
@@ -1362,7 +1362,7 @@ class GwentSocket extends BaseSocket
 					}
 					$step_status['actions'][] = $action['caption'];
 				}
-			break;*/
+			break;
 
 			/*case 'obscure'://ОДУРМАНИВАНИЕ
 				$cards_can_be_obscured = [];
