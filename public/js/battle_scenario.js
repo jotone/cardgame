@@ -1156,12 +1156,15 @@ function processActions(result){
 		for(var player in result.actions.appear){
 			for(var row in result.actions.appear[player]){
 				for(var item in result.actions.appear[player][row]){
+
 					var action = result.actions.appear[player][row][item];
+					var actionRow = $('#'+player+'.convert-cards '+ intRowToField(row));
+
 					switch(action){
 						case 'support':
 							var obj = {};
-								obj.field = $('#'+player+'.convert-cards '+ intRowToField(row));
-								obj.cardsMass = (!$.isEmptyObject(result.actions.cards))? result.actions.cards[player][row]: null;
+								obj.field = actionRow
+								obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row]: null;
 								obj.effectName = 'support';
 								obj.effectType = 'buff';
 
@@ -1169,8 +1172,8 @@ function processActions(result){
 						break;
 						case 'brotherhood':
 							var obj = {};
-								obj.field = $('#'+player+'.convert-cards '+ intRowToField(row));
-								obj.cardsMass = (!$.isEmptyObject(result.actions.cards))? result.actions.cards[player][row]: null;
+								obj.field = actionRow;
+								obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row]: null;
 								obj.effectName = 'brotherhood';
 								obj.effectType = 'buff';
 
@@ -1178,10 +1181,19 @@ function processActions(result){
 						break;
 						case 'inspiration':
 							var obj = {};
-								obj.field = $('#'+player+'.convert-cards '+ intRowToField(row));
+								obj.field = actionRow;
 								obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row] : null;
 								obj.effectName = 'inspiration';
 								obj.effectType = 'buff';
+
+							animatePositiveNegativeEffects(obj);
+						break;
+						case 'terrify':
+							var obj = {};
+								obj.field = actionRow;
+								obj.cardsMass = (!$.isEmptyObject(result.actions.cards[player])) ? result.actions.cards[player][row] : null;
+								obj.effectName = 'terrify';
+								obj.effectType = 'debuff';
 
 							animatePositiveNegativeEffects(obj);
 						break;
@@ -1192,6 +1204,7 @@ function processActions(result){
 	}
 
 	if(!$.isEmptyObject(result.actions.disappear)){
+
 	}
 	if ( $.isEmptyObject(result.actions.appear) && $.isEmptyObject(result.actions.disappear)) {
 		recalculateBattleStrength();
@@ -2100,12 +2113,13 @@ function animateCardStrengthPulsing(card,effectName,effectType,strength,strength
 
 		switch(operation.charAt(0)){
 			case '+':
-				operationType = '+'
+				operationType = '+';
 				newValue = strengthMod - strength;
 
 				break;
 			case '-':
-
+				operationType = '-';
+				newValue = Math.abs(strengthMod - strength);//по модулю
 				break;
 			case 'x':
 				operationType = 'x';
