@@ -1414,7 +1414,7 @@ class GwentSocket extends BaseSocket
 							$users_data['user'][$destination] = array_values($users_data['user'][$destination]);
 						}
 					}
-					$step_status['actions']['appear'][] = $action['caption'];
+					$step_status['actions']['appear'] = $action['caption'];
 				}
 			break;
 
