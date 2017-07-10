@@ -350,18 +350,16 @@ function setDecksValues(counts, images){
 		if (typeof cardData['debuffs'] !== 'undefined') {
 			effectHolder += 'debuffed ';
 			for(var debuff in cardData['debuffs']){
-				var debuffName = cardData['debuffs'][debuff]+'-debuffed';
+				var debuffName = cardData['debuffs'][debuff]+'-debuffed ';
 				effectHolder += debuffName;
 			}
-			debugger;
 		}
 		if (typeof cardData['buffs'] !== 'undefined') {
 			effectHolder += 'buffed ';
 			for(var debuff in cardData['debuffs']){
-				var debuffName = cardData['buffs'][debuff]+'-buffed';
+				var debuffName = cardData['buffs'][debuff]+'-buffed ';
 				effectHolder += debuffName;
 			}
-			debugger;
 		}
 
 
@@ -392,7 +390,6 @@ function setDecksValues(counts, images){
 	//Создание отображения карты
 	function createCardDescriptionView(cardData, strength) {
 
-console.info("cardData", cardData)
 		var hasImmune = 0;
 		var hasFullImmune = 0;
 		for(var i in cardData['actions']){
@@ -2162,12 +2159,6 @@ function animateDeletingPositiveNegativeEffects(obj) {
 
 			var $cards = field.find('.cards-row-wrap .content-card-item');// выборка карты
 
-console.info("cardIndex", cardIndex)
-console.info("$card", $cards)
-
-console.info("effectType", effectType)
-
-console.info("effectName", effectName)
 			switch(effectType){//удаляем класы бафов-дебафов
 				case 'buff':
 					$cards.removeClass('buffed '+effectName+'-buffed');
