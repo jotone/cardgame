@@ -370,6 +370,8 @@ function setDecksValues(counts, images){
 
 	//Создание отображения карты
 	function createCardDescriptionView(cardData, strength) {
+
+console.info("cardData", cardData)
 		var hasImmune = 0;
 		var hasFullImmune = 0;
 		for(var i in cardData['actions']){
@@ -2136,24 +2138,23 @@ function animateDeletingPositiveNegativeEffects(obj) {
 				}
 			}
 
-			if (cardIndex != 'undefined') {//если мы знаем индекс карты
-				var $card = field.find('.cards-row-wrap .content-card-item').eq(cardIndex);// выборка карты
+			var $cards = field.find('.cards-row-wrap .content-card-item');// выборка карты
 
 console.info("cardIndex", cardIndex)
-console.info("$card", $card)
+console.info("$card", $cards)
 
 console.info("effectType", effectType)
 
 console.info("effectName", effectName)
-				switch(effectType){//удаляем класы бафов-дебафов
-					case 'buff':
-						$card.removeClass('buffed '+effectName+'-buffed');
-						break;
-					case 'debuff':
-						$card.removeClass('debuffed '+effectName+'-debuffed');
-						break;
-				}
+			switch(effectType){//удаляем класы бафов-дебафов
+				case 'buff':
+					$cards.removeClass('buffed '+effectName+'-buffed');
+					break;
+				case 'debuff':
+					$cards.removeClass('debuffed '+effectName+'-debuffed');
+					break;
 			}
+
 
 			clearInterval(timer);
 		}
