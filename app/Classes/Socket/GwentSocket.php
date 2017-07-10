@@ -1154,7 +1154,7 @@ class GwentSocket extends BaseSocket
 					}else{
 						foreach($rows as $row => $row_data){
 							if(isset($new_field_buffs[$field][$row])){
-								$step_status['actions']['disappear'][$field][$row] = array_diff($field_buffs[$field][$row], $new_field_buffs[$field][$row]);
+								$step_status['actions']['disappear'][$field][$row] = array_values(array_diff($field_buffs[$field][$row], $new_field_buffs[$field][$row]));
 							}else{
 								$step_status['actions']['disappear'][$field][$row] = $field_buffs[$field][$row];
 							}
