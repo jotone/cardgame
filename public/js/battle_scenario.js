@@ -1291,7 +1291,7 @@ function processActions(result){
 				for(var item in result.actions.appear[player][row]){
 
 					var action = result.actions.appear[player][row][item];
-
+					row = parseInt(row);
 					switch(action){
 						case 'support'://Поддержка
 							var obj = {};
@@ -1303,6 +1303,7 @@ function processActions(result){
 							animatePositiveNegativeEffects(obj);
 						break;
 						case 'brotherhood'://Боевое братство
+
 							var obj = {};
 								obj.field = actionRow;
 								obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row]: null;
