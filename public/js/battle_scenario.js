@@ -1278,147 +1278,156 @@ function processActions(result){
 
 					break;
 			}
-		}
+		} else{
 
-		for(var player in result.actions.appear){
-			for(var row in result.actions.appear[player]){
-
-				var actionRow = $('#'+player+'.convert-cards '+ intRowToField(row));
-
-				for(var item in result.actions.appear[player][row]){
-
-					var action = result.actions.appear[player][row][item];
+			for(var player in result.actions.appear){
+				for(var row in result.actions.appear[player]){
 					row = parseInt(row);
-					switch(action){
-						case 'support'://Поддержка
-							var obj = {};
-								obj.field = actionRow
-								obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row]: null;
-								obj.effectName = 'support';
-								obj.effectType = 'buff';
+					var actionRow = $('#'+player+'.convert-cards '+ intRowToField(row));
 
-							animatePositiveNegativeEffects(obj);
-						break;
-						case 'brotherhood'://Боевое братство
+					for(var item in result.actions.appear[player][row]){
+						item = parseInt(item);
+						var action = result.actions.appear[player][row][item];
 
-							var obj = {};
-								obj.field = actionRow;
-								obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row]: null;
-								obj.effectName = 'brotherhood';
-								obj.effectType = 'buff';
+						switch(action){
+							case 'support'://Поддержка
+								var obj = {};
+									obj.field = actionRow
+									obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row]: null;
+									obj.effectName = 'support';
+									obj.effectType = 'buff';
 
-							animatePositiveNegativeEffects(obj);
-						break;
-						case 'inspiration'://Воодушевление
-							var obj = {};
-								obj.field = actionRow;
-								obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row] : null;
-								obj.effectName = 'inspiration';
-								obj.effectType = 'buff';
+								animatePositiveNegativeEffects(obj);
+							break;
+							case 'brotherhood'://Боевое братство
 
-							animatePositiveNegativeEffects(obj);
-						break;
-						case 'fury'://Неистовство
-							var obj = {};
-								obj.field = actionRow;
-								obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row] : null;
-								obj.effectName = 'fury';
-								obj.effectType = 'buff';
+								var obj = {};
+									obj.field = actionRow;
+									obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row]: null;
+									obj.effectName = 'brotherhood';
+									obj.effectType = 'buff';
 
-							animatePositiveNegativeEffects(obj);
-						break;
-						case 'terrify'://Страшный
-							var obj = {};
-								obj.field = actionRow;
-								obj.cardsMass = (!$.isEmptyObject(result.actions.cards[player])) ? result.actions.cards[player][row] : null;
-								obj.effectName = 'terrify';
-								obj.effectType = 'debuff';
+								animatePositiveNegativeEffects(obj);
+							break;
+							case 'inspiration'://Воодушевление
+								var obj = {};
+									obj.field = actionRow;
+									obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row] : null;
+									obj.effectName = 'inspiration';
+									obj.effectType = 'buff';
 
-							animatePositiveNegativeEffects(obj);
-						break;
-						case 'killer'://Убийца
+								animatePositiveNegativeEffects(obj);
+							break;
+							case 'fury'://Неистовство
+								var obj = {};
+									obj.field = actionRow;
+									obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row] : null;
+									obj.effectName = 'fury';
+									obj.effectType = 'buff';
 
-							var card = actionRow.find('.cards-row-wrap .content-card-item')[parseInt(item)];
+								animatePositiveNegativeEffects(obj);
+							break;
+							case 'terrify'://Страшный
+								var obj = {};
+									obj.field = actionRow;
+									obj.cardsMass = (!$.isEmptyObject(result.actions.cards[player])) ? result.actions.cards[player][row] : null;
+									obj.effectName = 'terrify';
+									obj.effectType = 'debuff';
 
-							animationBurningCardEndDeleting(card);
+								animatePositiveNegativeEffects(obj);
+							break;
+							case 'killer'://Убийца
 
-							setTimeout(function(){
-								setCardStrength(result.actions.cards_strength);
-							},1000);
+								var card = actionRow.find('.cards-row-wrap .content-card-item')[parseInt(item)];
 
-						break;
-						case 'cure'://Исциление
+								animationBurningCardEndDeleting(card);
 
-						break;
-						case 'sorrow'://печаль
+								setTimeout(function(){
+									setCardStrength(result.actions.cards_strength);
+								},1000);
 
-							var obj = {};
-								obj.field = actionRow;
-								obj.cardIndex = 'undefined';
-								obj.effectName = 'inspiration';
-								obj.effectType = 'buff';
-								obj.effectAnimation = 'fade';
-							//Внимание - Удаление ефекта !
-							animateDeletingPositiveNegativeEffects(obj);
-						break;
+							break;
+							case 'cure'://Исциление
 
+							break;
+							case 'sorrow'://печаль
+
+								var obj = {};
+									obj.field = actionRow;
+									obj.cardIndex = 'undefined';
+									obj.effectName = 'inspiration';
+									obj.effectType = 'buff';
+									obj.effectAnimation = 'fade';
+								//Внимание - Удаление ефекта !
+								animateDeletingPositiveNegativeEffects(obj);
+							break;
+
+						}
+						debugger;
 					}
 				}
 			}
+
 		}
 	}
 
 	if(!$.isEmptyObject(result.actions.disappear)){
-		for(var player in result.actions.disappear){
-			for(var row in result.actions.disappear[player]){
+		if (typeof result.actions.appear === 'string'){
 
-				var actionRow = $('#'+player+'.convert-cards '+ intRowToField(row));
+		} else {
+			for(var player in result.actions.disappear){
+				for(var row in result.actions.disappear[player]){
 
-				for(var item in result.actions.disappear[player][row]){
+					row = parseInt(row);
+					var actionRow = $('#'+player+'.convert-cards '+ intRowToField(row));
 
-					var action = result.actions.disappear[player][row][item];
+					for(var item in result.actions.disappear[player][row]){
 
-					switch(action){
-						case 'support':
-							var obj = {};
-								obj.field = actionRow
-								obj.cardIndex = parseInt(item);
-								obj.effectName = 'support';
-								obj.effectType = 'buff';
+						item = parseInt(item);
+						var action = result.actions.disappear[player][row][item];
 
-							animateDeletingPositiveNegativeEffects(obj);
-						break;
+						switch(action){
+							case 'support':
+								var obj = {};
+									obj.field = actionRow
+									obj.cardIndex = parseInt(item);
+									obj.effectName = 'support';
+									obj.effectType = 'buff';
 
-						case 'brotherhood':
-							var obj = {};
-								obj.field = actionRow
-								obj.cardIndex = parseInt(item);
-								obj.effectName = 'brotherhood';
-								obj.effectType = 'buff';
+								animateDeletingPositiveNegativeEffects(obj);
+							break;
 
-							animateDeletingPositiveNegativeEffects(obj);
-						break;
+							case 'brotherhood':
+								var obj = {};
+									obj.field = actionRow
+									obj.cardIndex = parseInt(item);
+									obj.effectName = 'brotherhood';
+									obj.effectType = 'buff';
 
-						case 'terrify':
-							var obj = {};
-								obj.field = actionRow;
-								obj.cardIndex = parseInt(item);
-								obj.effectName = 'terrify';
-								obj.effectType = 'debuff';
+								animateDeletingPositiveNegativeEffects(obj);
+							break;
 
-							animateDeletingPositiveNegativeEffects(obj);
-						break;
+							case 'terrify':
+								var obj = {};
+									obj.field = actionRow;
+									obj.cardIndex = parseInt(item);
+									obj.effectName = 'terrify';
+									obj.effectType = 'debuff';
 
-						case 'fury':
-							var obj = {};
-								obj.field = actionRow;
-								obj.cardIndex = parseInt(item);
-								obj.effectName = 'fury';
-								obj.effectType = 'buff';
+								animateDeletingPositiveNegativeEffects(obj);
+							break;
 
-							animateDeletingPositiveNegativeEffects(obj);
-						break;
+							case 'fury':
+								var obj = {};
+									obj.field = actionRow;
+									obj.cardIndex = parseInt(item);
+									obj.effectName = 'fury';
+									obj.effectType = 'buff';
 
+								animateDeletingPositiveNegativeEffects(obj);
+							break;
+
+						}
 					}
 				}
 			}
