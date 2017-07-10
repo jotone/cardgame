@@ -50,6 +50,8 @@ class BattleFieldController extends BaseController{
 			foreach($step_status['played_card']['card']['actions'] as $action){
 				$played_card_actions[] = $action['caption'];
 			}
+			$step_status['played_card']['card']['buffs'] = [];
+			$step_status['played_card']['card']['debuffs'] = [];
 		}
 
 		foreach($battle_field as $field => $rows){
@@ -303,9 +305,8 @@ class BattleFieldController extends BaseController{
 							}
 						}
 					}
-
+					$card_destination = explode('/',$card_id);
 					if(($allow_fury_by_row) || ($allow_fury_by_race) || ($allow_fury_by_magic) || ($allow_fury_by_group)){
-						$card_destination = explode('/',$card_id);
 						$strength = $battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['strength'] + $action['fury_strenghtVal'];
 
 						if($action['fury_strenghtVal'] >= 0){
@@ -317,7 +318,7 @@ class BattleFieldController extends BaseController{
 							){
 								$step_status['actions']['appear'][$card_destination[0]][$card_destination[1]][] = $action['caption'];
 								if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
-									$fury_cards[$card_destination[0]][$card_destination[1]][$card_destination[2]] = [
+									$step_status['cards'][$card_destination[0]][$card_destination[1]][$card_destination[2]] = [
 										'card'		=> $card_data['caption'],
 										'strength'	=> $battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['strength'],
 										'strModif'	=> $strength,
@@ -337,6 +338,13 @@ class BattleFieldController extends BaseController{
 						$field_status[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['strengthModified'] = $strength;
 						$cards_strength[$card_destination[0]][$card_destination[1]][$card_destination[2]] = $strength;
 						$battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['fury_modified'] = 1;
+					}else{
+						if((!$allow_fury_by_row) || (!$allow_fury_by_race) || (!$allow_fury_by_magic) || (!$allow_fury_by_group)){
+							$battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['strength'] = $card_data['strength'];
+							$field_status[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['strengthModified'] = $card_data['strength'];
+							$cards_strength[$card_destination[0]][$card_destination[1]][$card_destination[2]] = $card_data['strength'];
+							$battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['fury_modified'] = 0;
+						}
 					}
 				}
 			}
@@ -685,7 +693,6 @@ class BattleFieldController extends BaseController{
 										$step_status['played_card']['strength'] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'];
 										$step_status['played_card']['card']['buffs'][] = 'inspiration';
 									}
-
 								}
 
 								$cards_strength[$player][$row][$card_iter] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'];
@@ -755,9 +762,11 @@ class BattleFieldController extends BaseController{
 			}
 		}*/
 
+		if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
+			$step_status['played_card']['card']['buffs'] = array_values(array_unique($step_status['played_card']['card']['buffs']));
+			$step_status['played_card']['card']['debuffs'] = array_values(array_unique($step_status['played_card']['card']['debuffs']));
+		}
 
-		$step_status['played_card']['card']['buffs'] = array_values(array_unique($step_status['played_card']['card']['buffs']));
-		$step_status['played_card']['card']['debuffs'] = array_values(array_unique($step_status['played_card']['card']['debuffs']));
 		/*if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
 			$stop = false;
 			$n = count($step_status['played_card']['card']['actions']);
