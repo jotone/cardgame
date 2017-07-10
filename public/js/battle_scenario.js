@@ -347,14 +347,14 @@ function setDecksValues(counts, images){
 
 		//проверка на бафы-дебафы для карты
 		var effectHolder = '';
-		if (typeof cardData['debuffs'] !== 'undefined') {
+		if (!$.isEmptyObject(cardData['debuffs'])) {
 			effectHolder += 'debuffed ';
 			for(var debuff in cardData['debuffs']){
 				var debuffName = cardData['debuffs'][debuff]+'-debuffed ';
 				effectHolder += debuffName;
 			}
 		}
-		if (typeof cardData['buffs'] !== 'undefined') {
+		if (!$.isEmptyObject(cardData['buffs'])) {
 			effectHolder += 'buffed ';
 			for(var debuff in cardData['debuffs']){
 				var debuffName = cardData['buffs'][debuff]+'-buffed ';
