@@ -10,7 +10,7 @@
 .convert-battle-front .convert-cards .convert-card-box .convert-stuff .convert-one-field .field-for-cards { position: relative; }
 
 .convert-battle-front .convert-cards .convert-card-box .convert-stuff .field-for-sum { transition: all 300ms ease; }
-.convert-battle-front .convert-cards .convert-card-box .convert-stuff .field-for-sum.pulsed { animation-name: pulseAnim; animation-duration: 500ms; animation-timing-function: ease; }
+.convert-battle-front .convert-cards .convert-card-box .convert-stuff .field-for-sum.pulsed { animation-name: pulseFieldAnim; animation-duration: 500ms; animation-timing-function: ease; }
 
 .debuff-or-buff-anim { position: absolute;transition:opacity ease .3s; }
 
@@ -86,7 +86,11 @@
 	50% { transform: scale(2) translate(5px, 8px) translateZ(0px); }
 	100% { transform: scale(1) translate(0, 0px) translateZ(0px); }
 }
-
+@keyframes pulseFieldAnim {
+	0% { transform: scale(1) translate(0, 0px) translateZ(0px); }
+	50% { transform: scale(1.25) translate(0px, -1px) translateZ(0px); }
+	100% { transform: scale(1) translate(0, 0px) translateZ(0px); }
+}
 /* cards in hand */
 
 	.moving-card { position: absolute; left: 0; top: 0; opacity: 0; pointer-events: none; z-index: 3; background-size: cover; transition: opacity 300ms ease, left 1000ms ease, top 1000ms ease, width 800ms ease, height 800ms ease, transform 300ms ease 1000ms; }

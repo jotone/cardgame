@@ -911,13 +911,13 @@ function fieldBuild(stepStatus, addingAnim){
 					break;
 					default:
 						var rowId = intRowToField(row);
-						for(var type in stepStatus.dropped_cards[player][row]){
-							if(type == 'special'){
-								console.log(stepStatus.dropped_cards[player][row][type])
-								//animationDeleteSpecialCard(player,rowId);
+						for(var cardType in stepStatus.dropped_cards[player][row]){
+							if(cardType == 'special'){
+								console.log(stepStatus.dropped_cards[player][row][cardType]);
+								animationDeleteSpecialCard(player,rowId);
 							}else{
-								for(var position in stepStatus.dropped_cards[player][row][type]){
-									var card = stepStatus.dropped_cards[player][row][type][position];
+								for(var position in stepStatus.dropped_cards[player][row][cardType]){
+									var card = stepStatus.dropped_cards[player][row][cardType][position];
 
 									// Узнаю какие карты нужно удалить и даю им класс ready-to-die
 									var currentCardDelete = $('.convert-battle-front #'+player+'.convert-cards '+rowId+' .cards-row-wrap li[data-slug="'+card+'"]:not(.ready-to-die)').first();
@@ -992,51 +992,68 @@ function checkIfNeedRemoveBuffOnRow(player, row, stepStatus, buffName){
 	}*/
 }
 
+var processingRecalculateBattleStrength = true;
 function recalculateBattleStrength(){
-	var fieldData = {
-		p1:{
-			meele: 0,
-			range: 0,
-			superRange: 0,
-			total: 0
-		},
-		p2:{
-			meele: 0,
-			range: 0,
-			superRange: 0,
-			total: 0
-		}
-	};
-	$('.convert-battle-front .convert-stuff .field-for-sum').text('0');
-	$('.convert-right-info .power-text').text('0');
-	$(document).find('.convert-battle-front .convert-cards').each(function(){
-		var player = $(this).attr('id');
-		var total = 0;
-		$(this).find('.field-for-cards').each(function(){
-			var row = $(this).attr('id');
-			$(this).find('ul.cards-row-wrap li').each(function(){
-				var strength = parseInt($(this).find('.card-current-value').text());
-				fieldData[player][row] += strength;
-				total += strength;
-			});
-		});
-		fieldData[player]['total'] = total;
-	});
-
-	for(var player in fieldData){
-		for(var field in fieldData[player]){
-			if(field != 'total'){
-				$('#'+player+'.convert-cards #'+field).closest('.convert-stuff').find('.field-for-sum').text(fieldData[player][field]);
-				var pointsSum = $('#'+player+'.convert-cards #'+field).closest('.convert-stuff').find('.field-for-sum');
-				// setTimeout(function() {
-				// 	pointsSum.addClass('pulsed');
-				// 	setTimeout(function() {
-				// 		pointsSum.removeClass('pulsed');
-				// 	}, 500);
-				// }, 0);
-			}else{
-				$('.convert-right-info div[data-player='+player+'] .power-text').text(fieldData[player][field]);
+	if (processingRecalculateBattleStrength) {
+		processingRecalculateBattleStrength = false;
+		var fieldData = {
+			p1:{
+				meele: 0,
+				range: 0,
+				superRange: 0,
+				total: 0
+			},
+			p2:{
+				meele: 0,
+				range: 0,
+				superRange: 0,
+				total: 0
 			}
+		};
+		$('.convert-battle-front .convert-stuff .field-for-sum').text('0');
+		$('.convert-right-info .power-text').text('0');
+		$(document).find('.convert-battle-front .convert-cards').each(function(){
+			var player = $(this).attr('id');
+			var total = 0;
+			$(this).find('.field-for-cards').each(function(){
+				var row = $(this).attr('id');
+				$(this).find('ul.cards-row-wrap li').each(function(){
+					var strength = parseInt($(this).find('.card-current-value').text());
+					fieldData[player][row] += strength;
+					total += strength;
+				});
+			});
+			fieldData[player]['total'] = total;
+		});
+
+		for(var player in fieldData){
+			for(var field in fieldData[player]){
+				if(field != 'total'){
+					var pointsSum = $('#'+player+'.convert-cards #'+field).closest('.convert-stuff').find('.field-for-sum');
+
+					// console.info("pointsSum.text()", pointsSum.text())
+					// console.info("fieldData[player][field]", fieldData[player][field])
+					// if (!pointsSum.hasClass('pulsed') && parseInt(pointsSum.text()) !== fieldData[player][field]) {
+					// 	pulsingAdd(pointsSum)
+					// }
+					pointsSum.text(fieldData[player][field]);
+
+
+
+				}else{
+					$('.convert-right-info div[data-player='+player+'] .power-text').text(fieldData[player][field]);
+				}
+			}
+		}
+		processingRecalculateBattleStrength = true;
+
+		function pulsingAdd(holder) {
+			setTimeout(function() {
+				holder.addClass('pulsed');
+				setTimeout(function() {
+					holder.removeClass('pulsed');
+				}, 500);
+			}, 0);
 		}
 	}
 }
@@ -1139,13 +1156,15 @@ function processActions(result){
 	if(!$.isEmptyObject(result.actions.appear)){
 		for(var player in result.actions.appear){
 			for(var row in result.actions.appear[player]){
+
+				var actionRow = $('#'+player+'.convert-cards '+ intRowToField(row));
+
 				for(var item in result.actions.appear[player][row]){
 
 					var action = result.actions.appear[player][row][item];
-					var actionRow = $('#'+player+'.convert-cards '+ intRowToField(row));
 
 					switch(action){
-						case 'support':
+						case 'support'://Поддержка
 							var obj = {};
 								obj.field = actionRow
 								obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row]: null;
@@ -1154,7 +1173,7 @@ function processActions(result){
 
 							animatePositiveNegativeEffects(obj);
 						break;
-						case 'brotherhood':
+						case 'brotherhood'://Боевое братство
 							var obj = {};
 								obj.field = actionRow;
 								obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row]: null;
@@ -1163,7 +1182,7 @@ function processActions(result){
 
 							animatePositiveNegativeEffects(obj);
 						break;
-						case 'inspiration':
+						case 'inspiration'://Воодушевление
 							var obj = {};
 								obj.field = actionRow;
 								obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row] : null;
@@ -1172,7 +1191,16 @@ function processActions(result){
 
 							animatePositiveNegativeEffects(obj);
 						break;
-						case 'terrify':
+						case 'fury'://Неистовство
+							var obj = {};
+								obj.field = actionRow;
+								obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row] : null;
+								obj.effectName = 'fury';
+								obj.effectType = 'buff';
+
+							animatePositiveNegativeEffects(obj);
+						break;
+						case 'terrify'://Страшный
 							var obj = {};
 								obj.field = actionRow;
 								obj.cardsMass = (!$.isEmptyObject(result.actions.cards[player])) ? result.actions.cards[player][row] : null;
@@ -1181,13 +1209,32 @@ function processActions(result){
 
 							animatePositiveNegativeEffects(obj);
 						break;
-						case 'killer':
+						case 'killer'://Убийца
 
 							var card = actionRow.find('.cards-row-wrap .content-card-item')[parseInt(item)];
 
 							animationBurningCardEndDeleting(card);
 
+							setTimeout(function(){
+								setCardStrength(result.actions.cards_strength);
+							},1000);
+
 						break;
+						case 'cure'://Исциление
+
+						break;
+						case 'sorrow'://печаль
+
+							var obj = {};
+								obj.field = actionRow;
+								obj.cardIndex = 'undefined';
+								obj.effectName = 'inspiration';
+								obj.effectType = 'buff';
+								obj.effectAnimation = 'fade';
+							//Внимание - Удаление ефекта !
+							animateDeletingPositiveNegativeEffects(obj);
+						break;
+
 					}
 				}
 			}
@@ -1197,11 +1244,12 @@ function processActions(result){
 	if(!$.isEmptyObject(result.actions.disappear)){
 		for(var player in result.actions.disappear){
 			for(var row in result.actions.disappear[player]){
+
+				var actionRow = $('#'+player+'.convert-cards '+ intRowToField(row));
+
 				for(var item in result.actions.disappear[player][row]){
 
 					var action = result.actions.disappear[player][row][item];
-					var actionRow = $('#'+player+'.convert-cards '+ intRowToField(row));
-
 
 					switch(action){
 						case 'support':
@@ -1211,7 +1259,7 @@ function processActions(result){
 								obj.effectName = 'support';
 								obj.effectType = 'buff';
 
-						animateDeletingPositiveNegativeEffects(obj);
+							animateDeletingPositiveNegativeEffects(obj);
 						break;
 
 						case 'brotherhood':
@@ -1221,7 +1269,27 @@ function processActions(result){
 								obj.effectName = 'brotherhood';
 								obj.effectType = 'buff';
 
-						animateDeletingPositiveNegativeEffects(obj);
+							animateDeletingPositiveNegativeEffects(obj);
+						break;
+
+						case 'terrify':
+							var obj = {};
+								obj.field = actionRow;
+								obj.cardIndex = parseInt(item);
+								obj.effectName = 'terrify';
+								obj.effectType = 'debuff';
+
+							animateDeletingPositiveNegativeEffects(obj);
+						break;
+
+						case 'fury':
+							var obj = {};
+								obj.field = actionRow;
+								obj.cardIndex = parseInt(item);
+								obj.effectName = 'fury';
+								obj.effectType = 'buff';
+
+							animateDeletingPositiveNegativeEffects(obj);
 						break;
 
 					}
@@ -1705,9 +1773,9 @@ function cardMovingFromTo(side, from, count){
 };
 
 function animationDeleteSpecialCard(player,rowId){
+
 	var card = $('#'+player+'.convert-cards '+rowId+' .image-inside-line li'),
-		userName = $('#'+player).attr('data-user'),
-		otboy = $('.cards-bet [data-user="'+userName+'"] [data-field="discard"]'),
+		otboy = $('.cards-bet[data-type="'+player+'"] [data-field="discard"]'),
 		otboyOffset = otboy.offset(),
 		cardOffset = card.offset(),
 		zIndexHolder = 0;
@@ -1869,12 +1937,12 @@ function animatePositiveNegativeEffects(obj) {
 				};
 			}
 
-			setTimeout(function() {
-				pointsSum.addClass('pulsed');
-				setTimeout(function() {
-					pointsSum.removeClass('pulsed');
-				}, 500);
-			}, 0);
+			// setTimeout(function() {
+			// 	pointsSum.addClass('pulsed');
+			// 	setTimeout(function() {
+			// 		pointsSum.removeClass('pulsed');
+			// 	}, 500);
+			// }, 0);
 
 			mainRow.addClass(effectType);
 			clearInterval(timer);
@@ -1928,6 +1996,7 @@ function animateDeletingPositiveNegativeEffects(obj) {
 		cardIndex = obj.cardIndex,
 		effectName = obj.effectName,
 		effectType = obj.effectType;
+		effectAnimation = obj.effectAnimation;
 
 	var mainRow = field.closest('.convert-stuff');
 	var pointsSum = mainRow.find('.field-for-sum');
@@ -1937,16 +2006,28 @@ function animateDeletingPositiveNegativeEffects(obj) {
 	var timer = setInterval(function() {
 		if ( !$('.troll-popup.show').length ) {
 
+
 			mainRow.removeClass(effectName+'-'+effectType+'-wrap '+effectType);
 
 			if(field.children('.'+effectName+'-'+effectType+'.active').length > 0){// удаляем разметку подсвечивания полей
 				var effectMarkup = field.children('.'+effectName+'-'+effectType);
-				effectMarkup.removeClass('active');
-				setTimeout(function(){
-					effectMarkup.fadeOut("slow",function(){
-						effectMarkup.remove();
-					})
-				},2000);
+
+				switch(effectAnimation){
+
+					case 'fade':
+						effectMarkup.fadeOut(500,function(){
+							effectMarkup.remove();
+						})
+						break;
+
+					default:
+						effectMarkup.removeClass('active');
+						setTimeout(function(){
+							effectMarkup.fadeOut("slow",function(){
+								effectMarkup.remove();
+							})
+						},2000);
+				}
 			}
 
 			if (cardIndex != 'undefined') {//если мы знаем индекс карты
@@ -2003,6 +2084,8 @@ function animationBurningCardEndDeleting(card,action) {
 
 								card.remove();
 
+								recalculateBattleStrength();//пересчет сил на поле боя
+
 							},1000)
 						},500)
 					});
@@ -2010,4 +2093,30 @@ function animationBurningCardEndDeleting(card,action) {
 			},300)
 	}
 
+}
+
+var processingSetsCardStrength = true;
+function setCardStrength(cards_strength){
+	if(!$.isEmptyObject(cards_strength) && processingSetsCardStrength){
+		processingSetsCardStrength = false;
+		for(var player in cards_strength){
+			for(var row in cards_strength[player]){
+
+				var actionRow = $('#'+player+'.convert-cards '+ intRowToField(row));
+
+				for(var item in cards_strength[player][row]){
+
+					var value = cards_strength[player][row][item];
+
+					var card = $(actionRow.find('.cards-row-wrap .content-card-item')[parseInt(item)]);
+					var cardValue = card.find('.card-current-value');
+					if (parseInt(cardValue) !== value){
+						cardValue.text(value);
+					}
+
+				}
+			}
+		}
+		processingSetsCardStrength = true;
+	}
 }
