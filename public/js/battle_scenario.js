@@ -1247,6 +1247,19 @@ function incomeCardSelection(conn, ident, card_source) {
 function processActions(result){
 
 	if(!$.isEmptyObject(result.actions.appear)){
+
+		if (typeof result.actions.appear === 'string'){
+			switch(result.actions.appear){
+				case 'cure':
+
+					setTimeout(function(){
+						setCardStrength(result.actions.cards_strength);
+					},1000);
+
+					break;
+			}
+		}
+
 		for(var player in result.actions.appear){
 			for(var row in result.actions.appear[player]){
 
@@ -2126,6 +2139,12 @@ function animateDeletingPositiveNegativeEffects(obj) {
 			if (cardIndex != 'undefined') {//если мы знаем индекс карты
 				var $card = field.find('.cards-row-wrap .content-card-item').eq(cardIndex);// выборка карты
 
+console.info("cardIndex", cardIndex)
+console.info("$card", $card)
+
+console.info("effectType", effectType)
+
+console.info("effectName", effectName)
 				switch(effectType){//удаляем класы бафов-дебафов
 					case 'buff':
 						$card.removeClass('buffed '+effectName+'-buffed');
