@@ -765,7 +765,9 @@ class BattleFieldController extends BaseController{
 			for($i = 0; $i<$n; $i++){
 				$action = $step_status['played_card']['card']['actions'][$i];
 				switch($action['caption']){
+					case 'call':
 					case 'cure':
+					case 'heal':
 					case 'master':
 					case 'killer':
 					case 'sorrow':break;

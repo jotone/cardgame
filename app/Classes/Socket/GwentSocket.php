@@ -232,7 +232,13 @@ class GwentSocket extends BaseSocket
 					$this->step_status['round_status']['current_player'] = $user_turn;
 					$this->step_status['round_status']['card_source'] = [$player_source => $this->users_data['user']['card_source']];
 					$this->step_status['round_status']['activate_popup'] = $this->users_data['user']['addition_data'];
-					$this->step_status['round_status']['cards_to_play'] = $this->users_data['user']['cards_to_play'];
+					$cards_to_play = [];
+					if(!empty($this->users_data['user']['cards_to_play'])){
+						foreach($this->users_data['user']['cards_to_play'] as $card_data){
+							$cards_to_play[] = BattleFieldController::cardData($card_data);
+						}
+					}
+					$this->step_status['round_status']['cards_to_play'] = $cards_to_play;
 					$this->step_status['users_energy'] = [
 						$this->users_data['user']['login']	=> $this->users_data['user']['energy'],
 						$this->users_data['opponent']['login']=> $this->users_data['opponent']['energy']
@@ -948,6 +954,31 @@ class GwentSocket extends BaseSocket
 					self::sendMessageToOthers($from, $result, $this->battles[$msg->ident->battleId]);
 				}
 			break;
+
+			case 'dropCard':
+				if($msg->player != $this->users_data['user']['player']){
+					$position = -1;
+					foreach($this->users_data[$msg->player][$msg->deck] as $card_iter => $card_data){
+						if($card_data == Crypt::decrypt($msg->card)){
+							$position = $card_iter;
+							break;
+						}
+					}
+					if($position >= 0){
+						$this->step_status['dropped_cards'][$msg->player][$msg->deck][] = $this->users_data[$msg->player][$msg->deck][$position];
+						unset($this->users_data[$msg->player][$msg->deck][$position]);
+						$this->users_data[$msg->player][$msg->deck] = array_values($this->users_data[$msg->player][$msg->deck]);
+
+						\DB::table('tbl_battle_members')->where('id','=',$this->users_data[$msg->player]['battle_member_id'])->update([
+							'user_'.$msg->deck => serialize($this->users_data[$msg->player][$msg->deck])
+						]);
+						$result = $this->step_status;
+						$result['message'] = 'dropCard';
+						self::sendMessageToSelf($from, $result);
+						self::sendMessageToOthers($from, $result, $SplBattleObj[$msg->ident->battleId]);
+					}
+				}
+			break;
 		}
 	}
 
@@ -979,6 +1010,10 @@ class GwentSocket extends BaseSocket
 
 		if(isset($result['added_cards']['hand'])){
 			$result['added_cards']['hand'] = [];
+		}
+		if($users_data['opponent']['login'] != $result['round_status']['current_player']){
+			$result['round_status']['cards_to_play'] = [];
+			$result['round_status']['activate_popup'] = '';
 		}
 		$result['deck_slug'] = $users_data['opponent']['current_deck'];
 		$result['timing'] = $step_status['timing']+time();
@@ -1138,7 +1173,8 @@ class GwentSocket extends BaseSocket
 				$step_status['actions'][] = $action['caption'];
 			break;*/
 
-			/*case 'heal'://ЛЕКАРЬ
+			case 'heal'://ЛЕКАРЬ
+				$users_data['user']['card_source'] = 'discard';
 				$action_data = [
 					'deckChoise'	=> $action['healer_deckChoise'],
 					'typeOfCard'	=> $action['healer_typeOfCard'],
@@ -1150,14 +1186,14 @@ class GwentSocket extends BaseSocket
 				if(isset($action['healer_type_cardType']))	$action_data['type_cardType'] = $action['healer_type_cardType'];
 				if(isset($action['healer_type_group']))		$action_data['type_group'] = $action['healer_type_group'];
 
-				$heal_result = self::makeHealOrSummon($users_data, $step_status, $action_data, 'discard');
+				$heal_result = self::makeHealOrSummon($users_data, $step_status, $action_data);
 				//card activates after user action
-				$users_data		= $heal_result['users_data'];
 				$user_turn_id	= $heal_result['user_turn_id'];
+				$users_data		= $heal_result['users_data'];
 				$step_status	= $heal_result['step_status'];
 
-				$step_status['actions'][] = $action['caption'];
-			break;*/
+				$step_status['actions']['appear'] = $action['caption'];
+			break;
 
 			case 'killer'://УБИЙЦА
 				$field_buffs = BattleFieldController::getBattleBuffs($battle_field);
@@ -1617,43 +1653,43 @@ class GwentSocket extends BaseSocket
 		];
 	}
 
-	protected static function makeHealOrSummon($users_data, $step_status, $input_action, $deck){
-		$users_data['user']['card_source'] = $deck;
+	protected static function makeHealOrSummon($users_data, $step_status, $input_action){
+		$deck = $users_data['user']['card_source'];
 		if($input_action['deckChoise'] == 1){
 			$users_data['user']['player_source'] = $users_data['opponent']['player'];
 			$user = 'opponent';
 		}else{
 			$user = 'user';
 		}
-		$addition_data = 'activate_choise';
+		$step_status['round_status']['activate_popup'] = 'activate_choise';
 
 		$cards_to_play = [];
 		switch($input_action['typeOfCard']){
 			case '0':
 				foreach($users_data[$user][$deck] as $card_data){
-					$card = BattleFieldController::cardData($card_data['id']);
-					if(in_array($card_data['id'], $input_action['type_singleCard'])){
+					$card = BattleFieldController::getCardNaturalSetting($card_data);
+					if(in_array($card_data, $input_action['type_singleCard'])){
 						$allow_to_summon = ($user == 'user')
-							? self::checkForFullImmune($input_action['ignoreImmunity'], $card['actions'])
-							: self::checkForSimpleImmune($input_action['ignoreImmunity'], $card['actions']);
+							? BattleFieldController::checkForFullImmune($input_action['ignoreImmunity'], $card['actions'])
+							: BattleFieldController::checkForSimpleImmune($input_action['ignoreImmunity'], $card['actions']);
 
 						if($allow_to_summon){
-							$cards_to_play[] = $card_data['id'];
+							$cards_to_play[] = $card_data;
 						}
 					}
 				}
 			break;
 			case '1':
 				foreach($users_data[$user][$deck] as $card_data){
-					$card = BattleFieldController::cardData($card_data['id']);
+					$card = BattleFieldController::getCardNaturalSetting($card_data);
 					foreach($card['allowed_rows'] as $row_iter => $card_row){
 						if( (in_array($card_row, $input_action['type_actionRow'])) && ($card['fraction'] != 'special') ){
 							$allow_to_summon = ($user == 'user')
-								? self::checkForFullImmune($input_action['ignoreImmunity'], $card['actions'])
-								: self::checkForSimpleImmune($input_action['ignoreImmunity'], $card['actions']);
+								? BattleFieldController::checkForFullImmune($input_action['ignoreImmunity'], $card['actions'])
+								: BattleFieldController::checkForSimpleImmune($input_action['ignoreImmunity'], $card['actions']);
 
 							if($allow_to_summon){
-								$cards_to_play[] = $card_data['id'];
+								$cards_to_play[] = $card_data;
 							}
 						}
 					}
@@ -1661,45 +1697,46 @@ class GwentSocket extends BaseSocket
 			break;
 			case '2':
 				foreach($users_data[$user][$deck] as $card_data){
-					$card = BattleFieldController::cardData($card_data['id']);
+					var_dump($card_data);
+					$card = BattleFieldController::getCardNaturalSetting($card_data);
 
 					if($card['fraction'] != 'special'){
 						$allow_to_summon = ($user == 'user')
-							? self::checkForFullImmune($input_action['ignoreImmunity'], $card['actions'])
-							: self::checkForSimpleImmune($input_action['ignoreImmunity'], $card['actions']);
+							? BattleFieldController::checkForFullImmune($input_action['ignoreImmunity'], $card['actions'])
+							: BattleFieldController::checkForSimpleImmune($input_action['ignoreImmunity'], $card['actions']);
 
 						if($allow_to_summon){
-							$cards_to_play[] = $card_data['id'];
+							$cards_to_play[] = $card_data;
 						}
 					}
 				}
 			break;
 			case '3':
 				foreach($users_data[$user][$deck] as $card_data){
-					$card = BattleFieldController::cardData($card_data['id']);
+					$card = BattleFieldController::getCardNaturalSetting($card_data);
 					foreach($card['group'] as $group_id){
 						$allow_by_group = false;
 						if(in_array($group_id, $input_action['type_group'])){
 							$allow_by_group = true;
 						}
 						$allow_to_summon = ($user == 'user')
-							? self::checkForFullImmune($input_action['ignoreImmunity'], $card['actions'])
-							: self::checkForSimpleImmune($input_action['ignoreImmunity'], $card['actions']);
+							? BattleFieldController::checkForFullImmune($input_action['ignoreImmunity'], $card['actions'])
+							: BattleFieldController::checkForSimpleImmune($input_action['ignoreImmunity'], $card['actions']);
 
 						if( ($allow_to_summon) && ($allow_by_group) ){
-							$cards_to_play[] = $card_data['id'];
+							$cards_to_play[] = $card_data;
 						}
 					}
 				}
 			break;
 			case '4':
 				foreach($users_data[$user][$deck] as $card_data){
-					$card = BattleFieldController::cardData($card_data['id']);
+					$card = BattleFieldController::getCardNaturalSetting($card_data);
 					$allow_to_summon = ($user == 'user')
-						? self::checkForFullImmune($input_action['ignoreImmunity'], $card['actions'])
-						: self::checkForSimpleImmune($input_action['ignoreImmunity'], $card['actions']);
+						? BattleFieldController::checkForFullImmune($input_action['ignoreImmunity'], $card['actions'])
+						: BattleFieldController::checkForSimpleImmune($input_action['ignoreImmunity'], $card['actions']);
 					if($allow_to_summon){
-						$cards_to_play[] = $card_data['id'];
+						$cards_to_play[] = $card_data;
 					}
 				}
 			break;
@@ -1714,9 +1751,9 @@ class GwentSocket extends BaseSocket
 		}
 
 		foreach($users_data[$user][$deck] as $card_data){
-			if(in_array($card_data['id'], $cards_to_play)){
+			if(in_array($card_data, $cards_to_play)){
 				$users_data['user']['cards_to_play'][] = $card_data;//Карты приходят в попап выбора карт
-				$step_status['round_status']['card_to_play'] = BattleFieldController::cardData($card_data);
+				$step_status['round_status']['cards_to_play'][] = BattleFieldController::cardData($card_data);
 			}
 		}
 
@@ -1726,14 +1763,13 @@ class GwentSocket extends BaseSocket
 		}else{
 			$users_data['user']['card_source'] = 'hand';
 			$users_data['user']['player_source'] = $users_data['user']['player'];
-			$addition_data = '';
+			$step_status['round_status']['activate_popup'] = '';
 			$user_turn_id = $users_data['opponent']['id'];
 			$step_status['round_status']['current_player'] = $users_data['opponent']['login'];
 		}
 
 		$step_status['round_status']['card_source'] = [$users_data['user']['player_source'] => $users_data['user']['card_source']];
-		$step_status['round_status']['activate_popup'] = $addition_data;
-
+		
 		return [
 			'users_data'	=> $users_data,
 			'user_turn_id'	=> $user_turn_id,
@@ -1967,7 +2003,7 @@ class GwentSocket extends BaseSocket
 				$result['gold'] = $resources['gold_per_win'];
 				$result['silver'] = $resources['silver_per_win'];
 				$result['user_rating'] = $league->rating_per_win;
-				break;
+			break;
 			case 'loose':
 				$gold = $user->user_gold + $resources['gold_per_loose'];
 				$silver = $user->user_silver + $resources['silver_per_loose'];
@@ -1977,10 +2013,10 @@ class GwentSocket extends BaseSocket
 				$result['gold'] = $resources['gold_per_loose'];
 				$result['silver'] = $resources['silver_per_loose'];
 				$result['user_rating'] = abs($league->rating_per_loose);
-				break;
+			break;
 			case 'draw':
 				$rating = $user_rating[$league['slug']]['user_rating'];
-				break;
+			break;
 		}
 
 		$user_rating[$league['slug']] = [

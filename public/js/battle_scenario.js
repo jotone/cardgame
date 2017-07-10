@@ -1148,8 +1148,101 @@ function popupActivation(result){
 				});
 			}
 		break;
+		case 'activate_choise':
+			$('#selectNewCardsPopup .button-troll').hide(); //Скрыть все кнопки на в popup-окне
+			$('#selectNewCardsPopup .button-troll.acceptNewCards').show(); //Показать кнопку "Готово" для выбора призваных карт
+
+			$('#selectNewCardsPopup #handNewCards').empty();//Очистка списка карт popup-окна
+			//если карт отыгрыша пришло больше 1й
+			if(result.round_status.cards_to_play.length > 1){
+				//Вывод карт в список в popup-окне
+
+				var card_in_popup_count = 0;
+				for(var i in result.round_status.cards_to_play){
+					$('#selectNewCardsPopup #handNewCards').append(createFieldCardView(result.round_status.cards_to_play[i], result.round_status.cards_to_play[i]['strength']));
+					card_in_popup_count++;
+				}
+				setMinWidthInPop(card_in_popup_count,$('#selectNewCardsPopup'));
+
+				openTrollPopup($('#selectNewCardsPopup'));//Открытие popup-окна пользователю
+
+				$('#selectNewCardsPopup #handNewCards li, #selectNewCardsPopup .button-troll.acceptNewCards').unbind();
+				$('#selectNewCardsPopup #handNewCards li:first').addClass('glow');
+				$('#selectNewCardsPopup #handNewCards li').click(function(event){
+					if((!$(event.target).hasClass('ignore')) && event.which==1){
+						$('#selectNewCardsPopup #handNewCards li').removeClass('glow');
+						$(this).addClass('glow');
+					}
+				});
+
+				incomeCardSelection(conn, ident, result.round_status.card_source); //Отслеживание нажатия кнопки "Готово"
+			}else{//Если карта одна показываем её в боковом окне
+				incomeOneCardSelection(result.round_status.cards_to_play[0]);
+				getCardActiveRow(result.round_status.cards_to_play[0]['id'], 'card', conn, ident);//Подсветка ряда действия карты
+			}
+		break;
 	}
 }
+
+function setMinWidthInPop(count,popup) {
+	if (count>0){
+		var holder = popup.find('.cards-select-wrap li');
+		var card_in_poup_min_width = ( holder.width() * count ) + 300;//300 - magic count
+		popup.css({
+			'width':card_in_poup_min_width+'px'
+		});
+	}
+}
+
+//Функиции отправки выбраных карт для призыва на поле
+function incomeOneCardSelection(card) {
+	var content='<li class="content-card-item disable-select" data-cardid="'+card['id']+'" data-relative="'+card['fraction']+'" data-slug="'+card['caption']+'">'+
+		createCardDescriptionView(card, card['strength'])+
+		'</li>';
+	$('.summonCardPopup').removeClass('show');
+	$('#summonWrap').html(content);
+	$('.summonCardPopup').addClass('show');
+}
+
+function incomeCardSelection(conn, ident, card_source) {
+	$('#selectNewCardsPopup .button-troll.acceptNewCards').click(function(e) {
+		e.preventDefault();
+		if ( $('#selectNewCardsPopup #handNewCards .glow') ) {
+			createPseudoCard( $('#selectNewCardsPopup #handNewCards .glow') );
+		} else {
+			return;
+		}
+	});
+
+	function createPseudoCard(obj) {
+		$('#summonWrap').empty();
+		$('.summonCardPopup').removeClass('show');
+		obj.clone().appendTo('#summonWrap');
+		$('.summonCardPopup').addClass('show');
+		closeAllTrollPopup();
+		finalAction();
+	}
+
+	function finalAction() {
+		cardCase(card_source,false);
+		var card = $('#selectNewCardsPopup #handNewCards .glow').attr('data-cardid');
+		for(var player in card_source){
+			var source = card_source[player];
+		}
+		getCardActiveRow(card, 'card', conn, ident);
+		conn.send(
+			JSON.stringify({
+				action: 'dropCard',
+				ident: ident,
+				card: card,
+				player: player,
+				deck: source
+			})
+		);
+
+	}
+}
+// /Функиции отправки выбраных карт для призыва на поле
 
 function processActions(result){
 
