@@ -1341,6 +1341,16 @@ class GwentSocket extends BaseSocket
 						}
 					}
 				}
+				foreach($battle_field as $field => $rows){
+					if($field != 'mid'){
+						foreach($rows as $row => $row_data){
+							foreach($row_data['warrior'] as $card_iter => $card_data){
+								//fury_modified
+								var_dump($card_data);
+							}
+						}
+					}
+				}
 			break;
 
 			case 'master'://ПОВЕЛИТЕЛЬ
