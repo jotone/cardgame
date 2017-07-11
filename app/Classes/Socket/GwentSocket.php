@@ -1016,12 +1016,13 @@ class GwentSocket extends BaseSocket
 
 		self::sendMessageToSelf($from, $result); //Отправляем результат отправителю
 
-		if(isset($result['added_cards']['hand'])){
-			$result['added_cards']['hand'] = [];
+		foreach($result['added_cards'] as $player => $decks){
+			$result['added_cards'][$player]['hand'] = [];
 		}
-		if(isset($result['dropped_cards']['deck'])){
-			$result['dropped_cards']['deck'] = [];
+		foreach($result['dropped_cards'] as $player => $decks){
+			$result['dropped_cards'][$player]['hand'] = [];
 		}
+
 		if($users_data['opponent']['login'] != $result['round_status']['current_player']){
 			$result['round_status']['cards_to_play'] = [];
 			$result['round_status']['activate_popup'] = '';
