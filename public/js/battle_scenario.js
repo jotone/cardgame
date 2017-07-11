@@ -857,8 +857,22 @@ function fieldBuild(stepStatus, addingAnim){
 							}
 						}
 					break;
+
 					default:
 						//Отыгрыш пришедшик карт в поле
+						var row = destination;
+						for(var row in stepStatus.added_cards[player]){
+							var rowId = intRowToField(row);
+							for(var item in stepStatus.added_cards[player][row]){
+
+								var card = stepStatus.added_cards[player][row][item];
+
+								$('.convert-battle-front #'+player+'.convert-cards '+rowId+' .cards-row-wrap').append(createFieldCardView(card,card.strength, false));
+							}
+
+						}
+
+
 				}
 			}
 		}
@@ -903,26 +917,38 @@ function fieldBuild(stepStatus, addingAnim){
 					case 'deck':
 					case 'discard':
 						for(var i in stepStatus.dropped_cards[player][row]){
-							var card = stepStatus.dropped_cards[player][row][i];
-							console.log(card)
-							//$('#'+type+'-'+row+' ul.deck-cards-list li[data-slug='+card+']:first').remove();
+							var cardSlug = stepStatus.dropped_cards[player][row][i];
+							$('#'+type+'-'+row+' ul.deck-cards-list li[data-slug='+cardSlug+']').first().remove();
 						}
 					break;
 					case 'hand':
 						// удаление карты с руки противника
 						if($('.convert-right-info .user-describer').attr('data-player') == player){
+
 							for(var i in stepStatus.dropped_cards[player][row]){
+
+								var cardSlug = stepStatus.dropped_cards[player][row][i];
+
+console.info("animationCardReturnToOutage")
 								animationCardReturnToOutage(
-									$('.user-card-stash #sortableUserCards li[data-slug="'+card+'"]:first'), 1500,
+									$('.user-card-stash #sortableUserCards li[data-slug="'+cardSlug+'"]').first(),
+									1500,
 									function() {
-										var timeout = (100 * ($('.user-card-stash #sortableUserCards li[data-slug="'+card+'"]:first').length - 1)) + 1500;
+										var timeout = parseInt((100 * ($('.user-card-stash #sortableUserCards li[data-slug="'+cardSlug+'"]').first().length - 1)) + 1500);
+										console.log('removing');
+
+console.info("timeout", timeout)
+
+console.info("$('.user-card-stash #sortableUserCards li[data-slug=\"'+cardSlug+'\"]')", $('.user-card-stash #sortableUserCards li[data-slug="'+cardSlug+'"]'))
 										setTimeout(function() {
-											$('.user-card-stash #sortableUserCards li[data-slug="'+card+'"]:first').remove();
+											$('.user-card-stash #sortableUserCards li[data-slug="'+cardSlug+'"]').first().remove();
+											//calculateRightMarginCardHands();
 										}, timeout);
 									}
 								);
 							}
 						}
+
 					break;
 					case 'mid':
 						$('.mezhdyblock #sortable-cards-field-more').children().fadeOut(500, function() {
@@ -942,7 +968,7 @@ function fieldBuild(stepStatus, addingAnim){
 									// Узнаю какие карты нужно удалить и даю им класс ready-to-die
 									var currentCardDelete = $('.convert-battle-front #'+player+'.convert-cards '+rowId+' .cards-row-wrap li[data-slug="'+card+'"]:not(.ready-to-die)').first();
 									currentCardDelete.addClass('ready-to-die');
-									checkIfNeedRemoveBuffOnRow(player, row, stepStatus, 'support');
+									//checkIfNeedRemoveBuffOnRow(player, row, stepStatus, 'support');
 								}
 							}
 						}
@@ -1275,7 +1301,12 @@ function processActions(result){
 					setTimeout(function(){
 						setCardStrength(result.actions.cards_strength);
 					},1000);
+					break;
+				case 'master':
 
+					// setTimeout(function(){
+					// 	setCardStrength(result.actions.cards_strength);
+					// },1000);
 					break;
 			}
 		} else{
@@ -1363,7 +1394,7 @@ function processActions(result){
 							break;
 
 						}
-						debugger;
+
 					}
 				}
 			}
