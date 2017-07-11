@@ -1295,6 +1295,7 @@ function processActions(result){
 	if(!$.isEmptyObject(result.actions.appear)){
 
 		if (typeof result.actions.appear === 'string'){
+
 			switch(result.actions.appear){
 				case 'cure':
 
@@ -1665,6 +1666,7 @@ function startBattle() {
 						currentRound = result.round_status.round;
 						//},1000)
 					}else{
+
 						fieldBuild(result, true);
 						processActions(result);
 					}
@@ -1672,6 +1674,7 @@ function startBattle() {
 					changeTurnIndicator(result.round_status.current_player); //смена индикатора хода
 
 					setDecksValues(result.counts, result.images);
+
 
 					detailCardPopupOnStartStep(result.played_card['card'], result.played_card['strength']);
 				}else{
