@@ -1397,7 +1397,7 @@ class GwentSocket extends BaseSocket
 									];
 									$step_status['added_cards'][$users_data['user']['player']][$action_row][] = $card;
 
-									$step_status['dropped_cards'][$users_data['user']['player']][$destination][] = $card['caption'];
+									$step_status['dropped_cards'][$users_data['user']['player']][$destination][$card_to_summon_iter] = $card['caption'];
 									unset($users_data['user'][$destination][$card_to_summon_iter]);
 								}
 							}
