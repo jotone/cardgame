@@ -831,9 +831,8 @@ function fieldBuild(stepStatus, addingAnim){
 
 	//Добавление карт
 	if(!$.isEmptyObject(stepStatus.added_cards)){
-		var player = $('.user-describer').attr('data-player');
-		if(!$.isEmptyObject(stepStatus.added_cards[player])){
-
+		//var player = $('.user-describer').attr('data-player');
+		for(var player in stepStatus.added_cards){
 			for(var destination in stepStatus.added_cards[player]){
 				switch(destination){
 					case 'hand'://SPY action
@@ -860,22 +859,23 @@ function fieldBuild(stepStatus, addingAnim){
 
 					default:
 						//Отыгрыш пришедшик карт в поле
-						var row = destination;
-						for(var row in stepStatus.added_cards[player]){
-							var rowId = intRowToField(row);
-							for(var item in stepStatus.added_cards[player][row]){
 
-								var card = stepStatus.added_cards[player][row][item];
+				var row = destination;
+					for(var row in stepStatus.added_cards[player]){
+						var rowId = intRowToField(row);
+						for(var item in stepStatus.added_cards[player][row]){
 
-								$('.convert-battle-front #'+player+'.convert-cards '+rowId+' .cards-row-wrap').append(createFieldCardView(card,card.strength, false));
-							}
+							var card = stepStatus.added_cards[player][row][item];
 
+							$('.convert-battle-front #'+player+'.convert-cards '+rowId+' .cards-row-wrap').append(createFieldCardView(card,card.strength, false));
 						}
 
+					}
 
 				}
 			}
 		}
+
 		/*var player = $('.convert-cards[data-user='+$('.user-describer').attr('id')+']').attr('id');
 		if(typeof stepStatus.added_cards[player] != "undefined"){
 			//Дополнительные карты
@@ -913,23 +913,18 @@ function fieldBuild(stepStatus, addingAnim){
 		for(var player in stepStatus.dropped_cards){
 			for(var row in stepStatus.dropped_cards[player]){
 				var type = ($('.convert-right-info .user-describer').attr('data-player') == player)? 'allies': 'enemy';
-				console.log('-----------------------------------------------------' );
-				console.log('row',row );
 
 				switch(row){
 					case 'deck':
 					case 'discard':
-						console.log('case discard');
 						for(var i in stepStatus.dropped_cards[player][row]){
-							var cardSlug = stepStatus.dropped_cards[player][row][i];
-
-console.info("discard remove ", $('#'+type+'-'+row+' ul.deck-cards-list li').eq(i))
-							$('#'+type+'-'+row+' ul.deck-cards-list li').eq(i).remove();
+							//var cardSlug = stepStatus.dropped_cards[player][row][i];
+							$('#'+type+'-'+row+' ul.deck-cards-list li').eq(i).addClass('ready-to-remove-from-deck');
 						}
+						$('#'+type+'-'+row+' ul.deck-cards-list li.ready-to-remove-from-deck').remove();
 					break;
 					case 'hand':
 						// удаление карты с руки противника
-						console.log('case hand');
 						if($('.convert-right-info .user-describer').attr('data-player') == player){
 
 							function removeCardAnim(card,timing) {
@@ -949,7 +944,6 @@ console.info("discard remove ", $('#'+type+'-'+row+' ul.deck-cards-list li').eq(
 									cardRemoving,
 									1500,
 									function() {
-										console.count('removing');
 										removeCardAnim(cardRemoving,1500);
  									}
 								);
@@ -974,8 +968,7 @@ console.info("discard remove ", $('#'+type+'-'+row+' ul.deck-cards-list li').eq(
 
 									// Узнаю какие карты нужно удалить и даю им класс ready-to-die
 									var currentCardDelete = $('.convert-battle-front #'+player+'.convert-cards '+rowId+' .cards-row-wrap li[data-slug="'+card+'"]:not(.ready-to-die)').first();
-									currentCardDelete.addClass('ready-to-die');
-									//checkIfNeedRemoveBuffOnRow(player, row, stepStatus, 'support');
+ 									//checkIfNeedRemoveBuffOnRow(player, row, stepStatus, 'support');
 								}
 							}
 						}
