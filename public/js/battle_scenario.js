@@ -1560,6 +1560,10 @@ function startBattle() {
 				showCardActiveRow(result);
 			break;
 
+			case 'cartDescription':
+				console.log(result.data);
+			break;
+
 			case 'roundEnds':
 				var win_status = [0, 0];
 				for (var login in result.round_status.status.score) {
@@ -1775,6 +1779,17 @@ $(document).ready(function(){
 	});
 	recalculateBattleStrength();
 	circleRoundIndicator();
+
+	$(document).on('click','.info-img',function(){
+		var card = $(this).closest('li').attr('data-cardid');
+		conn.send(
+			JSON.stringify({
+				action:	'cartDescription',//Отправка сообщения о подключения пользователя к столу
+				ident:	ident,
+				card:	card
+			})
+		);
+	});
 });
 
 //*Анимации*//

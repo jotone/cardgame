@@ -178,6 +178,15 @@ class BattleFieldController extends BaseController{
 						$field_status[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['strengthModified'] = $strength;
 						$cards_strength[$card_destination[0]][$card_destination[1]][$card_destination[2]] = $strength;
 						$battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['fury_modified'] = 1;
+						if( (isset($step_status['added_cards'])) && (!empty($step_status['added_cards'])) ){
+							if(isset($step_status['added_cards'][$card_destination[0]][$card_destination[1]])){
+								foreach($step_status['added_cards'][$card_destination[0]][$card_destination[1]] as $i => $added_card){
+									if(Crypt::decrypt($added_card['id']) == $battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['id']){
+										$step_status['added_cards'][$card_destination[0]][$card_destination[1]][$i]['strModif'] = $battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['strength'];
+									}
+								}
+							}
+						}
 					}else{
 						if((!$allow_fury_by_row) || (!$allow_fury_by_race) || (!$allow_fury_by_magic) || (!$allow_fury_by_group)){
 							$battle_field[$card_destination[0]][$card_destination[1]]['warrior'][$card_destination[2]]['strength'] = $card_data['strength'];
@@ -289,6 +298,18 @@ class BattleFieldController extends BaseController{
 
 									$battle_field[$player][$row]['warrior'][$card_iter]['strength'] = $strength;
 									$field_status[$player][$row]['warrior'][$card_iter]['strengthModified'] = $strength;
+
+									if( (isset($step_status['added_cards'])) && (!empty($step_status['added_cards'])) ){
+										if(isset($step_status['added_cards'][$player][$row])){
+											foreach($step_status['added_cards'][$player][$row] as $i => $card){
+												foreach($battle_field[$player][$row]['warrior'] as $j => $battle_card){
+													if(Crypt::decrypt($card['id']) == $battle_card['id']){
+														$step_status['added_cards'][$player][$row][$i]['strModif'] = $battle_field[$player][$row]['warrior'][$j]['strength'];
+													}
+												}
+											}
+										}
+									}
 
 									$cards_strength[$player][$row][$card_iter] = $strength;
 
@@ -403,9 +424,9 @@ class BattleFieldController extends BaseController{
 																}
 															}
 														}
-														if(isset($fury_cards[$player][$row][$card_iter])){
-															$fury_cards[$player][$row][$card_iter]['strength'] = $fury_cards[$player][$row][$card_iter]['strModif'];
-															$fury_cards[$player][$row][$card_iter]['strModif'] = $strength;
+														if(isset($fury_cards[$field][$action_row][$card_iter])){
+															$fury_cards[$field][$action_row][$card_iter]['strength'] = $fury_cards[$field][$action_row][$card_iter]['strModif'];
+															$fury_cards[$field][$action_row][$card_iter]['strModif'] = $strength;
 														}
 
 														$battle_field[$field][$action_row]['warrior'][$card_iter]['strength'] = $strength;
@@ -413,10 +434,10 @@ class BattleFieldController extends BaseController{
 
 														$cards_strength[$field][$action_row][$card_iter] = $strength;
 
-														if(isset($step_status['added_cards'][$player][$row])){
-															foreach($step_status['added_cards'][$player][$row] as $i => $added_card){
-																if(Crypt::decrypt($added_card['id']) == $battle_field[$player][$row]['warrior'][$card_iter]['id']){
-																	$step_status['added_cards'][$player][$row][$i]['strengthModified'] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'];
+														if(isset($step_status['added_cards'][$field][$action_row])){
+															foreach($step_status['added_cards'][$field][$action_row] as $i => $added_card){
+																if(Crypt::decrypt($added_card['id']) == $battle_field[$field][$action_row]['warrior'][$card_iter]['id']){
+																	$step_status['added_cards'][$field][$action_row][$i]['strengthModified'] = $battle_field[$field][$action_row]['warrior'][$card_iter]['strength'];
 																}
 															}
 														}
@@ -450,9 +471,9 @@ class BattleFieldController extends BaseController{
 														}
 													}
 												}
-												if(isset($fury_cards[$player][$row][$card_iter])){
-													$fury_cards[$player][$row][$card_iter]['strength'] = $fury_cards[$player][$row][$card_iter]['strModif'];
-													$fury_cards[$player][$row][$card_iter]['strModif'] = $strength;
+												if(isset($fury_cards[$field][$action_row][$card_iter])){
+													$fury_cards[$field][$action_row][$card_iter]['strength'] = $fury_cards[$field][$action_row][$card_iter]['strModif'];
+													$fury_cards[$field][$action_row][$card_iter]['strModif'] = $strength;
 												}
 
 												$battle_field[$field][$action_row]['warrior'][$card_iter]['strength'] = $strength;
@@ -460,10 +481,10 @@ class BattleFieldController extends BaseController{
 
 												$cards_strength[$field][$action_row][$card_iter] = $strength;
 
-												if(isset($step_status['added_cards'][$player][$row])){
-													foreach($step_status['added_cards'][$player][$row] as $i => $added_card){
-														if(Crypt::decrypt($added_card['id']) == $battle_field[$player][$row]['warrior'][$card_iter]['id']){
-															$step_status['added_cards'][$player][$row][$i]['strengthModified'] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'];
+												if(isset($step_status['added_cards'][$field][$action_row])){
+													foreach($step_status['added_cards'][$field][$action_row] as $i => $added_card){
+														if(Crypt::decrypt($added_card['id']) == $battle_field[$field][$action_row]['warrior'][$card_iter]['id']){
+															$step_status['added_cards'][$field][$action_row][$i]['strengthModified'] = $battle_field[$field][$action_row]['warrior'][$card_iter]['strength'];
 														}
 													}
 												}
@@ -588,6 +609,14 @@ class BattleFieldController extends BaseController{
 										$battle_field[$player][$rows]['warrior'][$card_iter]['strength'] *= $mult_same;
 										$field_status[$player][$rows]['warrior'][$card_iter]['strengthModified'] *= $mult_same;
 
+										if(isset($step_status['added_cards'][$player][$rows])){
+											foreach($step_status['added_cards'][$player][$rows] as $i => $added_card){
+												if(Crypt::decrypt($added_card['id']) == $battle_field[$player][$rows]['warrior'][$card_iter]['id']){
+													$step_status['added_cards'][$player][$rows][$i]['strengthModified'] = $battle_field[$player][$rows]['warrior'][$card_iter]['strength'];
+												}
+											}
+										}
+
 										$cards_strength[$player][$rows][$card_iter] = $battle_field[$player][$rows]['warrior'][$card_iter]['strength'];
 									}
 								}
@@ -709,6 +738,10 @@ class BattleFieldController extends BaseController{
 								}
 
 								$battle_field[$player][$row]['warrior'][$card_iter]['strength'] *= $action_data['inspiration_multValue'];
+								$field_status[$player][$row]['warrior'][$card_iter]['buffs'][] = 'inspiration';
+								$field_status[$player][$row]['warrior'][$card_iter]['buffs'] = array_values(array_unique($field_status[$player][$row]['warrior'][$card_iter]['buffs']));
+								$field_status[$player][$row]['warrior'][$card_iter]['strengthModified'] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'];
+								$cards_strength[$player][$row][$card_iter] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'];
 
 								if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
 									if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
@@ -716,8 +749,6 @@ class BattleFieldController extends BaseController{
 										$step_status['played_card']['card']['buffs'][] = 'inspiration';
 									}
 								}
-
-								$cards_strength[$player][$row][$card_iter] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'];
 								if(isset($step_status['added_cards'][$player][$row])){
 									foreach($step_status['added_cards'][$player][$row] as $i => $added_card){
 										if(Crypt::decrypt($added_card['id']) == $battle_field[$player][$row]['warrior'][$card_iter]['id']){
@@ -725,10 +756,6 @@ class BattleFieldController extends BaseController{
 										}
 									}
 								}
-
-								$field_status[$player][$row]['warrior'][$card_iter]['buffs'][] = 'inspiration';
-								$field_status[$player][$row]['warrior'][$card_iter]['buffs'] = array_values(array_unique($field_status[$player][$row]['warrior'][$card_iter]['buffs']));
-								$field_status[$player][$row]['warrior'][$card_iter]['strengthModified'] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'];
 							}
 						}
 					}
@@ -803,7 +830,7 @@ class BattleFieldController extends BaseController{
 									}
 								}
 							}
-							break;
+						break;
 						case 'inspiration':
 							$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
 							if(isset($step_status['actions']['cards'][$player])){
@@ -1198,5 +1225,31 @@ class BattleFieldController extends BaseController{
 			}
 		}
 		return $field_status;
+	}
+
+	public static function getCardDescription($id){
+		$card = \DB::table('tbl_cards')
+				->select('id','title','full_description','card_type','card_race','is_leader','card_strong','img_url','allowed_rows','card_actions')
+				->find($id);
+		if($card == false) return false;
+
+		$allowed_row_images = SiteFunctionsController::createActionRowsArray($card->allowed_rows);
+		$action_images = SiteFunctionsController::createActionsArray(unserialize($card->card_actions));
+
+		$fraction = ($card->card_type == 'race')? $card->card_race: $card->card_type;
+
+		$fraction_img = self::getFractionFlag($fraction);
+		return [
+			'id'			=> Crypt::encrypt($card->id),
+			'title'			=> $card->title,
+			'text'			=> $card->full_description,
+			'img_url'		=> $card->img_url,
+			'fraction'		=> $fraction,
+			'fraction_img'	=> $fraction_img,
+			'is_leader'		=> $card->is_leader,
+			'strength'		=> $card->card_strong,
+			'allowed_row_images'=> $allowed_row_images,
+			'action_images'	=> $action_images,
+		];
 	}
 }

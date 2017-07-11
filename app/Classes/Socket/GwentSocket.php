@@ -903,6 +903,14 @@ class GwentSocket extends BaseSocket
 				}
 			break;
 
+			case 'cartDescription':
+				$result = [
+					'message'	=> 'cartDescription',
+					'data'		=> BattleFieldController::getCardDescription(Crypt::decrypt($msg->card))
+				];
+				self::sendMessageToSelf($from, $result);
+			break;
+
 			case 'cursedWantToChangeTurn':
 				$player = ($this->users_data['p1']['login'] == $msg->user)? 'p1': 'p2';
 
@@ -1396,6 +1404,7 @@ class GwentSocket extends BaseSocket
 										'login'		=> $users_data['user']['login']
 									];
 									$step_status['added_cards'][$users_data['user']['player']][$action_row][] = $card;
+									$step_status['actions']['appear'][$users_data['user']['player']][$action_row] = $action['caption'];
 
 									$step_status['dropped_cards'][$users_data['user']['player']][$destination][$card_to_summon_iter] = $card['caption'];
 									unset($users_data['user'][$destination][$card_to_summon_iter]);
@@ -1404,11 +1413,11 @@ class GwentSocket extends BaseSocket
 							$users_data['user'][$destination] = array_values($users_data['user'][$destination]);
 						}
 					}
-					$step_status['actions']['appear'] = $action['caption'];
 				}
 			break;
 
-			/*case 'obscure'://ОДУРМАНИВАНИЕ
+			case 'obscure'://ОДУРМАНИВАНИЕ
+				$field_buffs = BattleFieldController::getBattleBuffs($battle_field);
 				$cards_can_be_obscured = [];
 				$min_strength = 999;
 				$max_strength = 0;
@@ -1417,7 +1426,7 @@ class GwentSocket extends BaseSocket
 					foreach($battle_field[$users_data['opponent']['player']][$row]['warrior'] as $card_data){
 						$card = BattleFieldController::cardData($card_data['id']);
 						if($card_data['strength'] <= $action['obscure_maxCardStrength']){
-							$allow_obscure = self::checkForSimpleImmune($action['obscure_ignoreImmunity'], $card['actions']);
+							$allow_obscure = BattleFieldController::checkForSimpleImmune($action['obscure_ignoreImmunity'], $card['actions']);
 
 							if($allow_obscure){
 								$max_strength = ($card_data['strength'] > $max_strength)
@@ -1463,7 +1472,7 @@ class GwentSocket extends BaseSocket
 				}
 				for($i=0; $i<count($cards_to_obscure); $i++){
 					foreach($battle_field[$users_data['opponent']['player']][$cards_to_obscure[$i]['row']]['warrior'] as $j => $card_data){
-						if($cards_to_obscure[$i]['id'] == $card_data['id']){
+						if(Crypt::decrypt($cards_to_obscure[$i]['id']) == $card_data['id']){
 							$battle_field[$users_data['user']['player']][$cards_to_obscure[$i]['row']]['warrior'][] = [
 								'id'		=> $card_data['id'],
 								'strength'	=> $card_data['strength'],
@@ -1471,17 +1480,30 @@ class GwentSocket extends BaseSocket
 							];
 							$card_obscured = BattleFieldController::cardData($card_data['id']);
 							$step_status['added_cards'][$users_data['user']['player']][$cards_to_obscure[$i]['row']][] = $card_obscured;
-							$step_status['dropped_cards'][$users_data['opponent']['player']][$cards_to_obscure[$i]['row']][] = BattleFieldController::getCardNaturalSetting($card_data['id']);
+							$step_status['dropped_cards'][$users_data['opponent']['player']][$cards_to_obscure[$i]['row']][$j] = $card_obscured['caption'];
+							$step_status['actions']['appear'][$users_data['opponent']['player']][$cards_to_obscure[$i]['row']][$j] = 'obscure';
 							unset($battle_field[$users_data['opponent']['player']][$cards_to_obscure[$i]['row']]['warrior'][$j]);
 							$battle_field[$users_data['opponent']['player']][$cards_to_obscure[$i]['row']]['warrior'] = array_values($battle_field[$users_data['opponent']['player']][$cards_to_obscure[$i]['row']]['warrior']);
 							break;
 						}
 					}
 				}
-				if(count($cards_to_obscure) > 0){
-					$step_status['actions'][] = $action['caption'];
+
+				$new_field_buffs = BattleFieldController::getBattleBuffs($battle_field);
+				foreach($field_buffs as $field => $rows){
+					if(!isset($new_field_buffs[$field])){
+						$step_status['actions']['disappear'][$field] = $field_buffs[$field];
+					}else{
+						foreach($rows as $row => $row_data){
+							if(isset($new_field_buffs[$field][$row])){
+								$step_status['actions']['disappear'][$field][$row] = array_diff($field_buffs[$field][$row], $new_field_buffs[$field][$row]);
+							}else{
+								$step_status['actions']['disappear'][$field][$row] = $field_buffs[$field][$row];
+							}
+						}
+					}
 				}
-			break;*/
+			break;
 
 			/*case 'peep_card'://ПРОСМОТР КАРТ ПРОТИВНИКА
 				$temp_hand = $users_data['opponent']['hand'];
