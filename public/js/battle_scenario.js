@@ -965,21 +965,23 @@ function fieldBuild(stepStatus, addingAnim){
 								console.log(stepStatus.dropped_cards[player][row][cardType]);
 								animationDeleteSpecialCard(player,rowId);
 							}else{
-								for(var position in stepStatus.dropped_cards[player][row][cardType]){
-									var cardIndex = stepStatus.dropped_cards[player][row][cardType][position];
+								var cardIndex = cardType;
 
-console.info("card", card)
+								console.info("cardIndex", cardIndex)
 
-console.info("currentCardDelete", currentCardDelete)
-									// Узнаю какие карты нужно удалить и даю им класс ready-to-die
-									var currentCardDelete = $('.convert-battle-front #'+player+'.convert-cards '+rowId+' .cards-row-wrap li').eq(cardIndex);
-									currentCardDelete.addClass('ready-to-die');
-									//checkIfNeedRemoveBuffOnRow(player, row, stepStatus, 'support');
-								}
+
+								// Узнаю какие карты нужно удалить и даю им класс ready-to-die
+								var currentCardDelete = $('#'+player+'.convert-cards '+rowId+' .cards-row-wrap li').eq(cardIndex);
+								console.info("currentCardDelete", currentCardDelete)
+								console.info("'#'+player+'.convert-cards '+rowId+' .cards-row-wrap li'", '#'+player+'.convert-cards '+rowId+' .cards-row-wrap li')
+								currentCardDelete.addClass('ready-to-die');
+								//checkIfNeedRemoveBuffOnRow(player, row, stepStatus, 'support');
+
 							}
 						}
+						console.count('animationBurningCardEndDeleting');
 						animationBurningCardEndDeleting($('.cards-row-wrap li.ready-to-die'),'fade');
-						debugger;
+						//debugger;
 				}
 			}
 		}
