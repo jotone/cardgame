@@ -1203,8 +1203,6 @@ class GwentSocket extends BaseSocket
 				$user_turn_id	= $heal_result['user_turn_id'];
 				$users_data		= $heal_result['users_data'];
 				$step_status	= $heal_result['step_status'];
-
-				$step_status['actions']['appear'] = $action['caption'];
 			break;
 
 			case 'killer'://УБИЙЦА
@@ -1280,7 +1278,6 @@ class GwentSocket extends BaseSocket
 						$card_strength_to_kill = $card_strength_set[$random];
 					break;
 				}
-				var_dump($cards_to_destroy);
 
 				$card_to_kill = [];
 				foreach($cards_to_destroy as $player => $rows){
@@ -1737,7 +1734,6 @@ class GwentSocket extends BaseSocket
 			break;
 			case '2':
 				foreach($users_data[$user][$deck] as $card_data){
-					var_dump($card_data);
 					$card = BattleFieldController::getCardNaturalSetting($card_data);
 
 					if($card['fraction'] != 'special'){
