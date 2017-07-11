@@ -505,7 +505,6 @@ class GwentSocket extends BaseSocket
 					//Применение действий
 					$add_time = true;
 					$view_cards_strength = false;
-					var_dump($battle_field);
 					foreach($current_actions as $action_iter => $action){
 						$action_result = self::actionProcessing($action, $battle_field, $this->users_data, $this->step_status, $user_turn_id, $msg, $this->magic_usage, $battle);
 						$this->step_status	= $action_result['step_status'];
@@ -529,7 +528,6 @@ class GwentSocket extends BaseSocket
 							break;
 						}
 					}
-					var_dump($battle_field);
 					//Сортировка колод
 					$this->users_data = self::sortDecksByStrength($this->users_data);
 
@@ -1403,6 +1401,7 @@ class GwentSocket extends BaseSocket
 				}
 
 				if($n > 0){
+					$cards_count = 0;
 					foreach($cards_to_add as $destination => $cards){
 						if(!empty($cards)){
 							foreach($users_data['user'][$destination] as $card_to_summon_iter => $card_to_summon){
@@ -1421,10 +1420,15 @@ class GwentSocket extends BaseSocket
 										'login'		=> $users_data['user']['login']
 									];
 									$step_status['added_cards'][$users_data['user']['player']][$action_row][] = $card;
-									$step_status['actions']['appear'][$users_data['user']['player']][$action_row] = $action['caption'];
+									$step_status['actions']['appear'][$users_data['user']['player']][$action_row][$card_to_summon_iter] = 'master';
 
 									$step_status['dropped_cards'][$users_data['user']['player']][$destination][$card_to_summon_iter] = $card['caption'];
 									unset($users_data['user'][$destination][$card_to_summon_iter]);
+									$cards_count++;
+								}
+								if($cards_count >= $action['master_maxCardsSummon']){
+									$users_data['user'][$destination] = array_values($users_data['user'][$destination]);
+									break 2;
 								}
 							}
 							$users_data['user'][$destination] = array_values($users_data['user'][$destination]);

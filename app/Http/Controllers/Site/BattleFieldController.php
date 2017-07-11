@@ -52,6 +52,59 @@ class BattleFieldController extends BaseController{
 			}
 			$step_status['played_card']['card']['buffs'] = [];
 			$step_status['played_card']['card']['debuffs'] = [];
+			if( (!empty($step_status['added_cards'])) && (in_array('master', $played_card_actions)) ){
+				foreach($step_status['added_cards'] as $field => $rows){
+					foreach($rows as $row => $row_data){
+						foreach($row_data as $card_iter => $card_data){
+							foreach($card_data['actions'] as $action){
+								switch($action['caption']){
+									case 'support'://Поддержка
+										if(!empty($step_status['played_card']['card'])){
+											foreach($action['support_ActionRow'] as $inner_row){
+												$step_status['actions']['appear'][$field][$inner_row][] = $action['caption'];
+											}
+										}
+									break;
+
+									case 'terrify':
+										if(!empty($step_status['played_card']['card'])){
+											if($action['fear_actionTeamate'] == 1){
+												$players = ['p1','p2'];
+											}else{
+												$players = ($step_status['played_card']['move_to']['player'] == 'p1')? ['p2']: ['p1'];
+											}
+											foreach($players as $player){
+												foreach($action['fear_ActionRow'] as $inner_row){
+													$step_status['actions']['appear'][$player][$inner_row][] = $action['caption'];
+												}
+											}
+										}
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+			/*if(!empty($step_status['played_card']['card']['actions'])){
+				if(in_array('support', $played_card_actions)){
+					foreach($step_status['played_card']['card']['actions']['support_ActionRow'] as $row){
+						$step_status['actions']['appear'][$step_status['played_card']['move_to']['player']][$row][] = $action['caption'];
+					}
+				}
+				if(in_array('terrify', $played_card_actions)){
+					if($step_status['played_card']['card']['actions']['fear_actionTeamate'] == 1){
+						$players = ['p1','p2'];
+					}else{
+						$players = ($step_status['played_card']['move_to']['player'] == 'p1')? ['p2']: ['p1'];
+					}
+					foreach($players as $player){
+						foreach($step_status['played_card']['card']['actions']['fear_ActionRow'] as $row){
+							$step_status['actions']['appear'][$player][$row][] = $action['caption'];
+						}
+					}
+				}
+			}*/
 		}
 
 		foreach($battle_field as $field => $rows){
@@ -233,7 +286,7 @@ class BattleFieldController extends BaseController{
 											$field_status[$player][$row]['warrior'][$card_iter]['buffs'][] = 'support';
 
 											if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
-												if(in_array('support', $played_card_actions)){
+												if( (in_array('support', $played_card_actions)) || (in_array('master', $played_card_actions)) ){
 													$step_status['actions']['cards'][$player][$row][$card_iter] = [
 														'card'		=> $card['caption'],
 														'strength'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'],
@@ -278,7 +331,7 @@ class BattleFieldController extends BaseController{
 									$field_status[$player][$row]['warrior'][$card_iter]['buffs'][] = 'support';
 
 									if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
-										if(in_array('support', $played_card_actions)){
+										if( (in_array('support', $played_card_actions)) || (in_array('master', $played_card_actions)) ){
 											$step_status['actions']['cards'][$player][$row][$card_iter] = [
 												'card'		=> $card['caption'],
 												'strength'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'],
@@ -409,15 +462,13 @@ class BattleFieldController extends BaseController{
 														}
 
 														if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
-															foreach($step_status['played_card']['card']['actions'] as $inner_action){
-																if( ($inner_action['caption'] == 'terrify') || ($inner_action['caption'] == 'support') ){
-																	$step_status['actions']['cards'][$field][$action_row][$card_iter] = [
-																		'card'		=> $card['caption'],
-																		'strength'	=> $battle_field[$field][$action_row]['warrior'][$card_iter]['strength'],
-																		'strModif'	=> $strength,
-																		'operation'	=> '-'
-																	];
-																}
+															if( in_array('terrify', $played_card_actions) || in_array('support', $played_card_actions) || in_array('master', $played_card_actions) ){
+																$step_status['actions']['cards'][$field][$action_row][$card_iter] = [
+																	'card'		=> $card['caption'],
+																	'strength'	=> $battle_field[$field][$action_row]['warrior'][$card_iter]['strength'],
+																	'strModif'	=> $strength,
+																	'operation'	=> '-'
+																];
 															}
 														}
 														if(isset($fury_cards[$field][$action_row][$card_iter])){
@@ -456,15 +507,13 @@ class BattleFieldController extends BaseController{
 												}
 
 												if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
-													foreach($step_status['played_card']['card']['actions'] as $inner_action){
-														if( ($inner_action['caption'] == 'terrify') || ($inner_action['caption'] == 'support') ){
-															$step_status['actions']['cards'][$field][$action_row][$card_iter] = [
-																'card'		=> $card['caption'],
-																'strength'	=> $battle_field[$field][$action_row]['warrior'][$card_iter]['strength'],
-																'strModif'	=> $strength,
-																'operation'	=> ($inner_action['caption'] == 'terrify')? '-': '+'
-															];
-														}
+													if( in_array('terrify', $played_card_actions) || in_array('support', $played_card_actions) || in_array('master', $played_card_actions) ){
+														$step_status['actions']['cards'][$field][$action_row][$card_iter] = [
+															'card'		=> $card['caption'],
+															'strength'	=> $battle_field[$field][$action_row]['warrior'][$card_iter]['strength'],
+															'strModif'	=> $strength,
+															'operation'	=> '-'
+														];
 													}
 												}
 												if(isset($fury_cards[$field][$action_row][$card_iter])){
