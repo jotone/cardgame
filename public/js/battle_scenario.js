@@ -945,7 +945,7 @@ function fieldBuild(stepStatus, addingAnim){
 									1500,
 									function() {
 										removeCardAnim(cardRemoving,1500);
- 									}
+									}
 								);
 							}
 						}
@@ -968,7 +968,7 @@ function fieldBuild(stepStatus, addingAnim){
 
 									// Узнаю какие карты нужно удалить и даю им класс ready-to-die
 									var currentCardDelete = $('.convert-battle-front #'+player+'.convert-cards '+rowId+' .cards-row-wrap li[data-slug="'+card+'"]:not(.ready-to-die)').first();
- 									//checkIfNeedRemoveBuffOnRow(player, row, stepStatus, 'support');
+									//checkIfNeedRemoveBuffOnRow(player, row, stepStatus, 'support');
 								}
 							}
 						}
@@ -1673,7 +1673,9 @@ function startBattle() {
 
 					setDecksValues(result.counts, result.images);
 
-					detailCardPopupOnStartStep(result.played_card['card'], result.played_card['strength']);
+					if(result.round_status.activate_popup != 'activate_choise'){
+						detailCardPopupOnStartStep(result.played_card['card'], result.played_card['strength']);
+					}
 				}else{
 
 				}
