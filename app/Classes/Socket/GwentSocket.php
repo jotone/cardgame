@@ -1279,6 +1279,7 @@ class GwentSocket extends BaseSocket
 						$card_strength_to_kill = $card_strength_set[$random];
 					break;
 				}
+				var_dump($cards_to_destroy);
 
 				$card_to_kill = [];
 				foreach($cards_to_destroy as $player => $rows){
@@ -1320,6 +1321,19 @@ class GwentSocket extends BaseSocket
 							}
 						}
 					}
+				}
+
+				if($action['killer_killAllOrSingle'] == 0){
+					$temp = [];
+					foreach($card_to_kill as $player => $row_data){
+						foreach($row_data as $row => $cards_to_kill){
+							foreach($cards_to_kill as $card_iter => $card){
+								$temp[$player][$row][$card_iter] = $card;
+								break 3;
+							}
+						}
+					}
+					$card_to_kill = $temp;
 				}
 
 				foreach($card_to_kill as $player => $row_data){
