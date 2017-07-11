@@ -913,35 +913,45 @@ function fieldBuild(stepStatus, addingAnim){
 		for(var player in stepStatus.dropped_cards){
 			for(var row in stepStatus.dropped_cards[player]){
 				var type = ($('.convert-right-info .user-describer').attr('data-player') == player)? 'allies': 'enemy';
+				console.log('-----------------------------------------------------' );
+				console.log('row',row );
+
 				switch(row){
 					case 'deck':
 					case 'discard':
+						console.log('case discard');
 						for(var i in stepStatus.dropped_cards[player][row]){
 							var cardSlug = stepStatus.dropped_cards[player][row][i];
-							$('#'+type+'-'+row+' ul.deck-cards-list li[data-slug='+cardSlug+']').first().remove();
+
+console.info("discard remove ", $('#'+type+'-'+row+' ul.deck-cards-list li').eq(i))
+							$('#'+type+'-'+row+' ul.deck-cards-list li').eq(i).remove();
 						}
 					break;
 					case 'hand':
 						// удаление карты с руки противника
+						console.log('case hand');
 						if($('.convert-right-info .user-describer').attr('data-player') == player){
+
+							function removeCardAnim(card,timing) {
+								setTimeout(function() {
+									card.fadeOut(300,function(){
+										card.remove();
+									})
+								},timing);
+							}
 
 							for(var i in stepStatus.dropped_cards[player][row]){
 
 								var cardSlug = stepStatus.dropped_cards[player][row][i];
-								var cardRemoving = $('.user-card-stash #sortableUserCards li[data-slug="'+cardSlug+'"]').eq(i);
-console.info("animationCardReturnToOutage")
+								var cardRemoving = $('.user-card-stash #sortableUserCards li').eq(i);
+
 								animationCardReturnToOutage(
-									cardRemoving.first(),
+									cardRemoving,
 									1500,
 									function() {
-										var timeout = parseInt((100 * (cardRemoving.length - 1)) + 1500);
-										console.log('removing');
-
-										setTimeout(function() {
-											cardRemoving.first().remove();
-											//calculateRightMarginCardHands();
-										}, timeout);
-									}
+										console.count('removing');
+										removeCardAnim(cardRemoving,1500);
+ 									}
 								);
 							}
 						}
@@ -1368,11 +1378,8 @@ function processActions(result){
 
 								var card = actionRow.find('.cards-row-wrap .content-card-item')[parseInt(item)];
 
-								animationBurningCardEndDeleting(card);
+								animationBurningCardEndDeleting(card,'undefined',result.actions.cards_strength);
 
-								setTimeout(function(){
-									setCardStrength(result.actions.cards_strength);
-								},1000);
 
 							break;
 							case 'cure'://Исциление
@@ -2211,7 +2218,7 @@ function animateDeletingPositiveNegativeEffects(obj) {
 	},600);
 }
 
-function animationBurningCardEndDeleting(card,action) {
+function animationBurningCardEndDeleting(card,action,cards_strength) {
 	var card = $(card);
 
 	if (!card.parents('.field-for-cards').hasClass('overflow-visible') ) {
@@ -2247,7 +2254,11 @@ function animationBurningCardEndDeleting(card,action) {
 
 								card.remove();
 
-								recalculateBattleStrength();//пересчет сил на поле боя
+								setCardStrength(cards_strength);
+
+								setTimeout(function(){
+									recalculateBattleStrength();//пересчет сил на поле боя
+								},200);
 
 							},1000)
 						},500)
