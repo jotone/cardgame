@@ -1341,16 +1341,6 @@ class GwentSocket extends BaseSocket
 						}
 					}
 				}
-				foreach($battle_field as $field => $rows){
-					if($field != 'mid'){
-						foreach($rows as $row => $row_data){
-							foreach($row_data['warrior'] as $card_iter => $card_data){
-								//fury_modified
-								var_dump($card_data);
-							}
-						}
-					}
-				}
 			break;
 
 			case 'master'://ПОВЕЛИТЕЛЬ
@@ -1414,7 +1404,7 @@ class GwentSocket extends BaseSocket
 							$users_data['user'][$destination] = array_values($users_data['user'][$destination]);
 						}
 					}
-					$step_status['actions']['appear'][] = $action['caption'];
+					$step_status['actions']['appear'] = $action['caption'];
 				}
 			break;
 
