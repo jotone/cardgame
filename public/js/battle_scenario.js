@@ -1401,7 +1401,7 @@ function processActions(result){
 	}
 
 	if(!$.isEmptyObject(result.actions.disappear)){
-		if (typeof result.actions.appear === 'string'){
+		if (typeof result.actions.disappear === 'string'){
 
 		} else {
 			for(var player in result.actions.disappear){
@@ -1679,7 +1679,6 @@ function startBattle() {
 					if(result.round_status.activate_popup != 'activate_choise'){
 						detailCardPopupOnStartStep(result.played_card['card'], result.played_card['strength']);
 					}
-
 
 				}else{
 
