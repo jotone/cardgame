@@ -1547,10 +1547,14 @@ function startBattle() {
 				changeTurnIndicator(result.round_status.current_player);//смена индикатора хода
 				setDecksValues(result.counts, result.images);
 				currentRound = result.round_status.round;
-				break;
+			break;
 
 			case 'cardData':
 				showCardActiveRow(result);
+			break;
+
+			case 'cartDescription':
+				console.log(result.data);
 			break;
 
 			case 'roundEnds':
@@ -1768,6 +1772,17 @@ $(document).ready(function(){
 	});
 	recalculateBattleStrength();
 	circleRoundIndicator();
+
+	$(document).on('click','.info-img',function(){
+		var card = $(this).closest('li').attr('data-cardid');
+		conn.send(
+			JSON.stringify({
+				action:	'cartDescription',//Отправка сообщения о подключения пользователя к столу
+				ident:	ident,
+				card:	card
+			})
+		);
+	});
 });
 
 //*Анимации*//
