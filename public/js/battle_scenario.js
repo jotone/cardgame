@@ -928,20 +928,17 @@ function fieldBuild(stepStatus, addingAnim){
 							for(var i in stepStatus.dropped_cards[player][row]){
 
 								var cardSlug = stepStatus.dropped_cards[player][row][i];
-
+								var cardRemoving = $('.user-card-stash #sortableUserCards li[data-slug="'+cardSlug+'"]').eq(i);
 console.info("animationCardReturnToOutage")
 								animationCardReturnToOutage(
-									$('.user-card-stash #sortableUserCards li[data-slug="'+cardSlug+'"]').first(),
+									cardRemoving.first(),
 									1500,
 									function() {
-										var timeout = parseInt((100 * ($('.user-card-stash #sortableUserCards li[data-slug="'+cardSlug+'"]').first().length - 1)) + 1500);
+										var timeout = parseInt((100 * (cardRemoving.length - 1)) + 1500);
 										console.log('removing');
 
-console.info("timeout", timeout)
-
-console.info("$('.user-card-stash #sortableUserCards li[data-slug=\"'+cardSlug+'\"]')", $('.user-card-stash #sortableUserCards li[data-slug="'+cardSlug+'"]'))
 										setTimeout(function() {
-											$('.user-card-stash #sortableUserCards li[data-slug="'+cardSlug+'"]').first().remove();
+											cardRemoving.first().remove();
 											//calculateRightMarginCardHands();
 										}, timeout);
 									}
