@@ -1019,6 +1019,9 @@ class GwentSocket extends BaseSocket
 		if(isset($result['added_cards']['hand'])){
 			$result['added_cards']['hand'] = [];
 		}
+		if(isset($result['dropped_cards']['deck'])){
+			$result['dropped_cards']['deck'] = [];
+		}
 		if($users_data['opponent']['login'] != $result['round_status']['current_player']){
 			$result['round_status']['cards_to_play'] = [];
 			$result['round_status']['activate_popup'] = '';

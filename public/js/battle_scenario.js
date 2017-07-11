@@ -1554,7 +1554,7 @@ function startBattle() {
 				changeTurnIndicator(result.round_status.current_player);//смена индикатора хода
 				setDecksValues(result.counts, result.images);
 				currentRound = result.round_status.round;
-				break;
+			break;
 
 			case 'cardData':
 				showCardActiveRow(result);
