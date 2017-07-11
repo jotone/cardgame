@@ -505,6 +505,7 @@ class GwentSocket extends BaseSocket
 					//Применение действий
 					$add_time = true;
 					$view_cards_strength = false;
+					var_dump($battle_field);
 					foreach($current_actions as $action_iter => $action){
 						$action_result = self::actionProcessing($action, $battle_field, $this->users_data, $this->step_status, $user_turn_id, $msg, $this->magic_usage, $battle);
 						$this->step_status	= $action_result['step_status'];
@@ -528,6 +529,7 @@ class GwentSocket extends BaseSocket
 							break;
 						}
 					}
+					var_dump($battle_field);
 					//Сортировка колод
 					$this->users_data = self::sortDecksByStrength($this->users_data);
 
@@ -1017,10 +1019,10 @@ class GwentSocket extends BaseSocket
 		self::sendMessageToSelf($from, $result); //Отправляем результат отправителю
 
 		foreach($result['added_cards'] as $player => $decks){
-			$result['added_cards'][$player]['hand'] = [];
+			unset($result['added_cards'][$player]['hand']);
 		}
 		foreach($result['dropped_cards'] as $player => $decks){
-			$result['dropped_cards'][$player]['hand'] = [];
+			unset($result['dropped_cards'][$player]['deck']);
 		}
 
 		if($users_data['opponent']['login'] != $result['round_status']['current_player']){
@@ -1203,8 +1205,6 @@ class GwentSocket extends BaseSocket
 				$user_turn_id	= $heal_result['user_turn_id'];
 				$users_data		= $heal_result['users_data'];
 				$step_status	= $heal_result['step_status'];
-
-				$step_status['actions']['appear'] = $action['caption'];
 			break;
 
 			case 'killer'://УБИЙЦА
@@ -1280,7 +1280,6 @@ class GwentSocket extends BaseSocket
 						$card_strength_to_kill = $card_strength_set[$random];
 					break;
 				}
-				var_dump($cards_to_destroy);
 
 				$card_to_kill = [];
 				foreach($cards_to_destroy as $player => $rows){
@@ -1737,7 +1736,6 @@ class GwentSocket extends BaseSocket
 			break;
 			case '2':
 				foreach($users_data[$user][$deck] as $card_data){
-					var_dump($card_data);
 					$card = BattleFieldController::getCardNaturalSetting($card_data);
 
 					if($card['fraction'] != 'special'){
