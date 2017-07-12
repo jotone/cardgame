@@ -1032,6 +1032,18 @@ class GwentSocket extends BaseSocket
 						}
 					}
 				}
+				if(isset($this->step_status['actions']['disappear'])){
+					foreach($this->step_status['actions']['disappear'] as $player => $rows){
+						foreach($rows as $row => $data){
+							if(empty($this->step_status['actions']['disappear'][$player][$row])){
+								unset($this->step_status['actions']['disappear'][$player][$row]);
+							}
+						}
+						if(empty($this->step_status['actions']['disappear'][$player])){
+							unset($this->step_status['actions']['disappear'][$player]);
+						}
+					}
+				}
 
 				$this->users_data[$player]['addition_data'] = [];
 				$this->users_data = self::sortDecksByStrength($this->users_data);
