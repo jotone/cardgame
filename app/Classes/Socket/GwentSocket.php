@@ -1021,13 +1021,13 @@ class GwentSocket extends BaseSocket
 				$new_field_buffs = BattleFieldController::getBattleBuffs($battle_field);
 				foreach($field_buffs as $field => $rows){
 					if(!isset($new_field_buffs[$field])){
-						$step_status['actions']['disappear'][$field] = $field_buffs[$field];
+						$this->step_status['actions']['disappear'][$field] = $field_buffs[$field];
 					}else{
 						foreach($rows as $row => $row_data){
 							if(isset($new_field_buffs[$field][$row])){
-								$step_status['actions']['disappear'][$field][$row] = array_diff($field_buffs[$field][$row], $new_field_buffs[$field][$row]);
+								$this->step_status['actions']['disappear'][$field][$row] = array_diff($field_buffs[$field][$row], $new_field_buffs[$field][$row]);
 							}else{
-								$step_status['actions']['disappear'][$field][$row] = $field_buffs[$field][$row];
+								$this->step_status['actions']['disappear'][$field][$row] = $field_buffs[$field][$row];
 							}
 						}
 					}
