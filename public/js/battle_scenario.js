@@ -362,7 +362,6 @@ function setDecksValues(counts, images){
 			}
 		}
 
-
 		//console.log('cardData when building card markup: ', cardData);
 		return '<li class="content-card-item disable-select loading animation '+effectHolder+'" data-cardid="'+cardData['id']+'" data-slug="'+cardData['caption']+'" data-immune="'+immune+'" data-full-immune="'+full_immune+'" data-relative="'+cardData['fraction']+'">'+
 			createCardDescriptionView(cardData, strength)+
@@ -435,13 +434,15 @@ function setDecksValues(counts, images){
 		}
 
 		//сила карты
-		if(strength.length < 1 || typeof strength !== 'undefined'){
+		console.log(strength);
+		if( (typeof strength == 'undefined') || (strength == null) ){
+			console.log('AAA')
 			strength = cardData['strength'];
 		}
-		//Проаверка на модификованую силу карты
+		/*//Проаверка на модификованую силу карты
 		if (typeof cardData['strengthModified'] !== 'undefined' && strength !== cardData['strengthModified']) {
 			strength = cardData['strengthModified'];
-		}
+		}*/
 
 		var cartStrengthTag = (race_class != '')
 			? '<div class="label-power-card">'+
