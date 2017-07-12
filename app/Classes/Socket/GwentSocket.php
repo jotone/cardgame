@@ -523,6 +523,7 @@ class GwentSocket extends BaseSocket
 
 							case 'cure':
 							case 'killer':
+							case 'obscure':
 							case 'sorrow':
 								$view_cards_strength = true;
 							break;
