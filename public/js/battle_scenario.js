@@ -2111,34 +2111,23 @@ function animatePositiveNegativeEffects(obj) {
 			effectMarkup.addClass('active');
 
 			//Выборка нужных карт
-
 			if (typeof cardsMass !== 'undefined' || cardsMass !== null) {
 
-console.info("cardsMass", cardsMass)
 				var $cards = field.find('.cards-row-wrap .content-card-item');
 				for(var c in cardsMass){
 					var $card = $($cards[c]);
 
-console.info("$card", $card)
 					if (
 						(effectType == 'debuff' && $card.is('[data-immune=0]') && $card.is('[data-full-immune=0]') ) || (effectType == 'buff' && $card.is('[data-full-immune=0]'))
 					) {
 						var strength = parseInt(cardsMass[c]['strength']);
 
-console.info("strength", strength)
 						var strengthMod = parseInt(cardsMass[c]['strModif']);
 
-console.info("strengthMod", strengthMod)
 						var operation = cardsMass[c]['operation'];
 
-console.info("operation", operation)
-
-console.info("strength !== NaN", strength !== NaN)
 						if (strength !== NaN && strength !== strengthMod) {
 
-console.info("animateCardStrengthPulsing")
-
-console.info("$card,effectName,effectType,strength,strengthMod,operation", $card,effectName,effectType,strength,strengthMod,operation)
 							animateCardStrengthPulsing($card,effectName,effectType,strength,strengthMod,operation);
 
 						}
