@@ -288,11 +288,10 @@ class SiteGameController extends BaseController
 
 				if(!empty($magic_effect_data)){
 					$user_magic_effect_data[] = [
-						'id'			=> $id,
+						'id'			=> Crypt::encrypt($id),
 						'title'			=> $magic_effect_data->title,
 						'slug'			=> $magic_effect_data->slug,
 						'img_url'		=> $magic_effect_data->img_url,
-						'description'	=> $magic_effect_data->description,
 						'energy_cost'	=> $magic_effect_data->energy_cost,
 					];
 				}

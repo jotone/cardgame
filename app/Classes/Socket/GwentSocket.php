@@ -1680,6 +1680,7 @@ class GwentSocket extends BaseSocket
 					$user_turn_id	= $users_data['user']['id'];
 					$step_status['round_status']['current_player'] = $users_data['user']['login'];
 					$step_status['round_status']['activate_popup'] = 'activate_regroup';
+					$step_status['actions']['it_is_regroup'] = 'YARRR';
 				}
 			break;
 

@@ -1319,10 +1319,11 @@ function setMinWidthInPop(count,popup) {
 }
 
 //Функиции отправки выбраных карт для призыва на поле
-function incomeOneCardSelection(card) {
+function incomeOneCardSelection(card){
 	var content='<li class="content-card-item disable-select" data-cardid="'+card['id']+'" data-relative="'+card['fraction']+'" data-slug="'+card['caption']+'">'+
 		createCardDescriptionView(card, card['strength'])+
 		'</li>';
+    $('.magic-effects-wrap li').removeClass('active');
 	$('.summonCardPopup').removeClass('show');
 	$('#summonWrap').html(content);
 	$('.summonCardPopup').addClass('show');
@@ -1331,6 +1332,7 @@ function incomeOneCardSelection(card) {
 function incomeCardSelection(conn, ident, card_source) {
 	$('#selectNewCardsPopup .button-troll.acceptNewCards').click(function(e) {
 		e.preventDefault();
+		$('.magic-effects-wrap li').removeClass('active');
 		if ( $('#selectNewCardsPopup #handNewCards .glow') ) {
 			createPseudoCard( $('#selectNewCardsPopup #handNewCards .glow') );
 		} else {
