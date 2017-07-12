@@ -944,6 +944,26 @@ class BattleFieldController extends BaseController{
 		}
 	}
 
+	public static function magicData($id){
+		if(strlen($id) > 11){
+			$id = Crypt::decrypt($id);
+		}
+
+		$magic = \DB::table('tbl_magic_effect')
+			->select('id','title','img_url','energy_cost','effect_actions')
+			->find($id);
+		if(!$magic) return false;
+
+		$actions = self::processActions(unserialize($magic->effect_actions));
+		return [
+			'id'		=> Crypt::encrypt($magic->id),
+			'title'		=> $magic->title,
+			'img_url'	=> $magic->img_url,
+			'energy_cost'=>$magic->energy_cost,
+			'actions'	=> $actions
+		];
+	}
+
 	public static function cardData($id){
 		if(strlen($id) > 11){
 			$id = Crypt::decrypt($id);

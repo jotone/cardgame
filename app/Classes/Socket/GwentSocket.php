@@ -121,6 +121,7 @@ class GwentSocket extends BaseSocket
 					'turn_expire'	=> $value->turn_expire,
 					'time_shift'	=> $value->time_shift,
 					'pseudonim'		=> 'user',
+					'user_magic'	=> unserialize($user->user_magic),
 					'card_images'	=> [
 						'back'			=> $card_background->card_img,
 						'flag'			=> BattleFieldController::getFractionFlag($user->user_current_deck)
@@ -148,6 +149,7 @@ class GwentSocket extends BaseSocket
 					'turn_expire'	=> $value->turn_expire,
 					'time_shift'	=> $value->time_shift,
 					'pseudonim'		=> 'opponent',
+					'user_magic'	=> unserialize($user->user_magic),
 					'card_images'	=> [
 						'back'			=> $card_background->card_img,
 						'flag'			=> BattleFieldController::getFractionFlag($user->user_current_deck)
@@ -392,20 +394,21 @@ class GwentSocket extends BaseSocket
 						$user_turn_id = $this->users_data['opponent']['id'];
 					}
 					$self_drop = 0;
-					/*if($msg->magic != ''){
+					if($msg->magic != ''){
 						$disable_magic = false;
-						$magic = json_decode(SiteGameController::getMagicData($msg->magic));
-						if (($users_data['user']['user_magic'][$magic->id]['used_times'] > 0) && ($users_data['user']['energy'] >= $magic->energy_cost)) {
-							$users_data['user']['user_magic'][$magic->id]['used_times'] = $users_data['user']['user_magic'][$magic->id]['used_times'] - 1;
-							$users_data['user']['energy'] = $users_data['user']['energy'] - $magic->energy_cost;
+						$magic_id = Crypt::decrypt($msg->magic);
+						$magic = BattleFieldController::magicData($magic_id);
+						if (($this->users_data['user']['user_magic'][$magic_id]['used_times'] > 0) && ($this->users_data['user']['energy'] >= $magic['energy_cost'])) {
+							$this->users_data['user']['user_magic'][$magic_id]['used_times'] = $this->users_data['user']['user_magic'][$magic_id]['used_times'] - 1;
+							$this->users_data['user']['energy'] = $this->users_data['user']['energy'] - $magic['energy_cost'];
 
-							if(!isset($this->magic_usage[$users_data['user']['player']][$battle->round_count])){
-								$this->magic_usage[$users_data['user']['player']][$battle->round_count] = [
-									'id' => $msg->magic,
-									'allow' => '1'
+							if(!isset($this->magic_usage[$this->users_data['user']['player']][$battle->round_count])){
+								$this->magic_usage[$this->users_data['user']['player']][$battle->round_count] = [
+									'id'	=> Crypt::decrypt($msg->magic),
+									'allow'	=> '1'
 								];
 								$current_actions = $magic->actions;
-								$this->step_status['played_magic'][$users_data['user']['player']] = $magic;
+								$this->step_status['played_magic'][$this->users_data['user']['player']] = $magic;
 							}else{
 								$disable_magic = true;
 							}
@@ -417,11 +420,11 @@ class GwentSocket extends BaseSocket
 							$current_actions = [];
 						}
 
-						\DB::table('users')->where('id', '=', $users_data['user']['id'])->update([
-							'user_energy' => $users_data['user']['energy'],
-							'user_magic' => serialize($users_data['user']['user_magic'])
+						\DB::table('users')->where('id', '=', $this->users_data['user']['id'])->update([
+							'user_energy'	=> $this->users_data['user']['energy'],
+							'user_magic'	=> serialize($this->users_data['user']['user_magic'])
 						]);
-					}*/
+					}
 
 					if($msg->card != ''){
 						$current_card_id = Crypt::decrypt($msg->card);
@@ -483,22 +486,22 @@ class GwentSocket extends BaseSocket
 							'self_drop'	=> $self_drop,
 							'strength'	=> $current_card['strength']
 						];
-						/*
+
 						//Если был задействован МЭ "Марионетка"
 						if(
-							(isset($this->magic_usage[$users_data['user']['player']][$battle->round_count]['id']))
-							&& ($this->magic_usage[$users_data['user']['player']][$battle->round_count]['id'] == '19')
-							&& ($this->magic_usage[$users_data['user']['player']][$battle->round_count]['allow'] == 1)
+							(isset($this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['id']))
+							&& ($this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['id'] == '19')
+							&& ($this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['allow'] == 1)
 						){
-							$this->magic_usage[$users_data['user']['player']][$battle->round_count]['allow'] = '0';
+							$this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['allow'] = '0';
 							$user_type = 'opponent';
 						}else{
 							$user_type = 'user';
-						}*/
+						}
 
 						//Убираем карту из текущй колоды
 						$source = (isset($msg->source->p1))? $msg->source->p1: $msg->source->p2;
-						$this->users_data['user'/*$user_type*/][$source] = self::dropCardFromDeck($this->users_data['user'/*$user_type*/][$source], $current_card['id']);
+						$this->users_data[$user_type][$source] = self::dropCardFromDeck($this->users_data[$user_type][$source], $current_card['id']);
 						$current_actions = $current_card['actions'];
 					}
 
@@ -1104,6 +1107,11 @@ class GwentSocket extends BaseSocket
 		$step_status['images'] = [
 			$users_data['user']['login'] => $users_data['user']['card_images'],
 			$users_data['opponent']['login'] => $users_data['opponent']['card_images'],
+		];
+
+		$step_status['users_energy'] = [
+			$users_data['user']['login']	=> $users_data['user']['energy'],
+			$users_data['opponent']['login']=> $users_data['opponent']['energy']
 		];
 
 		$result = $step_status;
