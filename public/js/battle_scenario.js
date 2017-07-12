@@ -1612,7 +1612,6 @@ function startBattle() {
 			break;
 
 			case 'cartDescription':
-				console.log(result.data);
 				createInfoPopup(result.data);// создаем поап с инфой о карте/магии
 			break;
 
@@ -2395,8 +2394,8 @@ function createInfoPopup(data){
 	if (typeof data['strength'] !== 'undefined') {
 
 		//попап с картой
-		var cardData = data;
 
+		var cardData = data;
 		var result = '<div class="content-card-item-main new-card-form';
 		if(cardData['fraction'] == 'special'){
 			result += ' special-type';
@@ -2478,6 +2477,20 @@ function createInfoPopup(data){
 
 	}else{
 		//попап с магией
+
+		popup.addClass('mdesc');
+
+		var cardData = data;
+		var result =
+		'<div>'+
+			'<div class="magic-title">'+cardData['title']+'</div>'+
+			'<div class="magic-img"><img src="/img/card_images/'+cardData['img_url']+'" /></div>'+
+			'<div class="magic-description">'+cardData['text']+'</div>'+
+		'</div>';
+
+		popup.find('.content-card-info').html(result);
+
+		openTrollPopup(popup);
 
 	}
 }
