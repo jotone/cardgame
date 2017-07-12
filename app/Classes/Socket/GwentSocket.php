@@ -1235,7 +1235,8 @@ class GwentSocket extends BaseSocket
 				$step_status['actions'][] = $action['caption'];
 			break;*/
 			
-			/*case 'call'://ПРИЗЫВ
+			case 'call'://ПРИЗЫВ
+				$users_data['user']['card_source'] = 'deck';
 				$action_data = [
 					'deckChoise'	=> $action['summon_deckChoise'],
 					'typeOfCard'	=> $action['summon_typeOfCard'],
@@ -1247,14 +1248,14 @@ class GwentSocket extends BaseSocket
 				if(isset($action['summon_type_cardType']))	$action_data['type_cardType'] = $action['summon_type_cardType'];
 				if(isset($action['summon_type_group']))		$action_data['type_group'] = $action['summon_type_group'];
 
-				$summon_result = self::makeHealOrSummon($users_data, $step_status, $action_data,'deck');
+				$summon_result = self::makeHealOrSummon($users_data, $step_status, $action_data);
 				//card activates after user action
 				$users_data		= $summon_result['users_data'];
 				$user_turn_id	= $summon_result['user_turn_id'];
 				$step_status	= $summon_result['step_status'];
 
 				$step_status['actions'][] = $action['caption'];
-			break;*/
+			break;
 
 			case 'cure'://ИСЦЕЛЕНИЕ
 				$field_buffs = BattleFieldController::getBattleBuffs($battle_field);

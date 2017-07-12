@@ -325,8 +325,7 @@ function setDecksValues(counts, images){
 	function createMagicEffectView(magicData) {
 		return '<li data-cardid="' + magicData['id'] + '">' +
 			'<img src="/img/card_images/' + magicData['img_url']+'" alt="' + magicData['slug'] +'" title="' + magicData['title'] +'">'+
-			'<div class="magic-description">'+ magicData['description']+'</div>'+
-			'<div class="info-img"><img class="ignore" src="/images/info-icon.png" alt=""><span class="card-action-description">Инфо о магии</span></div>'+
+			'<div class="info-img"><img class="ignore" data-type="magic" src="/images/info-icon.png" alt=""><span class="card-action-description">Инфо о магии</span></div>'+
 		'</li>';
 	}
 	// /Созднаие Отображения маг. еффекта
@@ -1738,7 +1737,7 @@ function startBattle() {
 				if( (result.round_status.status.length > 0) || (!$.isEmptyObject(result.round_status.status)) ){
 					resultPopupShow('Противник пасует');
 				}
-				if(!$.isEmptyObject(result.played_card.card)) {
+				if(!$.isEmptyObject(result.played_card.card)){
 					if(currentRound != result.round_status.round){
 						//setTimeout(function () {
 						$('.field-for-cards').removeClass('visible');
@@ -1757,7 +1756,6 @@ function startBattle() {
 
 					setDecksValues(result.counts, result.images);
 
-
 					if(
 						(result.round_status.activate_popup != 'activate_choise') ||
 						(result.round_status.activate_popup != 'activate_regroup')
@@ -1768,8 +1766,8 @@ function startBattle() {
 				}else{
 					calculateRightMarginCardHands();
 					fieldBuild(result, false);
-                    changeTurnIndicator(result.round_status.current_player); //смена индикатора хода
-                    setDecksValues(result.counts, result.images);
+					changeTurnIndicator(result.round_status.current_player); //смена индикатора хода
+					setDecksValues(result.counts, result.images);
 				}
 			break;
 		}
