@@ -325,8 +325,7 @@ function setDecksValues(counts, images){
 	function createMagicEffectView(magicData) {
 		return '<li data-cardid="' + magicData['id'] + '">' +
 			'<img src="/img/card_images/' + magicData['img_url']+'" alt="' + magicData['slug'] +'" title="' + magicData['title'] +'">'+
-			'<div class="magic-description">'+ magicData['description']+'</div>'+
-			'<div class="info-img"><img class="ignore" src="/images/info-icon.png" alt=""><span class="card-action-description">Инфо о магии</span></div>'+
+			'<div class="info-img"><img class="ignore" data-type="magic" src="/images/info-icon.png" alt=""><span class="card-action-description">Инфо о магии</span></div>'+
 		'</li>';
 	}
 	// /Созднаие Отображения маг. еффекта
@@ -841,6 +840,8 @@ function fieldBuild(stepStatus, addingAnim){
 			for(var destination in stepStatus.added_cards[player]){
 				switch(destination){
 					case 'hand'://SPY action
+						console.log(stepStatus.added_cards[player]['hand']);
+						console.log(addingAnim);
 						for(var i in stepStatus.added_cards[player]['hand']){
 							$('.user-card-stash #sortableUserCards').append(createFieldCardView(stepStatus.added_cards[player]['hand'][i], stepStatus.added_cards[player]['hand'][i]['strength']));
 							if(addingAnim){
@@ -1281,6 +1282,29 @@ function popupActivation(result){
 			});
 			sortCards();
 		break;
+		//Задействовать popup просмотра карт
+		case 'activate_view':
+			$('#selectNewCardsPopup .button-troll').hide();//Скрыть все кнопки на в popup-окне
+			$('#selectNewCardsPopup .button-troll.closeViewCards').show();//Показать кнопку "Закрыть" после просмотра карт
+
+			$('#selectNewCardsPopup #handNewCards').empty();//Очистка списка карт popup-окна
+			//Вывод карт в список в popup-окне
+			var card_in_popup_count = 0;
+			for(var i in result.round_status.cards_to_play){
+				$('#selectNewCardsPopup #handNewCards').append(createFieldCardView(result.round_status.cards_to_play[i], result.round_status.cards_to_play[i]['strength']));
+				card_in_popup_count++;
+			}
+			setMinWidthInPop(card_in_popup_count,$('#selectNewCardsPopup'));
+
+			openTrollPopup($('#selectNewCardsPopup'));//Открытие popup-окна пользователю
+
+			//Закрытие popup-окна
+			$('#selectNewCardsPopup .button-troll.closeViewCards').click(function(e){
+				e.preventDefault();
+				closeAllTrollPopup();
+			});
+			break;
+		//Задействовать popup перегруппировки карт
 	}
 }
 
@@ -1295,10 +1319,11 @@ function setMinWidthInPop(count,popup) {
 }
 
 //Функиции отправки выбраных карт для призыва на поле
-function incomeOneCardSelection(card) {
+function incomeOneCardSelection(card){
 	var content='<li class="content-card-item disable-select" data-cardid="'+card['id']+'" data-relative="'+card['fraction']+'" data-slug="'+card['caption']+'">'+
 		createCardDescriptionView(card, card['strength'])+
 		'</li>';
+    $('.magic-effects-wrap li').removeClass('active');
 	$('.summonCardPopup').removeClass('show');
 	$('#summonWrap').html(content);
 	$('.summonCardPopup').addClass('show');
@@ -1307,6 +1332,7 @@ function incomeOneCardSelection(card) {
 function incomeCardSelection(conn, ident, card_source) {
 	$('#selectNewCardsPopup .button-troll.acceptNewCards').click(function(e) {
 		e.preventDefault();
+		$('.magic-effects-wrap li').removeClass('active');
 		if ( $('#selectNewCardsPopup #handNewCards .glow') ) {
 			createPseudoCard( $('#selectNewCardsPopup #handNewCards .glow') );
 		} else {
@@ -1733,7 +1759,7 @@ function startBattle() {
 				if( (result.round_status.status.length > 0) || (!$.isEmptyObject(result.round_status.status)) ){
 					resultPopupShow('Противник пасует');
 				}
-				if(!$.isEmptyObject(result.played_card.card)) {
+				if(!$.isEmptyObject(result.played_card.card)){
 					if(currentRound != result.round_status.round){
 						//setTimeout(function () {
 						$('.field-for-cards').removeClass('visible');
@@ -1752,10 +1778,6 @@ function startBattle() {
 
 					setDecksValues(result.counts, result.images);
 
-
-console.info("result.round_status.activate_popup != 'activate_choise'", result.round_status.activate_popup != 'activate_choise')
-
-console.info("result.round_status.activate_popup != 'activate_regroup'", result.round_status.activate_popup != 'activate_regroup')
 					if(
 						(result.round_status.activate_popup != 'activate_choise') ||
 						(result.round_status.activate_popup != 'activate_regroup')
@@ -1764,7 +1786,10 @@ console.info("result.round_status.activate_popup != 'activate_regroup'", result.
 					}
 
 				}else{
-
+					calculateRightMarginCardHands();
+					fieldBuild(result, false);
+					changeTurnIndicator(result.round_status.current_player); //смена индикатора хода
+					setDecksValues(result.counts, result.images);
 				}
 			break;
 		}
