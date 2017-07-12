@@ -52,7 +52,7 @@ class BattleFieldController extends BaseController{
 			}
 			$step_status['played_card']['card']['buffs'] = [];
 			$step_status['played_card']['card']['debuffs'] = [];
-			if( (!empty($step_status['added_cards'])) && (in_array('master', $played_card_actions)) ){
+			if( (!empty($step_status['added_cards'])) && (in_array('master', $played_card_actions) || in_array('obscure', $played_card_actions)) ){
 				foreach($step_status['added_cards'] as $field => $rows){
 					foreach($rows as $row => $row_data){
 						foreach($row_data as $card_iter => $card_data){
@@ -67,16 +67,14 @@ class BattleFieldController extends BaseController{
 									break;
 
 									case 'terrify':
-										if(!empty($step_status['played_card']['card'])){
-											if($action['fear_actionTeamate'] == 1){
-												$players = ['p1','p2'];
-											}else{
-												$players = ($step_status['played_card']['move_to']['player'] == 'p1')? ['p2']: ['p1'];
-											}
-											foreach($players as $player){
-												foreach($action['fear_ActionRow'] as $inner_row){
-													$step_status['actions']['appear'][$player][$inner_row][] = $action['caption'];
-												}
+										if($action['fear_actionTeamate'] == 1){
+											$players = ['p1','p2'];
+										}else{
+											$players = ($step_status['played_card']['move_to']['player'] == 'p1')? ['p2']: ['p1'];
+										}
+										foreach($players as $player){
+											foreach($action['fear_ActionRow'] as $inner_row){
+												$step_status['actions']['appear'][$player][$inner_row][] = $action['caption'];
 											}
 										}
 									break;
@@ -353,7 +351,7 @@ class BattleFieldController extends BaseController{
 									if(isset($step_status['added_cards'][$player][$row]) && (!in_array('spy', $played_card_actions))){
 										foreach($step_status['added_cards'][$player][$row] as $i => $added_card){
 											if(Crypt::decrypt($added_card['id']) == $battle_field[$player][$row]['warrior'][$card_iter]['id']){
-												$step_status['added_cards'][$player][$row][$i]['strengthModified'] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'];
+												$step_status['added_cards'][$player][$row][$i]['strength'] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'];
 											}
 										}
 									}
