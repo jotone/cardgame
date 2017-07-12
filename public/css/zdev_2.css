@@ -914,7 +914,7 @@
 	position:relative;
 	z-index: 3;
 }
-#sortableUserCards li .content-card-item-main{ width:103px; height:150px; border:1px solid #fff; }
+#sortableUserCards li .content-card-item-main{ width:103px; height:150px; border:1px solid #d8d8d8; }
 #sortableUserCards li{
 	position:relative; z-index:10;left: 0px;
 }
