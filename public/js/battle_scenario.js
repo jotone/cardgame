@@ -434,9 +434,7 @@ function setDecksValues(counts, images){
 		}
 
 		//сила карты
-		console.log(strength);
 		if( (typeof strength == 'undefined') || (strength == null) ){
-			console.log('AAA')
 			strength = cardData['strength'];
 		}
 		/*//Проаверка на модификованую силу карты

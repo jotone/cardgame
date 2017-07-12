@@ -284,7 +284,7 @@ class BattleFieldController extends BaseController{
 											$field_status[$player][$row]['warrior'][$card_iter]['buffs'][] = 'support';
 
 											if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
-												if( (in_array('support', $played_card_actions)) || (in_array('master', $played_card_actions)) ){
+												if( (in_array('support', $played_card_actions)) || (in_array('master', $played_card_actions)) || (in_array('obscure', $played_card_actions))){
 													$step_status['actions']['cards'][$player][$row][$card_iter] = [
 														'card'		=> $card['caption'],
 														'strength'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'],
@@ -329,7 +329,7 @@ class BattleFieldController extends BaseController{
 									$field_status[$player][$row]['warrior'][$card_iter]['buffs'][] = 'support';
 
 									if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
-										if( (in_array('support', $played_card_actions)) || (in_array('master', $played_card_actions)) ){
+										if( (in_array('support', $played_card_actions)) || (in_array('master', $played_card_actions)) || (in_array('obscure', $played_card_actions))){
 											$step_status['actions']['cards'][$player][$row][$card_iter] = [
 												'card'		=> $card['caption'],
 												'strength'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'],
