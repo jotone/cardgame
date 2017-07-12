@@ -1027,7 +1027,6 @@ class GwentSocket extends BaseSocket
 							$this->step_status['added_cards'][$player]['hand'][] = $card;
 							$this->step_status['dropped_cards'][$player][$row][$card_iter] = $card['caption'];
 							$this->step_status['actions']['appear'][$player][$row][$card_iter] = 'regroup';
-							$this->step_status['played_card']['card'] = ['YARRR'];
 							unset($battle_field[$player][$row]['warrior'][$card_iter]);
 							$battle_field[$player][$row]['warrior'] = array_values($battle_field[$player][$row]['warrior']);
 							break 2;
@@ -1036,6 +1035,7 @@ class GwentSocket extends BaseSocket
 				}
 
 				$battle_info = BattleFieldController::battleInfo($battle, $battle_field, $this->users_data, $this->magic_usage, $this->step_status);
+
 				$this->step_status['actions']['cards_strength'] = $battle_info['cards_strength'];
 
 				$new_field_buffs = BattleFieldController::getBattleBuffs($battle_field);
