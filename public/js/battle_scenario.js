@@ -1346,8 +1346,10 @@ function incomeCardSelection(conn, ident, card_source) {
 
 function processActions(result){
 
+console.info("!$.isEmptyObject(result.actions.appear", !$.isEmptyObject(result.actions.appear));
 	if(!$.isEmptyObject(result.actions.appear)){
 
+console.info("typeof result.actions.appear === 'string'", typeof result.actions.appear === 'string');
 		if (typeof result.actions.appear === 'string'){
 
 			switch(result.actions.appear){
@@ -1368,6 +1370,10 @@ function processActions(result){
 		} else{
 
 			for(var player in result.actions.appear){
+
+console.info("player", player);
+
+console.info("result.actions.appear", result.actions.appear);
 				for(var row in result.actions.appear[player]){
 
 					row = parseInt(row);
@@ -1378,6 +1384,7 @@ function processActions(result){
 						item = parseInt(item);
 						var action = result.actions.appear[player][row][item];
 
+console.info("action", action)
 						switch(action){
 							case 'support'://Поддержка
 								var obj = {};
@@ -1431,7 +1438,6 @@ function processActions(result){
 
 								animationBurningCardEndDeleting(card,'undefined',result.actions.cards_strength);
 
-
 							break;
 							case 'cure'://Исциление
 
@@ -1447,6 +1453,18 @@ function processActions(result){
 								//Внимание - Удаление ефекта !
 								animateDeletingPositiveNegativeEffects(obj);
 							break;
+							case 'regroup'://Перегрупировка
+
+								var card = result.added_cards[player]['hand'][row];//карты которую мы выбрали для перегрупировкиё
+								var cardOverloadingImg = result.appear.regroup_img;
+
+console.warn("card", card)
+
+console.info("cardOverloadingImg", cardOverloadingImg)
+								detailCardPopupOnOverloading(cardOverloadingImg, card);
+
+							break;
+
 
 						}
 
@@ -1456,6 +1474,8 @@ function processActions(result){
 
 		}
 	}
+
+	debugger;
 
 	if(!$.isEmptyObject(result.actions.disappear)){
 		if (typeof result.actions.disappear === 'string'){
@@ -1733,6 +1753,9 @@ function startBattle() {
 					setDecksValues(result.counts, result.images);
 
 
+console.info("result.round_status.activate_popup != 'activate_choise'", result.round_status.activate_popup != 'activate_choise')
+
+console.info("result.round_status.activate_popup != 'activate_regroup'", result.round_status.activate_popup != 'activate_regroup')
 					if(
 						(result.round_status.activate_popup != 'activate_choise') ||
 						(result.round_status.activate_popup != 'activate_regroup')
@@ -2089,24 +2112,22 @@ function animationCardReturnToOutage(cards, time, callback){
 }
 
 //Показать попап при перегрупировке
-function detailCardPopupOnOverloading(cardDetailOverloadingMarkup, card, strength, otherFunc) {
+function detailCardPopupOnOverloading(cardOverloadingImg, card) {
 	var holder = $('#card-start-step');
+
+	var cardOverloadingHolder = '<div><img src="'+cardOverloadingImg+'"></div>';
 	holder.find('.content-card-info').empty().append(cardDetailOverloadingMarkup);
-	var popContent = createCardDescriptionView(card, strength, 'without-description');
+	var popContent = createCardDescriptionView(card, 'undefined', 'without-description');
 	holder.find('.content-card-info').addClass('overloading-animation').append(popContent).end().addClass('overloading');
 	openSecondTrollPopup(holder,null);
 
 	setTimeout(function(){
 		holder.find('.content-card-info').removeClass('overloading-animation');
 		setTimeout(function(){
-			closeSecondTrollPopup(holder,null);
-			setTimeout(function(){
-				holder.removeClass('overloading');
-				if(otherFunc == 'show-and-delate-card'){
-					showCardOnDesc('mini-scale');
-					animationBurningCardEndDeleting('fade');
-				}
-			},1000)
+			// closeSecondTrollPopup(holder,null);
+			// setTimeout(function(){
+			// 	holder.removeClass('overloading');
+			// },1000)
 		},2000)
 	},2000);
 }
