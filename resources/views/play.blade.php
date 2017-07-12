@@ -450,6 +450,39 @@
 				<div class="inside-for-some-block">
 					<ul class="magic-effects-wrap">
 						<!-- Активная магия -->
+						@if((!empty($enemy['login'])) && (!empty($enemy['magic'])))
+							<?php
+							$disable_by_over = '';
+							$magic_using_times = ($enemy['fraction_data']['slug'] == 'forest')? 2:1;
+							if(count($magic_usage[$enemy['player']]) >= $magic_using_times){
+								$disable_by_over = 'disactive';
+							}
+							?>
+							@foreach($enemy['magic'] as $value)
+								<?php $disactive = ''; ?>
+								@foreach($magic_usage[$enemy['player']] as $activated_in_round => $magic_id)
+									@if($magic_id != 0)
+										<?php
+										if(
+											($value['id'] == \Illuminate\Support\Facades\Crypt::decrypt($magic_id['id']) ) ||
+											($battle_data->round_count == $activated_in_round)
+										){
+											$disactive = 'disactive';
+										}
+										?>
+									@else
+										<?php $disactive = 'disactive'; ?>
+									@endif
+								@endforeach
+								<li data-cardid="{{ $value['id'] }}" class="{{ $disable_by_over }} {{ $disactive }}">
+									<img src="{{ URL::asset('/img/card_images/'.$value['img_url']) }}" alt="{{ $value['slug'] }}" title="{{ $value['title'] }}">
+									<div class="info-img">
+										<img class="ignore" data-type="magic" src="{{ URL::asset('/images/info-icon.png') }}" alt="">
+										<span class="card-action-description">Инфо о магии</span>
+									</div>
+								</li>
+							@endforeach
+						@endif
 					</ul>
 				</div>
 			</div>
@@ -574,6 +607,39 @@
 			<div class="useless-card">
 				<div class="inside-for-some-block">
 					<ul class="magic-effects-wrap">
+						@if((!empty($ally['login'])) && (!empty($ally['magic'])))
+							<?php
+							$disable_by_over = '';
+							$magic_using_times = ($ally['fraction_data']['slug'] == 'forest')? 2:1;
+							if(count($magic_usage[$ally['player']]) >= $magic_using_times){
+								$disable_by_over = 'disactive';
+							}
+							?>
+							@foreach($ally['magic'] as $value)
+								<?php $disactive = ''; ?>
+								@foreach($magic_usage[$ally['player']] as $activated_in_round => $magic_id)
+									@if($magic_id != 0)
+										<?php
+										if(
+											($value['id'] == \Illuminate\Support\Facades\Crypt::decrypt($magic_id['id']) ) ||
+											($battle_data->round_count == $activated_in_round)
+										){
+											$disactive = 'disactive';
+										}
+										?>
+									@else
+										<?php $disactive = 'disactive'; ?>
+									@endif
+								@endforeach
+								<li data-cardid="{{ $value['id'] }}" class="{{ $disable_by_over }} {{ $disactive }}">
+									<img src="{{ URL::asset('/img/card_images/'.$value['img_url']) }}" alt="{{ $value['slug'] }}" title="{{ $value['title'] }}">
+									<div class="info-img">
+										<img class="ignore" data-type="magic" src="{{ URL::asset('/images/info-icon.png') }}" alt="">
+										<span class="card-action-description">Инфо о магии</span>
+									</div>
+								</li>
+							@endforeach
+						@endif
 					</ul>
 				</div>
 			</div>
