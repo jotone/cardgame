@@ -3324,9 +3324,10 @@ align-items: center;justify-content: center;max-height: 90vh;}
 }
 
 #card-info .content-card-item-main.new-card-form{display: -webkit-flex;display: -moz-flex;display: -ms-flex;display: -o-flex;display: flex;border-radius: 0px;}
-#card-info .content-card-item-main.new-card-form .card-load-info{width: 50%;border-radius: 5px;overflow: hidden;}
-#card-info .content-card-item-main.new-card-form .card-description-hidden{width: 50%;}
+#card-info .content-card-item-main.new-card-form .card-load-info{width: 50%;border-radius: 5px;overflow: hidden;position: relative;}
+#card-info .content-card-item-main.new-card-form .card-description-hidden{width: 50%;word-break: break-word;}
 #card-info .content-card-item-main.new-card-form .card-description-hidden .jsp-cont-descr{max-height: 100%;height: calc(100% - 40px);}
+#card-info .content-card-item-main.new-card-form .hovered-items{position: absolute;}
 
 .content-card-item-main.special-type .label-power-card{ background-image:url(../images/special-flog.png); background-size:50px 60px; top:-7px; height:60px; width:50px; display:none; }
 .content-card-item-main.special-type .label-power-card .label-power-card-wrap{ display:none; }

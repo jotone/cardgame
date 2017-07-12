@@ -1574,6 +1574,7 @@ function startBattle() {
 
 			case 'cartDescription':
 				console.log(result.data);
+				createInfoPopup(result.data);// создаем поап с инфой о карте/магии
 			break;
 
 			case 'roundEnds':
@@ -2343,5 +2344,108 @@ function setCardStrength(cards_strength){
 			}
 		}
 		processingSetsCardStrength = true;
+	}
+}
+
+
+function createInfoPopup(data){
+
+	var popup = $('#card-info');
+	popup.find('.content-card-info').empty();
+
+	popup.removeClass('mdesc');//i have no idea what that doing
+
+	//проверка на магию/карту
+	if (typeof data['strength'] !== 'undefined') {
+
+		//попап с картой
+		var cardData = data;
+
+		var result = '<div class="content-card-item-main new-card-form';
+		if(cardData['fraction'] == 'special'){
+			result += ' special-type';
+		}
+		if(cardData['is_leader'] == 1){
+			result += ' leader-type';
+		}
+
+		switch (cardData['fraction']) {
+			case 'highlander':	result += ' highlander-race'; break;
+			case 'monsters':	result += ' monsters-race'; break;
+			case 'undead':		result += ' undead-race'; break;
+			case 'cursed':		result += ' cursed-race'; break;
+			case 'knight':		result += ' knight-race'; break;
+			case 'forest':		result += ' forest-race'; break;
+			default:
+				if(cardData['fraction'] == 'neutrall'){result += ' neutrall-race';}
+		}
+		result +=' "  data-leader="'+cardData['is_leader']+'" >' +
+			'<div class="card-load-info card-popup"><div class="card-info-image"><img src="/img/card_images/'+cardData['img_url']+'" alt=""></div>';
+		if(cardData['is_leader'] == 1){
+			result += '<div class="leader-flag"><span class="card-action-description">Карта Лидера</span></div>';
+		}
+		result +='<div class="label-power-card"><span class="label-power-card-wrap"><span class="buff-debuff-value"></span><span class="card-current-value">'+cardData['strength']+'</span></span><span class="card-action-description">';
+		if(cardData['fraction'] == 'special'){
+			result += 'Специальная карта';
+		}else{
+			result += 'Сила карты';
+		}
+		result +=    '</span></div>' +
+			'<div class="hovered-items">' +
+				'<div class="card-game-status">' +
+					'<div class="card-game-status-role">' ;
+					if(cardData['fraction'] != 'special'){
+						for (var j = 0; j < cardData['allowed_row_images'].length; j++) {
+							result +='<img src="'+cardData['allowed_row_images'][j].image+'" alt=""><span class="card-action-description">'+cardData['allowed_row_images'][j].title+'</span>';
+						}
+					}
+
+		result += '</div><div class="card-game-status-wrap">';
+		if(cardData['action_images'].length>0){
+			for (var i = 0; i < cardData['action_images'].length; i++) {
+				result = result + '<span class="card-action" ><img src="' + cardData['action_images'][i].img+'" alt=""><span class="card-action-description">'+cardData['action_images'][i].title+'</span></span>';
+
+			}
+		}
+
+		var cardDescription = '<div class="card-description-hidden"><div class="jsp-cont-descr">'+cardData['text']+'</div></div> ';
+
+		result = result + '</div>' +
+			'</div>' +
+			'<div class="card-name-property"><p>'+cardData['title']+'</p></div>' +
+			'</div>' +
+			'</div>' + cardDescription +
+			'</div>';
+
+		popup.find('.content-card-info').html(result);
+
+		var maxImgWidth = popup.find('.card-load-info .card-info-image img').width();
+		var maxImgHeight = popup.find('.card-load-info .card-info-image img').height();
+
+		if (maxImgWidth <= 0){
+			maxImgWidth = '50vw'
+		}else {
+			maxImgWidth = maxImgWidth*2
+		}
+
+		popup.find('.content-card-item-main').css({
+			'min-width':maxImgWidth,
+			'max-height':maxImgHeight
+		});
+
+		openTrollPopup(popup);
+
+		setTimeout(function () {
+			var jsp = popup.find('.jsp-cont-descr').jScrollPane();
+		}, 100);
+		//console.log(result);
+
+	}else{
+		//попап с магией
+
+
+
+
+
 	}
 }
