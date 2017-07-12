@@ -394,27 +394,27 @@ class GwentSocket extends BaseSocket
 						$user_turn_id = $this->users_data['opponent']['id'];
 					}
 					$self_drop = 0;
-					if($msg->magic != ''){echo __LINE__."\n";
+					if($msg->magic != ''){
 						$disable_magic = false;
 						$magic_id = Crypt::decrypt($msg->magic);
-						$magic = BattleFieldController::magicData($magic_id);echo __LINE__."\n";
-						if (($this->users_data['user']['user_magic'][$magic_id]['used_times'] > 0) && ($this->users_data['user']['energy'] >= $magic['energy_cost'])) {echo __LINE__."\n";
+						$magic = BattleFieldController::magicData($magic_id);
+						if (($this->users_data['user']['user_magic'][$magic_id]['used_times'] > 0) && ($this->users_data['user']['energy'] >= $magic['energy_cost'])) {
 							$this->users_data['user']['user_magic'][$magic_id]['used_times'] = $this->users_data['user']['user_magic'][$magic_id]['used_times'] - 1;
-							$this->users_data['user']['energy'] = $this->users_data['user']['energy'] - $magic['energy_cost'];echo __LINE__."\n";
+							$this->users_data['user']['energy'] = $this->users_data['user']['energy'] - $magic['energy_cost'];
 
-							if(!isset($this->magic_usage[$this->users_data['user']['player']][$battle->round_count])){echo __LINE__."\n";
+							if(!isset($this->magic_usage[$this->users_data['user']['player']][$battle->round_count])){
 								/*$this->magic_usage[$this->users_data['user']['player']][$battle->round_count] = [
 									'id'	=> Crypt::decrypt($msg->magic),
 									'allow'	=> '1'
 								];*/
-								$current_actions = $magic['actions'];echo __LINE__."\n";
+								$current_actions = $magic['actions'];
 								$this->step_status['played_magic'][$this->users_data['user']['player']] = $magic;
-							}else{echo __LINE__."\n";
+							}else{
 								$disable_magic = true;
-							}echo __LINE__."\n";
-						}else{echo __LINE__."\n";
+							}
+						}else{
 							$disable_magic = true;
-						}echo __LINE__."\n";
+						}
 
 						if($disable_magic){
 							$current_actions = [];
@@ -1133,7 +1133,7 @@ class GwentSocket extends BaseSocket
 			unset($result['dropped_cards'][$player]['deck']);
 		}
 
-		if($users_data['opponent']['login'] != $result['round_status']['current_player']){
+		if( ($users_data['opponent']['login'] != $result['round_status']['current_player']) || ($step_status['actions']['appear'] == 'peep_card') ){
 			$result['round_status']['cards_to_play'] = [];
 			$result['round_status']['activate_popup'] = '';
 		}
@@ -1643,22 +1643,22 @@ class GwentSocket extends BaseSocket
 				}
 			break;
 
-			/*case 'peep_card'://ПРОСМОТР КАРТ ПРОТИВНИКА
+			case 'peep_card'://ПРОСМОТР КАРТ ПРОТИВНИКА
 				$temp_hand = $users_data['opponent']['hand'];
 				$n = (count($users_data['opponent']['hand']) < $action['overview_cardCount'])? count($users_data['opponent']['hand']): $action['overview_cardCount'];
 				while(count($users_data['user']['cards_to_play']) < $n){
 					$rand = mt_rand(0, count($temp_hand)-1);
 					$temp_card = $temp_hand[$rand];
 					$users_data['user']['cards_to_play'][] = $temp_card;
-					$step_status['added_cards'][] = BattleFieldController::cardData($temp_card);
+					$step_status['round_status']['cards_to_play'][] = BattleFieldController::cardData($temp_card);
 					unset($temp_hand[$rand]);
 					$temp_hand = array_values($temp_hand);
 				}
 				$step_status['round_status']['activate_popup'] = 'activate_view';
 				if(count($users_data['user']['cards_to_play']) > 0){
-					$step_status['actions'][] = $action['caption'];
+					$step_status['actions']['appear'] = $action['caption'];
 				}
-			break;*/
+			break;
 
 			case 'regroup'://ПЕРЕГРУППИРОВКА
 				foreach($battle_field[$users_data['user']['player']] as $row => $row_data){
@@ -1764,6 +1764,7 @@ class GwentSocket extends BaseSocket
 			break;
 
 			case 'spy'://ШПИЙОН
+				var_dump($action);
 				$deck_card_count = count($users_data['user']['deck']);
 				$step_status['played_card']['move_to']['player'] = ($action['spy_fieldChoise'] == 1)? $users_data['opponent']['player']: $users_data['user']['player'];
 				$n = ($deck_card_count >= $action['spy_getCardsCount']) ? $action['spy_getCardsCount'] : $deck_card_count;

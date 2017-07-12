@@ -841,6 +841,8 @@ function fieldBuild(stepStatus, addingAnim){
 			for(var destination in stepStatus.added_cards[player]){
 				switch(destination){
 					case 'hand'://SPY action
+						console.log(stepStatus.added_cards[player]['hand']);
+						console.log(addingAnim);
 						for(var i in stepStatus.added_cards[player]['hand']){
 							$('.user-card-stash #sortableUserCards').append(createFieldCardView(stepStatus.added_cards[player]['hand'][i], stepStatus.added_cards[player]['hand'][i]['strength']));
 							if(addingAnim){
@@ -1281,6 +1283,29 @@ function popupActivation(result){
 			});
 			sortCards();
 		break;
+		//Задействовать popup просмотра карт
+		case 'activate_view':
+			$('#selectNewCardsPopup .button-troll').hide();//Скрыть все кнопки на в popup-окне
+			$('#selectNewCardsPopup .button-troll.closeViewCards').show();//Показать кнопку "Закрыть" после просмотра карт
+
+			$('#selectNewCardsPopup #handNewCards').empty();//Очистка списка карт popup-окна
+			//Вывод карт в список в popup-окне
+			var card_in_popup_count = 0;
+			for(var i in result.round_status.cards_to_play){
+				$('#selectNewCardsPopup #handNewCards').append(createFieldCardView(result.round_status.cards_to_play[i], result.round_status.cards_to_play[i]['strength']));
+				card_in_popup_count++;
+			}
+			setMinWidthInPop(card_in_popup_count,$('#selectNewCardsPopup'));
+
+			openTrollPopup($('#selectNewCardsPopup'));//Открытие popup-окна пользователю
+
+			//Закрытие popup-окна
+			$('#selectNewCardsPopup .button-troll.closeViewCards').click(function(e){
+				e.preventDefault();
+				closeAllTrollPopup();
+			});
+			break;
+		//Задействовать popup перегруппировки карт
 	}
 }
 
@@ -1741,7 +1766,10 @@ function startBattle() {
 					}
 
 				}else{
-
+					calculateRightMarginCardHands();
+					fieldBuild(result, false);
+                    changeTurnIndicator(result.round_status.current_player); //смена индикатора хода
+                    setDecksValues(result.counts, result.images);
 				}
 			break;
 		}
