@@ -1842,11 +1842,13 @@ $(document).ready(function(){
 
 	$(document).on('click','.info-img',function(){
 		var card = $(this).closest('li').attr('data-cardid');
+		var type = (typeof $(this).attr('data-type') != 'undefined')? $(this).attr('data-type'): '';
 		conn.send(
 			JSON.stringify({
 				action:	'cartDescription',//Отправка сообщения о подключения пользователя к столу
 				ident:	ident,
-				card:	card
+				card:	card,
+				type:	type
 			})
 		);
 	});
