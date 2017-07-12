@@ -427,16 +427,22 @@ function setDecksValues(counts, images){
 		var action_images = '';
 		if(cardData['action_images']){
 			for(var i in cardData['action_images']){
-				action_images += '<span class="card-action">'+
+				action_images += '<span class="card-action" style="animation-delay: '+ (parseInt(i) + 0.5) +'s">'+
 					'<img src="'+cardData['action_images'][i]['img']+'" alt="">'+
 					'<span class="card-action-description">'+cardData['action_images'][i]['title']+'</span>'+
 				'</span>';
 			}
 		}
 
-		if(strength.length < 1){
+		//сила карты
+		if(strength.length < 1 || typeof strength !== 'undefined'){
 			strength = cardData['strength'];
 		}
+		//Проаверка на модификованую силу карты
+		if (typeof cardData['strengthModified'] !== 'undefined' && strength !== cardData['strengthModified']) {
+			strength = cardData['strengthModified'];
+		}
+
 		var cartStrengthTag = (race_class != '')
 			? '<div class="label-power-card">'+
 				'<span class="label-power-card-wrap">'+
@@ -860,17 +866,21 @@ function fieldBuild(stepStatus, addingAnim){
 					default:
 						//Отыгрыш пришедшик карт в поле
 
-				var row = destination;
-					for(var row in stepStatus.added_cards[player]){
-						var rowId = intRowToField(row);
-						for(var item in stepStatus.added_cards[player][row]){
+						var row = destination;
+						for(var row in stepStatus.added_cards[player]){
+							var rowId = intRowToField(row);
+							for(var item in stepStatus.added_cards[player][row]){
 
-							var card = stepStatus.added_cards[player][row][item];
+								var card = stepStatus.added_cards[player][row][item];
 
-							$('.convert-battle-front #'+player+'.convert-cards '+rowId+' .cards-row-wrap').append(createFieldCardView(card,card.strength, false));
+								$('.convert-battle-front #'+player+'.convert-cards '+rowId+' .cards-row-wrap').append(createFieldCardView(card,card.strength, false));
+							}
+
 						}
 
-					}
+						// setTimeout(function(){
+						// 	recalculateBattleStrength();//пересчет сил на поле боя
+						// },300);
 
 				}
 			}
@@ -967,21 +977,16 @@ function fieldBuild(stepStatus, addingAnim){
 							}else{
 								var cardIndex = cardType;
 
-								console.info("cardIndex", cardIndex)
-
-
 								// Узнаю какие карты нужно удалить и даю им класс ready-to-die
 								var currentCardDelete = $('#'+player+'.convert-cards '+rowId+' .cards-row-wrap li').eq(cardIndex);
-								console.info("currentCardDelete", currentCardDelete)
-								console.info("'#'+player+'.convert-cards '+rowId+' .cards-row-wrap li'", '#'+player+'.convert-cards '+rowId+' .cards-row-wrap li')
 								currentCardDelete.addClass('ready-to-die');
 								//checkIfNeedRemoveBuffOnRow(player, row, stepStatus, 'support');
 
 							}
 						}
-						console.count('animationBurningCardEndDeleting');
+
 						animationBurningCardEndDeleting($('.cards-row-wrap li.ready-to-die'),'fade');
-						//debugger;
+
 				}
 			}
 		}
@@ -1320,14 +1325,17 @@ function processActions(result){
 					// },1000);
 					break;
 			}
+
 		} else{
 
 			for(var player in result.actions.appear){
 				for(var row in result.actions.appear[player]){
+
 					row = parseInt(row);
 					var actionRow = $('#'+player+'.convert-cards '+ intRowToField(row));
 
 					for(var item in result.actions.appear[player][row]){
+
 						item = parseInt(item);
 						var action = result.actions.appear[player][row][item];
 
@@ -2077,7 +2085,14 @@ function animatePositiveNegativeEffects(obj) {
 	var pointsSum = mainRow.find('.field-for-sum');
 
 	//Анимация на поле
-	mainRow.addClass(effectName+'-'+effectType+'-wrap');
+	switch(effectName){
+		case 'fury':
+			return;
+			break;
+		default:
+			mainRow.addClass(effectName+'-'+effectType+'-wrap');
+	}
+
 	var effectMarkup = null;
 	if(field.children('.'+effectName+'-'+effectType+'.active').length > 0){
 		//Проверить - есть ли уже разметка для такого бафа
@@ -2096,7 +2111,6 @@ function animatePositiveNegativeEffects(obj) {
 			effectMarkup.addClass('active');
 
 			//Выборка нужных карт
-			//var cardNeedArray = null;
 
 			if (typeof cardsMass !== 'undefined' || cardsMass !== null) {
 
@@ -2259,7 +2273,7 @@ function animationBurningCardEndDeleting(card,action,cards_strength) {
 			card.removeClass('show');
 			setTimeout(function() {
 				card.remove();
-
+				recalculateBattleStrength();//пересчет сил на поле боя
 			}, 500);
 		break;
 		default:
