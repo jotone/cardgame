@@ -141,7 +141,6 @@ class SitePagesController extends BaseController
 		}
 
 		$battle_info = BattleFieldController::battleInfo($battle_data, unserialize($battle_data->battle_field), $users_data, unserialize($battle_data->magic_usage), []);
-		//dd(BattleFieldController::getBattleBuffs(unserialize($battle_data->battle_field)));
 		$field_status = $battle_info['field_status'];
 
 		$battle = [
@@ -222,9 +221,12 @@ class SitePagesController extends BaseController
 			}
 		}
 
+		$magic_usage = unserialize($battle_data->magic_usage);
+
 		return view('play', [
 			'battle_data'	=> $battle,
 			'field_status'	=> $field_status,
+			'magic_usage'	=> $magic_usage,
 			'ally'			=> $ally,
 			'enemy'			=> $enemy,
 			'hash'			=> $hash,

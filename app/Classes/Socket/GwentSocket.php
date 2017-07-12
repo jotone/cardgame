@@ -882,7 +882,6 @@ class GwentSocket extends BaseSocket
 				$id = Crypt::decrypt($msg->card);
 				if($msg->type == 'card'){
 					$card = \DB::table('tbl_cards')->select('card_type','card_race','allowed_rows','card_actions')->find($id);
-
 					$actions_list = [];
 					$actions = unserialize($card->card_actions);
 					foreach($actions as $i => $action){
@@ -891,7 +890,6 @@ class GwentSocket extends BaseSocket
 						$actions_list[$i] = $action;
 						$actions_list[$i]['caption'] = $action_data->type;
 					}
-
 					$result = [
 						'message'	=> 'cardData',
 						'fraction'	=> ($card->card_type == 'race')? $card->card_race: $card->card_type,
@@ -899,15 +897,33 @@ class GwentSocket extends BaseSocket
 						'actions'	=> $actions_list,
 						'type'		=> $msg->type
 					];
-
-					self::sendMessageToSelf($from, $result);
+				}else{
+					$magic = \DB::table('tbl_magic_effect')->select('effect_actions')->find($id);
+					$actions_list = [];
+					$actions = unserialize($magic->effect_actions);
+					foreach($actions as $i => $action){
+						$action = get_object_vars($action);
+						$action_data = \DB::table('tbl_actions')->select('type')->find($action['action']);
+						$actions_list[$i] = $action;
+						$actions_list[$i]['caption'] = $action_data->type;
+					}
+					$result = [
+						'message'	=> 'cardData',
+						'actions'	=> $actions_list,
+						'type'		=> $msg->type
+					];
 				}
+				self::sendMessageToSelf($from, $result);
 			break;
 
 			case 'cartDescription':
+				$data = ( (isset($msg->type)) && (!empty($msg->type)) )
+					? BattleFieldController::getMagicDescription(Crypt::decrypt($msg->card))
+					: BattleFieldController::getCardDescription(Crypt::decrypt($msg->card));
+
 				$result = [
 					'message'	=> 'cartDescription',
-					'data'		=> BattleFieldController::getCardDescription(Crypt::decrypt($msg->card))
+					'data'		=> $data
 				];
 				self::sendMessageToSelf($from, $result);
 			break;

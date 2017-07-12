@@ -1261,8 +1261,8 @@ class BattleFieldController extends BaseController{
 
 	public static function getCardDescription($id){
 		$card = \DB::table('tbl_cards')
-				->select('id','title','full_description','card_type','card_race','is_leader','card_strong','img_url','allowed_rows','card_actions')
-				->find($id);
+			->select('id','title','full_description','card_type','card_race','is_leader','card_strong','img_url','allowed_rows','card_actions')
+			->find($id);
 		if($card == false) return false;
 
 		$allowed_row_images = SiteFunctionsController::createActionRowsArray($card->allowed_rows);
@@ -1282,6 +1282,19 @@ class BattleFieldController extends BaseController{
 			'strength'		=> $card->card_strong,
 			'allowed_row_images'=> $allowed_row_images,
 			'action_images'	=> $action_images,
+		];
+	}
+
+	public static function getMagicDescription($id){
+		$magic = \DB::table('tbl_magic_effect')
+			->select('id','title','img_url','description')
+			->find($id);
+
+		return [
+			'id'		=> Crypt::encrypt($magic->id),
+			'title'		=> $magic->title,
+			'text'		=> $magic->description,
+			'img_url'	=> $magic->img_url,
 		];
 	}
 }
