@@ -1783,21 +1783,13 @@ function startBattle() {
 		//Пользователь сдается
 		$('.convert-right-info button[name=userGiveUpRound]').unbind();
 		$('.convert-right-info button[name=userGiveUpRound]').click(function(){
-			var surrenderResult = confirm('Вы действительно хотите сдаться?');
-			if(surrenderResult){
-				conn.send(
-					JSON.stringify({
-						action: 'userGivesUp',//Отправка сообщения о подключения пользователя к столу
-						ident: ident
-					})
-				);
-			}
-			else{
-				return ;
-			}
+
+			createGiveUpPopup(conn,ident);//Попап "сдачи"
+
 		});
 	}
 }
+
 
 window.userImgData = {opponent:'', user: ''}; //User Images
 var socketResult;
@@ -2485,9 +2477,24 @@ function createInfoPopup(data){
 	}else{
 		//попап с магией
 
-
-
-
-
 	}
+}
+
+function createGiveUpPopup(conn,ident){
+	$('#userGiveUpPopup .button-troll.userGiveUp').unbind( "click" );
+	closeAllTrollPopup();
+	openTrollPopup($('#userGiveUpPopup'));
+
+	$('#userGiveUpPopup .button-troll.userGiveUp').on('click',function(e){
+		if ($(this).attr('data-action') == 'true') {
+			conn.send(
+				JSON.stringify({
+					action: 'userGivesUp',//Отправка сообщения о подключения пользователя к столу
+					ident: ident
+				})
+			);
+		}else{
+			closeAllTrollPopup();
+		}
+	})
 }

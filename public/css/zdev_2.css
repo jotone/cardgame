@@ -3062,6 +3062,10 @@ input.book-style{
 .button-troll.unactive b{ color:rgba(0, 0, 0, 0.3); }
 .button-troll.unactive:before,
 .button-troll.unactive:after{ background-color:rgba(0, 0, 0, 0.3); }
+
+.button-troll.userGiveUp{min-width: 54px;line-height: auto;margin:0 5px;line-height: 27px;}
+.button-troll.userGiveUp:after,.button-troll.userGiveUp:before{display: none;}
+
 #confirm-popup-with-number-input .button-troll,
 #confirm-popup .button-troll{ margin:0 5px; }
 #confirm-popup-with-number-input .button-troll:first-child:after,

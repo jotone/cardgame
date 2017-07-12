@@ -112,6 +112,18 @@ $user = Auth::user();
 		</div>
 	</div>
 
+	<!-- Окно выбора "сдаться" -->
+	<div class="troll-popup" id="userGiveUpPopup">
+		<div class="close-this"></div>
+		<div class="popup-content-wrap">
+			<h5 style="text-align: center">Вы действительно хотите сдаться?</h5>
+			<div class="pop-row">
+				<button class="button-troll userGiveUp" data-action="true"><b>Да</b></button>
+				<button class="button-troll userGiveUp" data-action="false"><b>Нет</b></button>
+			</div>
+		</div>
+	</div>
+
 	<!-- Окно выбора стартовых карт -->
 	<div class="troll-popup hand-select-popup" id="selecthandCardsPopup">
 		<div class="popup-content-wrap">
