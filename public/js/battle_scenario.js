@@ -1241,6 +1241,46 @@ function popupActivation(result){
 				getCardActiveRow(result.round_status.cards_to_play[0]['id'], 'card', conn, ident);//Подсветка ряда действия карты
 			}
 		break;
+		case 'activate_regroup':
+			$('#selectNewCardsPopup .button-troll').hide();
+			$('#selectNewCardsPopup .button-troll.acceptRegroupCards').show();
+
+			$('#selectNewCardsPopup #handNewCards').empty();
+
+			var card_in_popup_count = 0;
+			for(var i in result.round_status.cards_to_play){
+				$('#selectNewCardsPopup #handNewCards').append(createFieldCardView(result.round_status.cards_to_play[i], result.round_status.cards_to_play[i]['strength']));
+				card_in_popup_count++;
+			}
+
+			setMinWidthInPop(card_in_popup_count,$('#selectNewCardsPopup'));
+			openTrollPopup($('#selectNewCardsPopup'));
+
+			$('#selectNewCardsPopup #handNewCards li, #selectNewCardsPopup .button-troll.acceptRegroupCards').unbind();
+			$('#selectNewCardsPopup #handNewCards li:first').addClass('glow');
+			$('#selectNewCardsPopup #handNewCards li').click(function(event){
+				if((!$(event.target).hasClass('ignore')) && event.which==1){
+					$('#selectNewCardsPopup #handNewCards li').removeClass('glow');
+					$(this).addClass('glow');
+				}
+			});
+			//Функция отправки сообщения на соккет о перегруппировки выбраной карты
+			$('#selectNewCardsPopup .button-troll.acceptRegroupCards').click(function(e){
+				e.preventDefault();
+				if($('#selectNewCardsPopup #handNewCards .glow')){
+					var card = $('#selectNewCardsPopup #handNewCards .glow').attr('data-cardid');
+					conn.send(
+						JSON.stringify({
+							action: 'returnCardToHand',
+							ident: ident,
+							card: card
+						})
+					);
+					closeAllTrollPopup();
+				}
+			});
+			sortCards();
+		break;
 	}
 }
 
@@ -1693,7 +1733,10 @@ function startBattle() {
 					setDecksValues(result.counts, result.images);
 
 
-					if(result.round_status.activate_popup != 'activate_choise'){
+					if(
+						(result.round_status.activate_popup != 'activate_choise') ||
+						(result.round_status.activate_popup != 'activate_regroup')
+					){
 						detailCardPopupOnStartStep(result.played_card['card'], result.played_card['strength']);
 					}
 

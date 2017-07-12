@@ -988,6 +988,79 @@ class GwentSocket extends BaseSocket
 					}
 				}
 			break;
+
+			case 'returnCardToHand':
+				$battle_field = unserialize($battle->battle_field);
+				$this->magic_usage = unserialize($battle->magic_usage);
+				$player = $this->users_data[$msg->ident->userId]['player'];
+				$field_buffs = BattleFieldController::getBattleBuffs($battle_field);
+
+				$turn_expire = $this->users_data[$msg->ident->userId]['turn_expire'] + $timing_settings['additional_time'] - $this->users_data[$msg->ident->userId]['time_shift'];
+				\DB::table('tbl_battle_members')
+					->where('id','=',$this->users_data[$msg->ident->userId]['battle_member_id'])
+					->update(['turn_expire' => $turn_expire]);
+
+				foreach($battle_field[$player] as $row => $row_data){
+					foreach($row_data['warrior'] as $card_iter => $card_data){
+						if($card_data['id'] == Crypt::decrypt($msg->card)){
+							$card = BattleFieldController::cardData($card_data['id']);
+							$this->users_data[$player]['hand'][] = $card_data['id'];
+							$this->step_status['added_cards'][$player]['hand'][] = $card;
+							$this->step_status['dropped_cards'][$player][$row][$card_iter] = $card['caption'];
+							$this->step_status['actions']['appear'][$player][$row][$card_iter] = 'regroup';
+							unset($battle_field[$player][$row]['warrior'][$card_iter]);
+							$battle_field[$player][$row]['warrior'] = array_values($battle_field[$player][$row]['warrior']);
+							break 2;
+						}
+					}
+				}
+
+				$battle_info = BattleFieldController::battleInfo($battle, $battle_field, $this->users_data, $this->magic_usage, $this->step_status);
+				$this->step_status['actions']['cards_strength'] = $battle_info['cards_strength'];
+
+				$new_field_buffs = BattleFieldController::getBattleBuffs($battle_field);
+				foreach($field_buffs as $field => $rows){
+					if(!isset($new_field_buffs[$field])){
+						$step_status['actions']['disappear'][$field] = $field_buffs[$field];
+					}else{
+						foreach($rows as $row => $row_data){
+							if(isset($new_field_buffs[$field][$row])){
+								$step_status['actions']['disappear'][$field][$row] = array_diff($field_buffs[$field][$row], $new_field_buffs[$field][$row]);
+							}else{
+								$step_status['actions']['disappear'][$field][$row] = $field_buffs[$field][$row];
+							}
+						}
+					}
+				}
+
+				$this->users_data[$player]['addition_data'] = [];
+				$this->users_data = self::sortDecksByStrength($this->users_data);
+				\DB::table('tbl_battle_members')->where('id','=',$this->users_data[$msg->ident->userId]['battle_member_id'])
+					->update([
+						'user_hand'		=> serialize($this->users_data[$player]['hand']),
+						'addition_data'	=> '',
+						'card_to_play'	=> 'a:0:{}',
+						'card_source'	=> 'hand'
+					]);
+
+				$user_type = (0 != $this->users_data['opponent']['round_passed'])? 'user': 'opponent';
+
+				$battle->battle_field	= serialize($battle_field);
+				$battle->user_id_turn	= $this->users_data[$user_type]['id'];
+				$battle->turn_expire	= $turn_expire + time();
+				$battle->save();
+
+				$card_image = \DB::table('tbl_cards')->select('img_url')->where('slug','=','peregruppirovka')->first();
+
+				$this->step_status['actions']['regroup_img'] = '/img/card_images/'.$card_image->img_url;
+				$this->step_status['round_status']['activate_popup'] = '';
+				$this->step_status['round_status']['card_source'] = [$this->users_data[$user_type]['player'] => 'hand'];
+				$this->step_status['round_status']['cards_to_play'] = [];
+				$this->step_status['round_status']['current_player'] = $this->users_data[$user_type]['login'];
+				$this->step_status['round_status']['round'] = $battle->round_count;
+
+				self::sendUserMadeAction($this->users_data, $this->step_status, $msg, $SplBattleObj, $from);
+			break;
 		}
 	}
 
@@ -1544,22 +1617,17 @@ class GwentSocket extends BaseSocket
 				}
 			break;*/
 
-			/*case 'regroup'://ПЕРЕГРУППИРОВКА
+			case 'regroup'://ПЕРЕГРУППИРОВКА
 				foreach($battle_field[$users_data['user']['player']] as $row => $row_data){
 					foreach($row_data['warrior'] as $card_data){
 						$card = BattleFieldController::cardData($card_data['id']);
 						$allow_to_regroup = true;
 						if($action['regroup_ignoreImmunity'] == 0){
-							foreach($card['actions'] as $action){
-								if($action->action == '5'){
-									if($action->immumity_type == 1){
-										$allow_to_regroup = false;
-									}
-								}
-							}
+							$allow_to_regroup = BattleFieldController::checkForFullImmune($action['regroup_ignoreImmunity'], $card['actions']);
 						}
 						if($allow_to_regroup){
-							$users_data['user']['cards_to_play'][] = $card_data['card'];
+							$users_data['user']['cards_to_play'][] = $card_data['id'];
+							$step_status['round_status']['cards_to_play'][] = $card;
 						}
 					}
 				}
@@ -1568,9 +1636,8 @@ class GwentSocket extends BaseSocket
 					$user_turn_id	= $users_data['user']['id'];
 					$step_status['round_status']['current_player'] = $users_data['user']['login'];
 					$step_status['round_status']['activate_popup'] = 'activate_regroup';
-					$step_status['actions'][] = $action['caption'];
 				}
-			break;*/
+			break;
 
 			case 'sorrow'://ПЕЧАЛЬ
 				$field_buffs = BattleFieldController::getBattleBuffs($battle_field);
