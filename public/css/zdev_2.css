@@ -27,7 +27,7 @@
 
 	.convert-battle-front .convert-cards.user .convert-card-box .convert-stuff.debuff .field-for-sum, .convert-battle-front .convert-cards .convert-card-box .convert-stuff.debuff .field-for-sum { color: #b40000; box-shadow: inset 0 0 10px 2px rgba(180, 0, 0, .4); }
 
-	.convert-battle-front .convert-cards .convert-card-box .convert-stuff.debuff .cards-row-wrap .content-card-item:not([data-immune='true']):not([data-full-immune='true']) .label-power-card-wrap { color: #b40000; }
+	.convert-battle-front .convert-cards .convert-card-box .convert-stuff.debuff .cards-row-wrap .content-card-item:not([data-immune='1']):not([data-full-immune='1']) .label-power-card-wrap { color: #b40000; }
 
 	/* terrify anim */
 
@@ -66,13 +66,18 @@
 
 	/* /suport buff */
 
+	/* fury buff*/
+		.convert-battle-front .convert-cards .convert-card-box .convert-stuff .cards-row-wrap .content-card-item.fury-buffed:not([data-full-immune='1']) .label-power-card-wrap { color: #409e00;}
+	/* /fury buff*/
+
+
 /* /buff anim */
 
 /* buff & debuff anim */
 
 	.convert-battle-front .convert-cards.user .convert-card-box .convert-stuff.buff.debuff .field-for-sum, .convert-battle-front .convert-cards .convert-card-box .convert-stuff.buff.debuff .field-for-sum { color: #e37300;box-shadow: inset 0 0 10px 2px rgba(227, 115, 0,0.4); }
 
-	.convert-battle-front .convert-cards .convert-card-box .convert-stuff.buff.debuff .cards-row-wrap .content-card-item:not([data-immune='true']):not([data-full-immune='true']) .label-power-card-wrap { color: #e37300; }
+	.convert-battle-front .convert-cards .convert-card-box .convert-stuff.buff.debuff .cards-row-wrap .content-card-item:not([data-immune='1']):not([data-full-immune='1']) .label-power-card-wrap { color: #e37300; }
 
 	/* ?????*/
 	.convert-battle-front .convert-cards .convert-card-box .convert-stuff.support-buff-wrap.terrify-debuff-wrap .debuff-or-buff-anim.support-buff{opacity:0;}
