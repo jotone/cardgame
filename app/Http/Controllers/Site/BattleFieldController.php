@@ -46,7 +46,12 @@ class BattleFieldController extends BaseController{
 		$cards_strength = [];
 		$fury_cards = [];
 		$played_card_actions = [];
-		if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
+		if( isset($step_status['played_magic']) && !empty($step_status['played_magic']) ){
+			foreach($step_status['played_magic']['actions'] as $action){
+				$played_card_actions[] = $action['caption'];
+			}
+		}
+		if( isset($step_status['played_card']['card']) && !empty($step_status['played_card']['card']) ){
 			foreach($step_status['played_card']['card']['actions'] as $action){
 				$played_card_actions[] = $action['caption'];
 			}
@@ -84,26 +89,8 @@ class BattleFieldController extends BaseController{
 					}
 				}
 			}
-			/*if(!empty($step_status['played_card']['card']['actions'])){
-				if(in_array('support', $played_card_actions)){
-					foreach($step_status['played_card']['card']['actions']['support_ActionRow'] as $row){
-						$step_status['actions']['appear'][$step_status['played_card']['move_to']['player']][$row][] = $action['caption'];
-					}
-				}
-				if(in_array('terrify', $played_card_actions)){
-					if($step_status['played_card']['card']['actions']['fear_actionTeamate'] == 1){
-						$players = ['p1','p2'];
-					}else{
-						$players = ($step_status['played_card']['move_to']['player'] == 'p1')? ['p2']: ['p1'];
-					}
-					foreach($players as $player){
-						foreach($step_status['played_card']['card']['actions']['fear_ActionRow'] as $row){
-							$step_status['actions']['appear'][$player][$row][] = $action['caption'];
-						}
-					}
-				}
-			}*/
 		}
+		$played_card_actions = array_values(array_unique($played_card_actions));
 
 		foreach($battle_field as $field => $rows){
 			if($field != 'mid'){
@@ -177,7 +164,7 @@ class BattleFieldController extends BaseController{
 					if((isset($action['fury_group'])) && (!empty($action['fury_group']))){
 						foreach($battle_field[$enemy_field] as $enemy_row){
 							foreach($enemy_row['warrior'] as $enemy_card_data){
-								$enemy_card = BattleFieldController::getCardNaturalSetting($enemy_card_data['id']);
+								$enemy_card = self::getCardNaturalSetting($enemy_card_data['id']);
 								if(!empty($enemy_card['group'])){
 									foreach($enemy_card['group'] as $group){
 										if(in_array($group, $action['fury_group'])){
@@ -262,7 +249,7 @@ class BattleFieldController extends BaseController{
 						$field_status[$player][$row]['buffs'][] = 'support';
 						foreach($battle_field[$player][$row]['warrior'] as $card_iter => $card_data){
 							$allow_support = true;
-							$card = BattleFieldController::getCardNaturalSetting($card_data['id']);
+							$card = self::getCardNaturalSetting($card_data['id']);
 							if($action_data['support_ignoreImmunity'] == 0){
 								foreach($card['actions'] as $action){
 									if($action['caption'] == 'immune'){
@@ -461,7 +448,7 @@ class BattleFieldController extends BaseController{
 									$field = $users_data[$player]['player'];
 									$field_status[$field][$action_row]['debuffs'][] = 'terrify';
 									foreach($battle_field[$field][$action_row]['warrior'] as $card_iter => $card_data){
-										$card = BattleFieldController::getCardNaturalSetting($card_data['id']);
+										$card = self::getCardNaturalSetting($card_data['id']);
 										$allow_fear = self::checkForSimpleImmune($action['fear_ignoreImmunity'], $card['actions']);
 
 										if(($card_data['strength'] > 0) && ($allow_fear)){
@@ -762,29 +749,18 @@ class BattleFieldController extends BaseController{
 				foreach($card['actions'] as $action_data){
 					if($action_data['caption'] == 'inspiration'){
 						foreach($battle_field[$player][$row]['warrior'] as $card_iter => $card_data){
-							$allow_inspiration = true;
-							if($action_data['inspiration_ignoreImmunity'] == 0){
-								$card_data = BattleFieldController::getCardNaturalSetting($card_data['id']);
-								foreach($card_data['actions'] as $i => $card_action){
-									if($card_action['caption'] == 'immune'){
-										if($card_action['immumity_type'] == 1){
-											$allow_inspiration = false;
-										}
-									}
-								}
-							}
+							$card_data = self::getCardNaturalSetting($card_data['id']);
+							$allow_inspiration = self::checkForSimpleImmune($action_data['inspiration_ignoreImmunity'], $card_data['actions']);
+
 							if($allow_inspiration){
 								if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
-									foreach($step_status['played_card']['card']['actions'] as $action){
-										if($action['caption'] != 'killer'){
-											$step_status['actions']['cards'][$player][$row][$card_iter] = [
-												'card'		=> $card_data['caption'],
-												'strength'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'],
-												'strModif'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'] * $action_data['inspiration_multValue'],
-												'operation'	=> 'x'.$action_data['inspiration_multValue']
-											];
-											break;
-										}
+									if(!in_array('killer', $played_card_actions)){
+										$step_status['actions']['cards'][$player][$row][$card_iter] = [
+											'card'		=> $card_data['caption'],
+											'strength'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'],
+											'strModif'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'] * $action_data['inspiration_multValue'],
+											'operation'	=> 'x'.$action_data['inspiration_multValue']
+										];
 									}
 
 									if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
@@ -832,7 +808,7 @@ class BattleFieldController extends BaseController{
 										foreach($battle_field[$player][$row]['warrior'] as $card_iter => $card_data){
 											$card = self::cardData($card_data['id']);
 
-											$allow_inspiration = self::checkForFullImmune($action['inspiration_ignoreImmunity'], $card['actions']);
+											$allow_inspiration = self::checkForSimpleImmune($action['inspiration_ignoreImmunity'], $card['actions']);
 
 											if($allow_inspiration){
 												if( (isset($step_status['played_magic'])) && (!empty($step_status['played_magic'])) ){
@@ -1187,7 +1163,7 @@ class BattleFieldController extends BaseController{
 
 	public static function recontentDecks($deck){
 		foreach($deck as $i => $card){
-			$deck[$i] = BattleFieldController::getCardNaturalSetting($card);
+			$deck[$i] = self::getCardNaturalSetting($card);
 			$deck[$i]['id'] = $card;
 		}
 		return $deck;
