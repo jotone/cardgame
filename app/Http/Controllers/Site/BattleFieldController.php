@@ -47,8 +47,10 @@ class BattleFieldController extends BaseController{
 		$fury_cards = [];
 		$played_card_actions = [];
 		if( isset($step_status['played_magic']) && !empty($step_status['played_magic']) ){
-			foreach($step_status['played_magic']['actions'] as $action){
-				$played_card_actions[] = $action['caption'];
+			foreach($step_status['played_magic'] as $player => $magic_data){
+				foreach($step_status['played_magic'][$player]['actions'] as $action){
+					$played_card_actions[] = $action['caption'];
+				}
 			}
 		}
 		if( isset($step_status['played_card']['card']) && !empty($step_status['played_card']['card']) ){
@@ -354,7 +356,7 @@ class BattleFieldController extends BaseController{
 				}
 			}
 		}
-		
+
 		//Применение МЭ "Поддержка" к картам
 		if(!empty($magic_usage)){
 			foreach($magic_usage as $player => $magic_data){
@@ -850,6 +852,27 @@ class BattleFieldController extends BaseController{
 										}
 									}
 									$field_status[$player][$row]['buffs'] = array_values(array_unique($field_status[$player][$row]['buffs']));
+								}
+							}
+						}
+					}else{
+						if(isset($step_status['actions'])){
+							$magic = self::magicData($magic_id['id']);//Данные о МЭ
+							foreach($magic['actions'] as $action_iter => $action){
+								if($action['caption'] == 'inspiration'){
+									foreach ($action['inspiration_ActionRow'] as $row){
+										if(empty($battle_field[$player][$row]['special'])){
+											foreach($battle_field[$player][$row]['warrior'] as $card_data){
+												$card = self::getCardNaturalSetting($card_data['id']);
+												foreach($card['actions'] as $action){
+													if($action['caption'] == 'inspiration'){
+														$step_status['actions']['disappear'][$player][$row][] = 'inspiration';
+													}
+													break 2;
+												}
+											}
+										}
+									}
 								}
 							}
 						}

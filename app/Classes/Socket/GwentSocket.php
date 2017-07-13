@@ -403,10 +403,10 @@ class GwentSocket extends BaseSocket
 							$this->users_data['user']['energy'] = $this->users_data['user']['energy'] - $magic['energy_cost'];
 
 							if(!isset($this->magic_usage[$this->users_data['user']['player']][$battle->round_count])){
-								$this->magic_usage[$this->users_data['user']['player']][$battle->round_count] = [
+								/*$this->magic_usage[$this->users_data['user']['player']][$battle->round_count] = [
 									'id'	=> Crypt::decrypt($msg->magic),
 									'allow'	=> '1'
-								];
+								];*/
 								$current_actions = $magic['actions'];
 								$this->step_status['played_magic'][$this->users_data['user']['player']] = $magic;
 							}else{
@@ -1700,19 +1700,19 @@ class GwentSocket extends BaseSocket
 				$players = ($action['sorrow_actionTeamate'] == 0)? [$users_data['opponent']['player']]: ['p1', 'p2'];
 				$row = self::strRowToInt($msg->BFData->row);
 
-				/*!!!!! MAGIC USED
-				 * foreach($players as $player){
+				//MAGIC USED
+				foreach($players as $player){
 					foreach($magic_usage[$player] as $activated_in_round => $magic_id){
 						if($magic_id != '0'){
-							$magic = json_decode(SiteGameController::getMagicData($magic_id['id']));//Данные о МЭ
-							foreach($magic->actions as $action_iter => $action_data){
-								if($action_data->action == '4'){
+							$magic = BattleFieldController::magicData($magic_id['id']);//Данные о МЭ
+							foreach($magic['actions'] as $action_data){
+								if($action_data['caption'] == 'inspiration'){
 									$magic_usage[$player][$activated_in_round]['allow'] = 0;
 								}
 							}
 						}
-					}©
-				}*/
+					}
+				}
 
 				foreach($players as $player){
 					if(!empty($battle_field[$player][$row]['special'])){
