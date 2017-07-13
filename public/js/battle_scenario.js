@@ -1372,10 +1372,8 @@ function incomeCardSelection(conn, ident, card_source) {
 
 function processActions(result){
 
-console.info("!$.isEmptyObject(result.actions.appear", !$.isEmptyObject(result.actions.appear));
 	if(!$.isEmptyObject(result.actions.appear)){
 
-console.info("typeof result.actions.appear === 'string'", typeof result.actions.appear === 'string');
 		if (typeof result.actions.appear === 'string'){
 
 			switch(result.actions.appear){
@@ -1397,9 +1395,6 @@ console.info("typeof result.actions.appear === 'string'", typeof result.actions.
 
 			for(var player in result.actions.appear){
 
-console.info("player", player);
-
-console.info("result.actions.appear", result.actions.appear);
 				for(var row in result.actions.appear[player]){
 
 					row = parseInt(row);
@@ -1410,12 +1405,11 @@ console.info("result.actions.appear", result.actions.appear);
 						item = parseInt(item);
 						var action = result.actions.appear[player][row][item];
 
-console.info("action", action)
 						switch(action){
 							case 'support'://Поддержка
 								var obj = {};
 									obj.field = actionRow
-									obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row]: null;
+									obj.cardsMass = (!$.isEmptyObject(result.actions.cards[player])) ? result.actions.cards[player][row]: null;
 									obj.effectName = 'support';
 									obj.effectType = 'buff';
 
@@ -1425,7 +1419,7 @@ console.info("action", action)
 
 								var obj = {};
 									obj.field = actionRow;
-									obj.cardsMass = (!$.isEmptyObject(result.actions.cards)) ? result.actions.cards[player][row]: null;
+									obj.cardsMass = (!$.isEmptyObject(result.actions.cards[player])) ? result.actions.cards[player][row]: null;
 									obj.effectName = 'brotherhood';
 									obj.effectType = 'buff';
 
@@ -1481,13 +1475,13 @@ console.info("action", action)
 							break;
 							case 'regroup'://Перегрупировка
 
-								var card = result.added_cards[player]['hand'][row];//карты которую мы выбрали для перегрупировкиё
+								var card = result.actions.regroup_card;//карты которую мы выбрали для перегрупировкиё
 
-								var cardOverloadingImg = result.regroup_img;
+								var cardOverloadingImg = result.actions.regroup_img;
 
-console.warn("card", card)
+								console.info("card", card)
 
-console.info("cardOverloadingImg", cardOverloadingImg)
+								console.info("cardOverloadingImg", cardOverloadingImg)
 								detailCardPopupOnOverloading(cardOverloadingImg, card);
 
 							break;
@@ -1502,7 +1496,7 @@ console.info("cardOverloadingImg", cardOverloadingImg)
 		}
 	}
 
-	debugger;
+	//debugger;
 
 	if(!$.isEmptyObject(result.actions.disappear)){
 		if (typeof result.actions.disappear === 'string'){
@@ -1784,9 +1778,9 @@ function startBattle() {
 
 					setDecksValues(result.counts, result.images);
 
+console.info("(result.round_status.activate_popup != 'activate_choise') && (typeof result.actions.it_is_regroup !== 'undefined')", (result.round_status.activate_popup != 'activate_choise') && (typeof result.actions.it_is_regroup !== 'undefined'))
 					if(
-						(result.round_status.activate_popup != 'activate_choise') ||
-						(typeof result.actions.it_is_regroup !== 'undefined')
+						(result.round_status.activate_popup != 'activate_choise') && (typeof result.actions.it_is_regroup !== 'undefined')
 					){
 						detailCardPopupOnStartStep(result.played_card['card'], result.played_card['strength']);
 					}
@@ -2140,20 +2134,22 @@ function animationCardReturnToOutage(cards, time, callback){
 function detailCardPopupOnOverloading(cardOverloadingImg, card) {
 	var holder = $('#card-start-step');
 
-	var cardOverloadingHolder = '<div><img src="'+cardOverloadingImg+'"></div>';
-	holder.find('.content-card-info').empty().append(cardDetailOverloadingMarkup);
-	var popContent = createCardDescriptionView(card, 'undefined', 'without-description');
+	var cardOverloadingHolder = '<div class="content-card-item-main"><img src="'+cardOverloadingImg+'"></div>';
+	holder.find('.content-card-info').empty().append(cardOverloadingHolder);
+	var popContent = createCardDescriptionView(card, card['strength'], 'without-description');
+
+console.info("popContent", popContent)
 	holder.find('.content-card-info').addClass('overloading-animation').append(popContent).end().addClass('overloading');
 	openSecondTrollPopup(holder,null);
 
 	setTimeout(function(){
-		holder.find('.content-card-info').removeClass('overloading-animation');
-		setTimeout(function(){
-			// closeSecondTrollPopup(holder,null);
-			// setTimeout(function(){
-			// 	holder.removeClass('overloading');
-			// },1000)
-		},2000)
+		// holder.find('.content-card-info').removeClass('overloading-animation');
+		// setTimeout(function(){
+		// 	// closeSecondTrollPopup(holder,null);
+		// 	// setTimeout(function(){
+		// 	// 	holder.removeClass('overloading');
+		// 	// },1000)
+		// },2000)
 	},2000);
 }
 
