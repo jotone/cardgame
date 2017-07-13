@@ -403,10 +403,10 @@ class GwentSocket extends BaseSocket
 							$this->users_data['user']['energy'] = $this->users_data['user']['energy'] - $magic['energy_cost'];
 
 							if(!isset($this->magic_usage[$this->users_data['user']['player']][$battle->round_count])){
-								/*$this->magic_usage[$this->users_data['user']['player']][$battle->round_count] = [
+								$this->magic_usage[$this->users_data['user']['player']][$battle->round_count] = [
 									'id'	=> Crypt::decrypt($msg->magic),
 									'allow'	=> '1'
-								];*/
+								];
 								$current_actions = $magic['actions'];
 								$this->step_status['played_magic'][$this->users_data['user']['player']] = $magic;
 							}else{
@@ -1736,6 +1736,11 @@ class GwentSocket extends BaseSocket
 				if(!empty($step_status['played_card']['card'])){
 					foreach($action['support_ActionRow'] as $row){
 						$step_status['actions']['appear'][$step_status['played_card']['move_to']['player']][$row][] = $action['caption'];
+					}
+				}
+				if(!empty($step_status['played_magic'])){
+					foreach($action['support_ActionRow'] as $row){
+						$step_status['actions']['appear'][$msg->BFData->field][$row][] = $action['caption'];
 					}
 				}
 			break;

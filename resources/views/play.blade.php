@@ -464,8 +464,8 @@
 									@if($magic_id != 0)
 										<?php
 										if(
-											($value['id'] == \Illuminate\Support\Facades\Crypt::decrypt($magic_id['id']) ) ||
-											($battle_data->round_count == $activated_in_round)
+											(\Illuminate\Support\Facades\Crypt::decrypt($value['id']) == $magic_id['id']) ||
+											($battle_data['round_count'] == $activated_in_round)
 										){
 											$disactive = 'disactive';
 										}
@@ -621,8 +621,8 @@
 									@if($magic_id != 0)
 										<?php
 										if(
-											($value['id'] == \Illuminate\Support\Facades\Crypt::decrypt($magic_id['id']) ) ||
-											($battle_data->round_count == $activated_in_round)
+											(\Illuminate\Support\Facades\Crypt::decrypt($value['id']) == $magic_id['id']) ||
+											($battle_data['round_count'] == $activated_in_round)
 										){
 											$disactive = 'disactive';
 										}
