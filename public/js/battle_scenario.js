@@ -1780,7 +1780,7 @@ function startBattle() {
 
 					if(
 						(result.round_status.activate_popup != 'activate_choise') ||
-						(result.round_status.activate_popup != 'activate_regroup')
+						(typeof result.actions.it_is_regroup !== 'undefined')
 					){
 						detailCardPopupOnStartStep(result.played_card['card'], result.played_card['strength']);
 					}
