@@ -927,7 +927,6 @@ function fieldBuild(stepStatus, addingAnim){
 			for(var row in stepStatus.dropped_cards[player]){
 				var type = ($('.convert-right-info .user-describer').attr('data-player') == player)? 'allies': 'enemy';
 
-console.info("row", row)
 				switch(row){
 					case 'deck':
 					case 'discard':
@@ -1773,7 +1772,7 @@ function startBattle() {
 					fieldBuild(result, true);
 
 					if (
-						result.round_status.activate_popup != 'activate_magic_regroup' && typeof result.actions.regroup_img != 'string'
+						result.round_status.activate_popup != 'activate_magic_regroup' && result.round_status.activate_popup != 'activate_view'
 					) {
 						processingMagicEffectPopup(result.played_magic);
 					}
