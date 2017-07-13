@@ -1099,6 +1099,7 @@ class GwentSocket extends BaseSocket
 				$this->step_status['round_status']['cards_to_play'] = [];
 				$this->step_status['round_status']['current_player'] = $this->users_data[$user_type]['login'];
 				$this->step_status['round_status']['round'] = $battle->round_count;
+				$this->step_status['actions']['type'] = $msg->type;
 
 				self::sendUserMadeAction($this->users_data, $this->step_status, $msg, $SplBattleObj, $from);
 			break;
