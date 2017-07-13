@@ -1477,11 +1477,8 @@ function processActions(result){
 
 								var card = result.actions.regroup_card;//карты которую мы выбрали для перегрупировкиё
 
-								var cardOverloadingImg = result.actions.regroup_img;
+								var cardOverloadingImg = result.actions.regroup_img;// картинка карты перегрупирвка
 
-								console.info("card", card)
-
-								console.info("cardOverloadingImg", cardOverloadingImg)
 								detailCardPopupOnOverloading(cardOverloadingImg, card);
 
 							break;
@@ -1496,7 +1493,6 @@ function processActions(result){
 		}
 	}
 
-	//debugger;
 
 	if(!$.isEmptyObject(result.actions.disappear)){
 		if (typeof result.actions.disappear === 'string'){
@@ -1588,7 +1584,7 @@ function startBattle() {
 	};
 	conn.onmessage = function(e){
 		var result = JSON.parse(e.data);
-		//console.group('Action');
+
 		console.group(result.message);
 		console.log(result);
 		console.groupEnd();
@@ -1681,7 +1677,7 @@ function startBattle() {
 					buildBattleField(result.added_cards, result.dropped_cards);
 					setDecksValues(result.counts, result.images);
 					showCardOnDesc();
-					recalculateBattleStrength();
+
 
 					resultPopupShow(result.round_status.status.result + '! Подождите, идет подготовка нового раунда.');
 					changeTurnIndicator(result.round_status.current_player);
@@ -1697,6 +1693,11 @@ function startBattle() {
 					allowToAction = (result.round_status.current_player == $('.user-describer').attr('id'))? true: false;
 					cardCase(result.round_status.card_source, allowToAction);//Функция выбора карт
 					userMakeAction(conn, result.round_status.card_source, allowToAction);//Функция разрешает пользователю действие
+
+					setTimeout(function(){
+						recalculateBattleStrength();
+					},700);
+
 					setTimeout(function(){
 						$('#successEvent').removeClass('show');
 						if($('div.troll-popup.show').length <= 0){
@@ -1781,14 +1782,13 @@ function startBattle() {
 
 					setDecksValues(result.counts, result.images);
 
-console.info("result.round_status.activate_popup != 'activate_choise'", result.round_status.activate_popup != 'activate_choise')
-console.info("typeof result.actions.it_is_regroup != 'string'", typeof result.actions.it_is_regroup != 'string')
-console.info("result.actions.regroup_img != 'string''", typeof result.actions.regroup_img != 'string')
-console.info("result.round_status.activate_popup != 'activate_choise' || typeof result.actions.it_is_regroup != 'string'", result.round_status.activate_popup != 'activate_choise' || typeof result.actions.it_is_regroup != 'string')
-
-console.info("------------------------------------------------")
+					// Не показывать детальный попап карты если:
+					// есть попап "выбора" карт
+					// или розыгрываем карту перегрупировки (приходит it_is_regroup как string)
+					// или уже выбрали карту перегрупировки (показываеться спец попап с перегрупироакой 2 карт) (приходит regroup_img как string)
+					// или пользователь спасовал ( result.round_status.status.passed_user )
 					if(
-						result.round_status.activate_popup != 'activate_choise' && typeof result.actions.it_is_regroup != 'string' && typeof result.actions.regroup_img != 'string'
+						result.round_status.activate_popup != 'activate_choise' && typeof result.actions.it_is_regroup != 'string' && typeof result.actions.regroup_img != 'string' && typeof result.round_status.status.passed_user != 'string'
 					){
 						detailCardPopupOnStartStep(result.played_card['card'], result.played_card['strength']);
 					}
@@ -2061,6 +2061,8 @@ function cardMovingFromTo(side, from, count){
 	}, 300);
 };
 
+
+// Функция удаления специальной карты(в особенности карты воодушевления), когда карта улетает с своего места в отбой
 function animationDeleteSpecialCard(player,rowId){
 
 	var card = $('#'+player+'.convert-cards '+rowId+' .image-inside-line li'),
@@ -2146,18 +2148,17 @@ function detailCardPopupOnOverloading(cardOverloadingImg, card) {
 	holder.find('.content-card-info').empty().append(cardOverloadingHolder);
 	var popContent = createCardDescriptionView(card, card['strength'], 'without-description');
 
-console.info("popContent", popContent)
 	holder.find('.content-card-info').addClass('overloading-animation').append(popContent).end().addClass('overloading');
 	openSecondTrollPopup(holder,null);
 
 	setTimeout(function(){
-		// holder.find('.content-card-info').removeClass('overloading-animation');
-		// setTimeout(function(){
-		// 	// closeSecondTrollPopup(holder,null);
-		// 	// setTimeout(function(){
-		// 	// 	holder.removeClass('overloading');
-		// 	// },1000)
-		// },2000)
+		holder.find('.content-card-info').removeClass('overloading-animation');
+		setTimeout(function(){
+			closeSecondTrollPopup(holder,null);
+			setTimeout(function(){
+				holder.removeClass('overloading');
+			},1000)
+		},2000)
 	},2000);
 }
 
