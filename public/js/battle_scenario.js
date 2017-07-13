@@ -1757,6 +1757,9 @@ function startBattle() {
 				if(!$.isEmptyObject(result.played_magic)){
 					calculateRightMarginCardHands();
 					fieldBuild(result, false);
+
+					processActions(result);
+
 					changeTurnIndicator(result.round_status.current_player); //смена индикатора хода
 					setDecksValues(result.counts, result.images);
 				}else{
