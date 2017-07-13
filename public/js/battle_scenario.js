@@ -927,6 +927,7 @@ function fieldBuild(stepStatus, addingAnim){
 			for(var row in stepStatus.dropped_cards[player]){
 				var type = ($('.convert-right-info .user-describer').attr('data-player') == player)? 'allies': 'enemy';
 
+console.info("row", row)
 				switch(row){
 					case 'deck':
 					case 'discard':
