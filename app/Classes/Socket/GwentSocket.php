@@ -1026,6 +1026,7 @@ class GwentSocket extends BaseSocket
 							$this->users_data[$player]['hand'][] = $card_data['id'];
 							$this->step_status['added_cards'][$player]['hand'][] = $card;
 							$this->step_status['dropped_cards'][$player][$row][$card_iter] = $card['caption'];
+							$this->step_status['actions']['regroup_card'] = $card;
 							$this->step_status['actions']['appear'][$player][$row][$card_iter] = 'regroup';
 							unset($battle_field[$player][$row]['warrior'][$card_iter]);
 							$battle_field[$player][$row]['warrior'] = array_values($battle_field[$player][$row]['warrior']);
