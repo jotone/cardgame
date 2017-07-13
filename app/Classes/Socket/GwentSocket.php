@@ -514,7 +514,7 @@ class GwentSocket extends BaseSocket
 						$this->users_data	= $action_result['users_data'];
 						$battle_field		= $action_result['battle_field'];
 						$user_turn_id		= $action_result['user_turn_id'];
-						var_dump($action_result['magic_usage']);
+
 						$this->magic_usage	= $action_result['magic_usage'];
 
 						switch($action['caption']){
@@ -578,6 +578,8 @@ class GwentSocket extends BaseSocket
 						'user_hand'	=> serialize($this->users_data['opponent']['hand']),
 						'user_discard'=> serialize($this->users_data['opponent']['discard'])
 					]);
+					var_dump('madeAction');
+					var_dump($this->magic_usage);
 
 					//Сохраняем поле битвы
 					$battle->battle_field	= serialize($battle_field);
@@ -683,7 +685,9 @@ class GwentSocket extends BaseSocket
 
 					$this->users_data	= $clear_result['users_data'];
 					$this->step_status	= $clear_result['step_status'];
-					$this->magic_usage	=$clear_result['magic_usage'];
+					$this->magic_usage	= $clear_result['magic_usage'];
+					var_dump('Passed');
+					var_dump($this->magic_usage);
 
 					$battle->round_count	= $battle->round_count +1;
 					$battle->round_status	= serialize($round_status);
@@ -1770,6 +1774,12 @@ class GwentSocket extends BaseSocket
 			case 'inspiration':
 				if(!empty($step_status['played_card']['card'])){
 					$step_status['actions']['appear'][$step_status['played_card']['move_to']['player']][$step_status['played_card']['move_to']['row']][] = $action['caption'];
+				}
+				if(!empty($step_status['played_magic'])){
+					foreach($action['inspiration_ActionRow'] as $row){
+						$step_status['actions']['appear'][$msg->BFData->field][$row][] = $action['caption'];
+					}
+
 				}
 			break;
 
