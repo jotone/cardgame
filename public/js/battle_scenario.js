@@ -1778,9 +1778,14 @@ function startBattle() {
 
 					setDecksValues(result.counts, result.images);
 
-console.info("(result.round_status.activate_popup != 'activate_choise') && (typeof result.actions.it_is_regroup !== 'undefined')", (result.round_status.activate_popup != 'activate_choise') && (typeof result.actions.it_is_regroup !== 'undefined'))
+console.info("result.round_status.activate_popup != 'activate_choise'", result.round_status.activate_popup != 'activate_choise')
+console.info("typeof result.actions.it_is_regroup != 'string'", typeof result.actions.it_is_regroup != 'string')
+console.info("result.actions.regroup_img != 'string''", typeof result.actions.regroup_img != 'string')
+console.info("result.round_status.activate_popup != 'activate_choise' || typeof result.actions.it_is_regroup != 'string'", result.round_status.activate_popup != 'activate_choise' || typeof result.actions.it_is_regroup != 'string')
+
+console.info("------------------------------------------------")
 					if(
-						(result.round_status.activate_popup != 'activate_choise') && (typeof result.actions.it_is_regroup !== 'undefined')
+						result.round_status.activate_popup != 'activate_choise' && typeof result.actions.it_is_regroup != 'string' && typeof result.actions.regroup_img != 'string'
 					){
 						detailCardPopupOnStartStep(result.played_card['card'], result.played_card['strength']);
 					}
@@ -2134,7 +2139,7 @@ function animationCardReturnToOutage(cards, time, callback){
 function detailCardPopupOnOverloading(cardOverloadingImg, card) {
 	var holder = $('#card-start-step');
 
-	var cardOverloadingHolder = '<div class="content-card-item-main"><img src="'+cardOverloadingImg+'"></div>';
+	var cardOverloadingHolder = '<div class="content-card-item-main" style="background-image: url('+cardOverloadingImg+')"><div card-load-info card-popup><div class="hovered-items"><div class="card-name-property"><p>Перегруппировка</p></div></div></div></div>';
 	holder.find('.content-card-info').empty().append(cardOverloadingHolder);
 	var popContent = createCardDescriptionView(card, card['strength'], 'without-description');
 
