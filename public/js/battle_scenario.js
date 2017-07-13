@@ -167,6 +167,9 @@ function secondTrollPopupCustomImgAndTitle(text, imgSrc) {
 	openSecondTrollPopup(holder,'custom-img-and-title');
 	setTimeout(function(){
 		closeSecondTrollPopup(holder);
+		setTimeout(function(){
+			holder.removeClass('custom-img-and-title');
+		},1000);
 	},2000);
 }
 // /Popup
@@ -1486,7 +1489,9 @@ function processActions(result){
 
 								var cardOverloadingImg = result.actions.regroup_img;// картинка карты перегрупирвка
 
-								detailCardPopupOnOverloading(cardOverloadingImg, card);
+								var type = result.actions.type; //magic or card
+
+								detailCardPopupOnOverloading(cardOverloadingImg, card, type);
 
 							break;
 
@@ -1764,9 +1769,16 @@ function startBattle() {
 				}
 				if(!$.isEmptyObject(result.played_magic)){
 					calculateRightMarginCardHands();
-					fieldBuild(result, false);
+					fieldBuild(result, true);
 
-					processingMagicEffect(result.played_magic);
+					if (
+						result.round_status.activate_popup != 'activate_magic_regroup' && typeof result.actions.regroup_img != 'string'
+					) {
+						processingMagicEffectPopup(result.played_magic);
+					}
+
+					processingMagicEffectButtons(result.played_magic);
+
 
 					processActions(result);
 
@@ -2150,7 +2162,7 @@ function animationCardReturnToOutage(cards, time, callback){
 }
 
 //Показать попап при перегрупировке
-function detailCardPopupOnOverloading(cardOverloadingImg, card) {
+function detailCardPopupOnOverloading(cardOverloadingImg, card, type) {
 	var holder = $('#card-start-step');
 
 	var cardOverloadingHolder = '<div class="content-card-item-main" style="background-image: url('+cardOverloadingImg+')"><div card-load-info card-popup><div class="hovered-items"><div class="card-name-property"><p>Перегруппировка</p></div></div></div></div>';
@@ -2158,6 +2170,13 @@ function detailCardPopupOnOverloading(cardOverloadingImg, card) {
 	var popContent = createCardDescriptionView(card, card['strength'], 'without-description');
 
 	holder.find('.content-card-info').addClass('overloading-animation').append(popContent).end().addClass('overloading');
+
+	switch(type){
+		case 'magic':
+			holder.addClass('overloading-magic');//стили для перегрупировки магической
+		break
+	}
+
 	openSecondTrollPopup(holder,null);
 
 	setTimeout(function(){
@@ -2165,7 +2184,7 @@ function detailCardPopupOnOverloading(cardOverloadingImg, card) {
 		setTimeout(function(){
 			closeSecondTrollPopup(holder,null);
 			setTimeout(function(){
-				holder.removeClass('overloading');
+				holder.removeClass('overloading overloading-magic');
 			},1000)
 		},2000)
 	},2000);
@@ -2575,17 +2594,20 @@ function createGiveUpPopup(conn,ident){
 }
 
 //Вызов магии - открытие попапа с юзаной магией и выключение кнопок магии
-function processingMagicEffect(played_magic){
+function processingMagicEffectPopup(played_magic){
 	for(var player in played_magic){
-		//Выключение юзаных кнопок
-
-		$('[data-player="'+player+'"] .magic-effects-wrap li.active').removeClass('active').addClass('used');
 		setTimeout(function(){
-			$('[data-player="'+player+'"] .magic-effects-wrap li').addClass('disactive');
-
 			//вызов попапа с тайтло и кртинкой магии
 			secondTrollPopupCustomImgAndTitle(played_magic[player]['title'], '/img/card_images/'+played_magic[player]['img_url']);
 		},1000);
+	}
+}
 
+//Вызов магии - выключение кнопок магии
+function processingMagicEffectButtons(played_magic){
+	for(var player in played_magic){
+		//Выключение юзаных кнопок
+		$('[data-player="'+player+'"] .magic-effects-wrap li.active').removeClass('active').addClass('used ');
+		$('[data-player="'+player+'"] .magic-effects-wrap li').addClass('disactive');
 	}
 }
