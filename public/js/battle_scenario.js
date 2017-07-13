@@ -1759,6 +1759,8 @@ function startBattle() {
 					calculateRightMarginCardHands();
 					fieldBuild(result, false);
 
+					processingMagicEffect(result.played_magic);
+
 					processActions(result);
 
 					changeTurnIndicator(result.round_status.current_player); //смена индикатора хода
@@ -2563,4 +2565,20 @@ function createGiveUpPopup(conn,ident){
 			closeAllTrollPopup();
 		}
 	})
+}
+
+//Вызов магии - открытие попапа с юзаной магией и выключение кнопок магии
+function processingMagicEffect(played_magic){
+	for(var player in played_magic){
+		//Выключение юзаных кнопок
+
+		$('[data-player="'+player+'"] .magic-effects-wrap li.active').removeClass('active').addClass('used');
+		setTimeout(function(){
+			$('[data-player="'+player+'"] .magic-effects-wrap li').addClass('disactive');
+
+			//вызов попапа с тайтло и кртинкой магии
+			secondTrollPopupCustomImgAndTitle(played_magic[player]['title'], '/img/card_images/'+played_magic[player]['img_url']);
+		},1000);
+
+	}
 }
