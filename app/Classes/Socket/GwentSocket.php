@@ -1088,9 +1088,12 @@ class GwentSocket extends BaseSocket
 				$battle->turn_expire	= $turn_expire + time();
 				$battle->save();
 
-				$card_image = \DB::table('tbl_cards')->select('img_url')->where('slug','=','peregruppirovka')->first();
+				$card_image = ($msg->type == 'card')
+					? \DB::table('tbl_cards')->select('img_url')->where('slug','=','peregruppirovka')->first()
+					: \DB::table('tbl_magic_effect')->select('img_url')->where('slug','=','taktika')->first();
 
 				$this->step_status['actions']['regroup_img'] = '/img/card_images/'.$card_image->img_url;
+
 				$this->step_status['round_status']['activate_popup'] = '';
 				$this->step_status['round_status']['card_source'] = [$this->users_data[$user_type]['player'] => 'hand'];
 				$this->step_status['round_status']['cards_to_play'] = [];
@@ -1686,7 +1689,7 @@ class GwentSocket extends BaseSocket
 				if(count($users_data['user']['cards_to_play']) > 0){
 					$user_turn_id	= $users_data['user']['id'];
 					$step_status['round_status']['current_player'] = $users_data['user']['login'];
-					$step_status['round_status']['activate_popup'] = 'activate_regroup';
+					$step_status['round_status']['activate_popup'] = (!empty($step_status['played_magic']))? 'activate_magic_regroup': 'activate_regroup';
 					$step_status['actions']['it_is_regroup'] = 'YARRR';
 				}
 			break;

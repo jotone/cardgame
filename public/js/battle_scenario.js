@@ -1242,6 +1242,7 @@ function popupActivation(result){
 				getCardActiveRow(result.round_status.cards_to_play[0]['id'], 'card', conn, ident);//Подсветка ряда действия карты
 			}
 		break;
+		case 'activate_magic_regroup':
 		case 'activate_regroup':
 			$('#selectNewCardsPopup .button-troll').hide();
 			$('#selectNewCardsPopup .button-troll.acceptRegroupCards').show();
@@ -1254,6 +1255,9 @@ function popupActivation(result){
 				card_in_popup_count++;
 			}
 
+			var it_is_magic = (result.round_status.activate_popup == 'activate_magic_regroup')? 'magic': 'card';
+			$('#selectNewCardsPopup #handNewCards').attr('data-type', it_is_magic);
+
 			setMinWidthInPop(card_in_popup_count,$('#selectNewCardsPopup'));
 			openTrollPopup($('#selectNewCardsPopup'));
 
@@ -1265,6 +1269,8 @@ function popupActivation(result){
 					$(this).addClass('glow');
 				}
 			});
+
+			var type = (typeof $('#selectNewCardsPopup #handNewCards').attr('data-type') != 'undefined')? $('#selectNewCardsPopup #handNewCards').attr('data-type'): 'card';
 			//Функция отправки сообщения на соккет о перегруппировки выбраной карты
 			$('#selectNewCardsPopup .button-troll.acceptRegroupCards').click(function(e){
 				e.preventDefault();
@@ -1272,9 +1278,10 @@ function popupActivation(result){
 					var card = $('#selectNewCardsPopup #handNewCards .glow').attr('data-cardid');
 					conn.send(
 						JSON.stringify({
-							action: 'returnCardToHand',
-							ident: ident,
-							card: card
+							action:	'returnCardToHand',
+							ident:	ident,
+							card:	card,
+							type:	type
 						})
 					);
 					closeAllTrollPopup();
