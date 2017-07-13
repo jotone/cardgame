@@ -22,14 +22,14 @@ class BattleFieldController extends BaseController{
 		return $battle_field;
 	}
 
-	public static function battleInfo($battle, $battle_field, $users_data, $magic_usage, $step_status){
+	public static function battleInfo($battle, $battle_field, $users_data, $magic_usage, $step_status){echo __LINE__."\n";
 		$battle_field = self::resetBattleFieldCardsStrength($battle_field);
 		$actions_array_support = [];//Массив действий "Поддержка"
 		$actions_array_fury = [];//Массив действий "Неистовство"
 		$actions_array_fear = [];//Массив действий "Страшный"
 		$actions_array_brotherhood = [];//Массив действий "Боевое братство"
 		$actions_array_inspiration = [];//Массив действий "Воодушевление"
-
+		echo __LINE__."\n";
 		$field_status = [
 			'p1' => [
 				['buffs' => [],'debuffs'=>[],'special'=>[],'warrior'=>[]],
@@ -42,9 +42,9 @@ class BattleFieldController extends BaseController{
 				['buffs' => [],'debuffs'=>[],'special'=>[],'warrior'=>[]],
 			],
 			'mid' => []
-		];
+		];echo __LINE__."\n";
 		$cards_strength = [];
-		$fury_cards = [];
+		$fury_cards = [];echo __LINE__."\n";
 		$played_card_actions = [];
 		if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
 			foreach($step_status['played_card']['card']['actions'] as $action){
@@ -83,7 +83,7 @@ class BattleFieldController extends BaseController{
 						}
 					}
 				}
-			}
+			}echo __LINE__."\n";
 			/*if(!empty($step_status['played_card']['card']['actions'])){
 				if(in_array('support', $played_card_actions)){
 					foreach($step_status['played_card']['card']['actions']['support_ActionRow'] as $row){
@@ -103,7 +103,7 @@ class BattleFieldController extends BaseController{
 					}
 				}
 			}*/
-		}
+		}echo __LINE__."\n";
 
 		foreach($battle_field as $field => $rows){
 			if($field != 'mid'){
@@ -149,7 +149,7 @@ class BattleFieldController extends BaseController{
 					}
 				}
 			}
-		}
+		}echo __LINE__."\n";
 
 		//Применение "Неистовость" к картам
 		foreach($actions_array_fury as $card_id => $card_data){
@@ -248,7 +248,7 @@ class BattleFieldController extends BaseController{
 					}
 				}
 			}
-		}
+		}echo __LINE__."\n";
 
 		//Применение "Поддержка" к картам
 		foreach($actions_array_support as $card_path => $action_card){
@@ -372,7 +372,7 @@ class BattleFieldController extends BaseController{
 					}
 				}
 			}
-		}
+		}echo __LINE__."\n";
 
 		//Применение МЭ "Поддержка" к картам
 		/*foreach($magic_usage as $player => $magic_data){
@@ -538,7 +538,7 @@ class BattleFieldController extends BaseController{
 					}
 				}
 			}
-		}
+		}echo __LINE__."\n";
 
 		//Применение МЭ "Страшный" к картам
 		/*foreach($magic_usage as $player => $magic_data){
@@ -576,7 +576,7 @@ class BattleFieldController extends BaseController{
 					}
 				}
 			}
-		}*/
+		}*/echo __LINE__."\n";
 
 		//Применение "Боевое братство" к картам
 		$cards_to_brotherhood = [];
@@ -667,7 +667,7 @@ class BattleFieldController extends BaseController{
 					}
 				}
 			}
-		}
+		}echo __LINE__."\n";
 
 		if( (isset($cards_to_brotherhood)) && (!empty($cards_to_brotherhood)) ){
 			foreach($cards_to_brotherhood as $player => $group_data){
@@ -728,7 +728,7 @@ class BattleFieldController extends BaseController{
 					}
 				}
 			}
-		}
+		}echo __LINE__."\n";
 		// /Применение "Боевое братство" к картам
 
 		//Применение Воодушевления
@@ -793,7 +793,7 @@ class BattleFieldController extends BaseController{
 				}
 				$field_status[$player][$row]['buffs'] = array_values(array_unique($field_status[$player][$row]['buffs']));
 			}
-		}
+		}echo __LINE__."\n";
 
 		//Применение МЭ "Воодушевление" к картам
 		/*foreach($magic_usage as $player => $magic_data){
@@ -840,7 +840,7 @@ class BattleFieldController extends BaseController{
 					}
 				}
 			}
-		}*/
+		}*/echo __LINE__."\n";
 
 		if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
 			$step_status['played_card']['card']['buffs'] = array_values(array_unique($step_status['played_card']['card']['buffs']));
@@ -921,7 +921,7 @@ class BattleFieldController extends BaseController{
 					}
 				}
 			}
-		}
+		}echo __LINE__."\n";
 
 		return [
 			'battle_field'	=> $battle_field,

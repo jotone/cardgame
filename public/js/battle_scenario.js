@@ -1323,7 +1323,7 @@ function incomeOneCardSelection(card){
 	var content='<li class="content-card-item disable-select" data-cardid="'+card['id']+'" data-relative="'+card['fraction']+'" data-slug="'+card['caption']+'">'+
 		createCardDescriptionView(card, card['strength'])+
 		'</li>';
-    $('.magic-effects-wrap li').removeClass('active');
+	$('.magic-effects-wrap li').removeClass('active');
 	$('.summonCardPopup').removeClass('show');
 	$('#summonWrap').html(content);
 	$('.summonCardPopup').addClass('show');
@@ -1482,7 +1482,8 @@ console.info("action", action)
 							case 'regroup'://Перегрупировка
 
 								var card = result.added_cards[player]['hand'][row];//карты которую мы выбрали для перегрупировкиё
-								var cardOverloadingImg = result.appear.regroup_img;
+
+								var cardOverloadingImg = result.regroup_img;
 
 console.warn("card", card)
 
@@ -1759,7 +1760,12 @@ function startBattle() {
 				if( (result.round_status.status.length > 0) || (!$.isEmptyObject(result.round_status.status)) ){
 					resultPopupShow('Противник пасует');
 				}
-				if(!$.isEmptyObject(result.played_card.card)){
+				if(!$.isEmptyObject(result.played_magic)){
+					calculateRightMarginCardHands();
+					fieldBuild(result, false);
+					changeTurnIndicator(result.round_status.current_player); //смена индикатора хода
+					setDecksValues(result.counts, result.images);
+				}else{
 					if(currentRound != result.round_status.round){
 						//setTimeout(function () {
 						$('.field-for-cards').removeClass('visible');
@@ -1784,12 +1790,6 @@ function startBattle() {
 					){
 						detailCardPopupOnStartStep(result.played_card['card'], result.played_card['strength']);
 					}
-
-				}else{
-					calculateRightMarginCardHands();
-					fieldBuild(result, false);
-					changeTurnIndicator(result.round_status.current_player); //смена индикатора хода
-					setDecksValues(result.counts, result.images);
 				}
 			break;
 		}
