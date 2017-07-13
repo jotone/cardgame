@@ -514,6 +514,7 @@ class GwentSocket extends BaseSocket
 						$this->users_data	= $action_result['users_data'];
 						$battle_field		= $action_result['battle_field'];
 						$user_turn_id		= $action_result['user_turn_id'];
+						var_dump($action_result['magic_usage']);
 						$this->magic_usage	= $action_result['magic_usage'];
 
 						switch($action['caption']){
@@ -1773,7 +1774,6 @@ class GwentSocket extends BaseSocket
 			break;
 
 			case 'spy'://ШПИЙОН
-				var_dump($action);
 				$deck_card_count = count($users_data['user']['deck']);
 				$step_status['played_card']['move_to']['player'] = ($action['spy_fieldChoise'] == 1)? $users_data['opponent']['player']: $users_data['user']['player'];
 				$n = ($deck_card_count >= $action['spy_getCardsCount']) ? $action['spy_getCardsCount'] : $deck_card_count;
