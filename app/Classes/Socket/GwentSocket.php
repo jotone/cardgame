@@ -403,10 +403,10 @@ class GwentSocket extends BaseSocket
 							$this->users_data['user']['energy'] = $this->users_data['user']['energy'] - $magic['energy_cost'];
 
 							if(!isset($this->magic_usage[$this->users_data['user']['player']][$battle->round_count])){
-								/*$this->magic_usage[$this->users_data['user']['player']][$battle->round_count] = [
+								$this->magic_usage[$this->users_data['user']['player']][$battle->round_count] = [
 									'id'	=> Crypt::decrypt($msg->magic),
 									'allow'	=> '1'
-								];*/
+								];
 								$current_actions = $magic['actions'];
 								$this->step_status['played_magic'][$this->users_data['user']['player']] = $magic;
 							}else{
@@ -1304,7 +1304,7 @@ class GwentSocket extends BaseSocket
 						$users_data['opponent']['discard'][] = $users_data['opponent']['hand'][$rand];
 						$card = BattleFieldController::getCardNaturalSetting($users_data['opponent']['hand'][$rand]);
 
-						$step_status['dropped_cards'][$users_data['opponent']['player']]['hand'] = $card['caption'];
+						$step_status['dropped_cards'][$users_data['opponent']['player']]['hand'][$rand] = $card['caption'];
 						$step_status['added_cards'][$users_data['opponent']['player']]['discard'] = $card;
 
 						unset($users_data['opponent']['hand'][$rand]);
@@ -1708,6 +1708,7 @@ class GwentSocket extends BaseSocket
 							foreach($magic['actions'] as $action_data){
 								if($action_data['caption'] == 'inspiration'){
 									$magic_usage[$player][$activated_in_round]['allow'] = 0;
+									$step_status['actions']['appear'][$player][$row][] = $action['caption'];
 								}
 							}
 						}
