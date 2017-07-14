@@ -403,10 +403,10 @@ class GwentSocket extends BaseSocket
 							$this->users_data['user']['energy'] = $this->users_data['user']['energy'] - $magic['energy_cost'];
 
 							if(!isset($this->magic_usage[$this->users_data['user']['player']][$battle->round_count])){
-								$this->magic_usage[$this->users_data['user']['player']][$battle->round_count] = [
+								/*$this->magic_usage[$this->users_data['user']['player']][$battle->round_count] = [
 									'id'	=> Crypt::decrypt($msg->magic),
 									'allow'	=> '1'
-								];
+								];*/
 								$current_actions = $magic['actions'];
 								$this->step_status['played_magic'][$this->users_data['user']['player']] = $magic;
 							}else{
@@ -1245,7 +1245,7 @@ class GwentSocket extends BaseSocket
 				$magic_usage[$users_data['opponent']['player']][2] = ['id' => $msg->magic, 'allow'=>'0'];
 				$step_status['actions'][] = $action['caption'];
 			break;*/
-			
+
 			case 'call'://ПРИЗЫВ
 				$users_data['user']['card_source'] = 'deck';
 				$action_data = [
@@ -1947,7 +1947,7 @@ class GwentSocket extends BaseSocket
 		}
 
 		$step_status['round_status']['card_source'] = [$users_data['user']['player_source'] => $users_data['user']['card_source']];
-		
+
 		return [
 			'users_data'	=> $users_data,
 			'user_turn_id'	=> $user_turn_id,
