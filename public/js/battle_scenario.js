@@ -832,7 +832,23 @@ function fieldBuild(stepStatus, addingAnim){
 				$('.convert-battle-front #'+card['move_to']['player']+'.convert-cards '+rowId+' .cards-row-wrap').append(createFieldCardView(card['card'], card['strength']));
 			}
 		}else{
-			$('.mezhdyblock '+rowId).append(createFieldCardView(card['card'], card['strength']));
+			//вставляем карту в "межблок"(для специальнх карт)
+			var mezhdyblock = $('.mezhdyblock '+rowId);
+			if (mezhdyblock.find('li[data-slug='+card['card']['caption']+']').length > 0) {//если уже есть карта такого типа
+
+				var card = mezhdyblock.find('li[data-slug='+card['card']['caption']+']');
+
+				if (card.find('.count').length > 0) {//добавляем к уже существующей карте каунтер + 1
+					var value = parseInt( card.find('.count').text() ) + 1;
+					card.find('.count').text(value);
+				} else {
+					card.prepend('<div class="count">2</div>');
+				}
+
+			} else {
+				mezhdyblock.append(createFieldCardView(card['card'], card['strength']));
+			}
+
 		}
 	}
 
