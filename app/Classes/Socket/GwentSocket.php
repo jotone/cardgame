@@ -193,7 +193,7 @@ class GwentSocket extends BaseSocket
 			'timing'		=> '',
 			'images'		=> []
 		];
-		$this->magic_usage = ['p1'=>[],'p2'=>[]];
+		$this->magic_usage = unserialize($battle->magic_usage);//Данные о использовании магии
 
 		if(isset($msg->timing)) $this->users_data['user']['turn_expire'] = $msg->timing - $this->users_data['user']['time_shift'];
 
@@ -375,7 +375,6 @@ class GwentSocket extends BaseSocket
 				if($battle->fight_status == 2){
 					//Данные о текущем пользователе
 					$battle_field = unserialize($battle->battle_field);//Данные о поле битвы
-					$this->magic_usage = unserialize($battle->magic_usage);//Данные о использовании магии
 					//Установка источника хода по умолчанию
 					$this->users_data['user']['cards_to_play'] = [];
 					$this->users_data['user']['player_source'] = $this->users_data['user']['player'];
@@ -586,6 +585,7 @@ class GwentSocket extends BaseSocket
 					$battle->user_id_turn	= $user_turn_id;
 					$battle->turn_expire	= $turn_expire+time();
 					$battle->save();
+					var_dump($battle->magic_usage);
 
 					self::sendUserMadeAction($this->users_data, $this->step_status, $msg, $SplBattleObj, $from, $showTimerOfUser);
 				}
@@ -1111,7 +1111,7 @@ class GwentSocket extends BaseSocket
 			->select('id','turn_expire','time_shift')
 			->where('id', '=', $users_data[$showTimerOfUser]['battle_member_id'])
 			->first();
-		$step_status['timing'] = $users_battle_data->turn_expire - $users_battle_data->time_shift;
+		$step_status['timing'] = $users_battle_data->turn_expire - $users_battle_data->time_shift + time();
 
 		$step_status['images'] = [
 			$users_data['user']['login'] => $users_data['user']['card_images'],
@@ -1147,7 +1147,6 @@ class GwentSocket extends BaseSocket
 			$result['round_status']['activate_popup'] = '';
 		}
 		$result['deck_slug'] = $users_data['opponent']['current_deck'];
-		$result['timing'] = $step_status['timing']+time();
 		self::sendMessageToOthers($from, $result, $SplBattleObj[$msg->ident->battleId]);
 	}
 
