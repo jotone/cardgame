@@ -133,7 +133,7 @@ class SiteGameController extends BaseController
 			$deck_card_count = count($real_card_array);
 		}
 
-		$available_to_change = ($user_deck_race == 'highlander')? 40: 20;
+		$available_to_change = ($user_deck_race == 'highlander')? 4: 2;
 
 		$league_data = \DB::table('tbl_league')
 			->select('slug', 'min_lvl')
