@@ -80,6 +80,8 @@ function ajaxErrorMsg(jqXHR, exception) {
 
 	//Смена идентификатора хода пользователя
 	function changeTurnIndicator(login) {
+		console.log(login)
+		console.log($('.user-describer').attr('id'))
 		if(login == $('.user-describer').attr('id')){
 			$('.user-turn-wrap .turn-indicator').addClass('active');
 		}else{
@@ -1629,7 +1631,7 @@ function startBattle() {
 				//Запрос на формирование изначальной колоды и руки пользователя
 				if ( usersAreJoinedAJAX !== null ) {
 					console.info("usersAreJoinedAJAX.abort()")
-				    usersAreJoinedAJAX.abort();
+					usersAreJoinedAJAX.abort();
 				}
 
 				usersAreJoinedAJAX = $.ajax({
@@ -1847,6 +1849,9 @@ function startBattle() {
 					}
 				}
 			break;
+			case 'dropCard':
+				fieldBuild(result, false);
+			break;
 		}
 
 		if( (result.message == 'allUsersAreReady') || (result.message == 'userMadeAction') ){
@@ -1979,7 +1984,7 @@ function detailCardPopupOnStartStep(card, strength, callback) {
 
 	closeAllTrollPopup();
 
-	if (typeof card != 'undefined') {
+	if( (typeof card != 'undefined') && (!$.isEmptyObject(card)) ){
 		var holder = $('#card-start-step');
 		holder.find('.content-card-info').empty();
 		var popContent = createCardDescriptionView(card, strength, 'without-description');
@@ -2318,11 +2323,11 @@ function animatePositiveNegativeEffects(obj) {
 	},600);
 }
 
-function animateCardStrengthPulsing(card,effectName,effectType,strength,strengthMod,operation) {
+function animateCardStrengthPulsing(card,effectName,effectType,strength,strengthMod,operation,position) {
 
 	setTimeout(function(){
 		var currentValue = card.find('.card-current-value');
-		currentValue.text(strength);//на всякий - вставляем обычное значение карты
+		//currentValue.text(strength);//на всякий - вставляем обычное значение карты
 		card.addClass('pulsed');//пульсация - начало
 
 		var buffDebuffHolder = card.find('.buff-debuff-value');
@@ -2331,13 +2336,17 @@ function animateCardStrengthPulsing(card,effectName,effectType,strength,strength
 
 		switch(operation.charAt(0)){//чекаем какая будет операция - добавление(+) или убывание(-) или умножение(х2)
 			case '+':
-				operationType = '+';
-				newValue = strengthMod - strength;
+				//operationType = '+';
+				var lastStrength = parseInt(currentValue.text());
+				operationType = (strengthMod - lastStrength > 0)? '+': '-';
+				newValue = strengthMod - lastStrength;//strengthMod - strength
 
 				break;
 			case '-':
-				operationType = '-';
-				newValue = Math.abs(strengthMod - strength);//по модулю
+				//operationType = '-';
+				var lastStrength = parseInt(currentValue.text());
+				operationType = (strengthMod - lastStrength > 0)? '+': '-';
+				newValue = Math.abs(strengthMod - lastStrength);//по модулю//strengthMod - strength
 				break;
 			case 'x':// х2 х3 ...
 				operationType = 'x';
