@@ -775,9 +775,10 @@ class GwentSocket extends BaseSocket
 						$result['message'] = 'roundEnds';
 						$result['battleInfo'] = $msg->ident->battleId;
 						$result['user_hand'] = self::getDeckCards($this->users_data['user']['hand']);
-
+						$result['deck_slug'] = $this->users_data['user']['current_deck'];
 						self::sendMessageToSelf($from, $result);
 						$result['user_hand'] = self::getDeckCards($this->users_data['opponent']['hand']);
+						$result['deck_slug'] = $this->users_data['opponent']['current_deck'];
 						self::sendMessageToOthers($from, $result, $this->battles[$msg->ident->battleId]);
 					}else{
 						$battle->fight_status = 3;
