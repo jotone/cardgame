@@ -1389,17 +1389,22 @@ function processActions(result){
 
 			switch(result.actions.appear){
 				case 'cure':
-
 					setTimeout(function(){
 						setCardStrength(result.actions.cards_strength);
 					},1000);
 					break;
 				case 'master':
-
 					// setTimeout(function(){
 					// 	setCardStrength(result.actions.cards_strength);
 					// },1000);
 					break;
+				case 'block_magic':// Магия "блокировка"
+
+					var player = Object.keys(result.played_magic)[0];
+					var opponent = ( player == 'p2' ) ? 'p1' : 'p2';
+					$('[data-player="'+opponent+'"] .magic-effects-wrap li').removeClass('active').addClass('disactive');
+
+				break;
 			}
 
 		} else{
@@ -1497,7 +1502,6 @@ function processActions(result){
 								detailCardPopupOnOverloading(cardOverloadingImg, card, type);
 
 							break;
-
 
 						}
 
@@ -1945,20 +1949,24 @@ function animateHandCard() {
 
 //Показ попапа с картой которой ходит игрок( открываеться при начале хода )
 function detailCardPopupOnStartStep(card, strength, callback) {
+
 	closeAllTrollPopup();
-	var holder = $('#card-start-step');
-	holder.find('.content-card-info').empty();
-	var popContent = createCardDescriptionView(card, strength, 'without-description');
 
-	holder.find('.content-card-info').append(popContent);
-	openSecondTrollPopup(holder,null);
+	if (typeof card != 'undefined') {
+		var holder = $('#card-start-step');
+		holder.find('.content-card-info').empty();
+		var popContent = createCardDescriptionView(card, strength, 'without-description');
 
-	setTimeout(function() {
-		closeSecondTrollPopup(holder,null);//закрываю попап с детальной инфой карты
+		holder.find('.content-card-info').append(popContent);
+		openSecondTrollPopup(holder,null);
+
 		setTimeout(function() {
-			showCardOnDesc(null, callback);//показываю сыгранную карту на столе
-		}, 500)
-	}, 2000);
+			closeSecondTrollPopup(holder,null);//закрываю попап с детальной инфой карты
+			setTimeout(function() {
+				showCardOnDesc(null, callback);//показываю сыгранную карту на столе
+			}, 500)
+		}, 2000);
+	}
 }
 
 function recalculateCardsStrengthTimeout(params){
