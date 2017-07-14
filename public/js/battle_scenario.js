@@ -1727,7 +1727,10 @@ function startBattle() {
 					animateHandCard();
 					calculateRightMarginCardHands();
 
-					popupActivation(result)
+					popupActivation(result);
+
+					//специальная проверка на рассовую магию
+					checkMagiaUsage(result);
 
 					allowToAction = (result.round_status.current_player == $('.user-describer').attr('id'))? true: false;
 					cardCase(result.round_status.card_source, allowToAction);//Функция выбора карт
@@ -2651,5 +2654,20 @@ function processingMagicEffectButtons(played_magic){
 		//Выключение юзаных кнопок
 		$('[data-player="'+player+'"] .magic-effects-wrap li.active').removeClass('active').addClass('used ');
 		$('[data-player="'+player+'"] .magic-effects-wrap li').addClass('disactive');
+	}
+}
+
+function checkMagiaUsage(result){
+	switch(result.deck_slug){
+		case 'forest'://Расса хозяева леса
+
+			for(var player in result.magic_usage){
+				var magiaCounts = result.magic_usage[player];
+				if (Object.keys(magiaCounts).length <= 1) {
+					$('[data-player="'+player+'"] .magic-effects-wrap li:not(.used)').removeClass('disactive');
+				}
+			}
+
+		break;
 	}
 }
