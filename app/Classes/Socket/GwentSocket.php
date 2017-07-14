@@ -403,10 +403,10 @@ class GwentSocket extends BaseSocket
 							$this->users_data['user']['energy'] = $this->users_data['user']['energy'] - $magic['energy_cost'];
 
 							if(!isset($this->magic_usage[$this->users_data['user']['player']][$battle->round_count])){
-								/*$this->magic_usage[$this->users_data['user']['player']][$battle->round_count] = [
+								$this->magic_usage[$this->users_data['user']['player']][$battle->round_count] = [
 									'id'	=> Crypt::decrypt($msg->magic),
 									'allow'	=> '1'
-								];*/
+								];
 								$current_actions = $magic['actions'];
 								$this->step_status['played_magic'][$this->users_data['user']['player']] = $magic;
 							}else{
@@ -1761,6 +1761,18 @@ class GwentSocket extends BaseSocket
 						$players = ['p1','p2'];
 					}else{
 						$players = ($step_status['played_card']['move_to']['player'] == 'p1')? ['p2']: ['p1'];
+					}
+					foreach($players as $player){
+						foreach($action['fear_ActionRow'] as $row){
+							$step_status['actions']['appear'][$player][$row][] = $action['caption'];
+						}
+					}
+				}
+				if(!empty($step_status['played_magic'])){
+					if($action['fear_actionTeamate'] == 1){
+						$players = ['p1','p2'];
+					}else{
+						$players = [$users_data['opponent']['player']];
 					}
 					foreach($players as $player){
 						foreach($action['fear_ActionRow'] as $row){
