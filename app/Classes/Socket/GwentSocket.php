@@ -1954,11 +1954,15 @@ class GwentSocket extends BaseSocket
 			$users_data['user']['card_source'] = 'hand';
 			$users_data['user']['player_source'] = $users_data['user']['player'];
 			$step_status['round_status']['activate_popup'] = '';
-			$user_turn_id = $users_data['opponent']['id'];
-			$step_status['round_status']['current_player'] = $users_data['opponent']['login'];
+			if($users_data['opponent']['round_passed'] > 0){
+				$user_turn_id = $users_data['user']['id'];
+				$step_status['round_status']['current_player'] = $users_data['user']['login'];
+			}else{
+				$user_turn_id = $users_data['opponent']['id'];
+				$step_status['round_status']['current_player'] = $users_data['opponent']['login'];
+			}
+			$step_status['round_status']['card_source'] = [$users_data['user']['player_source'] => $users_data['user']['card_source']];
 		}
-
-		$step_status['round_status']['card_source'] = [$users_data['user']['player_source'] => $users_data['user']['card_source']];
 
 		return [
 			'users_data'	=> $users_data,
