@@ -1480,8 +1480,12 @@ function processActions(result){
 									obj.effectName = 'inspiration';
 									obj.effectType = 'buff';
 									obj.effectAnimation = 'fade';
+									obj.newCardStrength = result.actions.cards_strength;
+
 								//Внимание - Удаление ефекта !
 								animateDeletingPositiveNegativeEffects(obj);
+
+
 							break;
 							case 'regroup'://Перегрупировка
 
@@ -2334,6 +2338,7 @@ function animateDeletingPositiveNegativeEffects(obj) {
 		effectName = obj.effectName,
 		effectType = obj.effectType;
 		effectAnimation = obj.effectAnimation;
+		newCardStrength = obj.newCardStrength;
 
 	var mainRow = field.closest('.convert-stuff');
 	var pointsSum = mainRow.find('.field-for-sum');
@@ -2378,6 +2383,16 @@ function animateDeletingPositiveNegativeEffects(obj) {
 					break;
 			}
 
+			if (typeof newCardStrength != 'undefined') {//Если есть новая сила карт
+
+				setCardStrength(newCardStrength);//Вставляем новую силу все картам на поле
+
+				setTimeout(function(){
+					recalculateBattleStrength();//пересчет сил карт на поле боя
+				},100);
+
+			}
+
 
 			clearInterval(timer);
 		}
@@ -2397,15 +2412,14 @@ function animationBurningCardEndDeleting(card,action,cards_strength) {
 	}
 
 	switch(action){
-		case 'fade':
+		case 'fade'://карта пропадает просто через fade
 			card.removeClass('show');
 			setTimeout(function() {
 				card.remove();
 				recalculateBattleStrength();//пересчет сил на поле боя
 			}, 500);
 		break;
-		default:
-			//console.log('default');
+		default://карта "сжигаеться"(сиреневым пламенем)
 			card.append('<span class="card-burning-item-main"><img src="/images/card-burning-item-main-2.gif" alt="" /></span>');
 			setTimeout(function(){
 				card.addClass('card-burning');
@@ -2599,6 +2613,9 @@ function processingMagicEffectPopup(played_magic){
 		setTimeout(function(){
 			//вызов попапа с тайтло и кртинкой магии
 			secondTrollPopupCustomImgAndTitle(played_magic[player]['title'], '/img/card_images/'+played_magic[player]['img_url']);
+
+			showCardOnDesc();//Показ карт на столе -
+
 		},1000);
 	}
 }
