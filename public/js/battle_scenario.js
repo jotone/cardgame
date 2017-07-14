@@ -1604,11 +1604,19 @@ function startBattle() {
 		console.log(result);
 		console.groupEnd();
 
+		var usersAreJoinedAJAX = null;
+
 		switch(result.message){
 			case 'usersAreJoined':
 				var token = $('.market-buy-popup input[name=_token]').val().trim();
+
 				//Запрос на формирование изначальной колоды и руки пользователя
-				$.ajax({
+				if ( usersAreJoinedAJAX !== null ) {
+					console.info("usersAreJoinedAJAX.abort()")
+				    usersAreJoinedAJAX.abort();
+				}
+
+				usersAreJoinedAJAX = $.ajax({
 					url:		'/game_start',
 					type:		'PUT',
 					headers:	{'X-CSRF-TOKEN': token},
