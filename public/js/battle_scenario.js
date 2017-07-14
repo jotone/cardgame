@@ -1018,7 +1018,6 @@ function sortCards(){
 		}
 	});
 	arrayToSort.other.sort(function(a, b){
-		//return b.strength >= a.strength;
 		var r = (b['strength'] - a['strength']);
 		if(r !== 0) return r;
 		return a['title'].localeCompare(b['title']);
