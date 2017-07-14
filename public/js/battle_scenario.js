@@ -1620,7 +1620,7 @@ function startBattle() {
 							hidePreloader();
 						}
 
-						var expireTime = result.turn_expire - phpTime();
+						var expireTime = result.timing - phpTime();
 						convertTimeToStr(expireTime);
 						if(expireTime > 0){
 							startTimer(result.round_status.current_player);
