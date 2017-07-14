@@ -686,8 +686,6 @@ class GwentSocket extends BaseSocket
 					$this->users_data	= $clear_result['users_data'];
 					$this->step_status	= $clear_result['step_status'];
 					$this->magic_usage	= $clear_result['magic_usage'];
-					var_dump('Passed');
-					var_dump($this->magic_usage);
 
 					$battle->round_count	= $battle->round_count +1;
 					$battle->round_status	= serialize($round_status);
@@ -753,6 +751,8 @@ class GwentSocket extends BaseSocket
 
 						$battle->first_turn_user_id = $user_turn_id;
 						$battle->user_id_turn = $user_turn_id;
+						var_dump($user_turn_id);
+						var_dump($this->users_data[$user_turn_id]['login']);
 						$battle->save();
 
 						$this->step_status['round_status']['current_player'] = $this->users_data[$user_turn_id]['login'];
@@ -998,7 +998,8 @@ class GwentSocket extends BaseSocket
 						}
 					}
 					if($position >= 0){
-						$this->step_status['dropped_cards'][$msg->player][$msg->deck][] = $this->users_data[$msg->player][$msg->deck][$position];
+						$card = BattleFieldController::cardData($this->users_data[$msg->player][$msg->deck][$position]);
+						$this->step_status['dropped_cards'][$msg->player][$msg->deck][] = $card['caption'];
 						unset($this->users_data[$msg->player][$msg->deck][$position]);
 						$this->users_data[$msg->player][$msg->deck] = array_values($this->users_data[$msg->player][$msg->deck]);
 
