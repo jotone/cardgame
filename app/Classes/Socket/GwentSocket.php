@@ -193,6 +193,7 @@ class GwentSocket extends BaseSocket
 			'timing'		=> '',
 			'images'		=> []
 		];
+		$this->magic_usage = ['p1'=>[],'p2'=>[]];
 
 		if(isset($msg->timing)) $this->users_data['user']['turn_expire'] = $msg->timing - $this->users_data['user']['time_shift'];
 
@@ -578,8 +579,6 @@ class GwentSocket extends BaseSocket
 						'user_hand'	=> serialize($this->users_data['opponent']['hand']),
 						'user_discard'=> serialize($this->users_data['opponent']['discard'])
 					]);
-					var_dump('madeAction');
-					var_dump($this->magic_usage);
 
 					//Сохраняем поле битвы
 					$battle->battle_field	= serialize($battle_field);
@@ -680,12 +679,10 @@ class GwentSocket extends BaseSocket
 					];
 
 					$clear_result	= self::clearBattleField($battle, $battle_field, $this->users_data, $this->magic_usage, $gain_cards_count, $this->step_status);
-
 					$battle_field	= $clear_result['battle_field'];
 
 					$this->users_data	= $clear_result['users_data'];
 					$this->step_status	= $clear_result['step_status'];
-					$this->magic_usage	= $clear_result['magic_usage'];
 
 					$battle->round_count	= $battle->round_count +1;
 					$battle->round_status	= serialize($round_status);
@@ -2082,7 +2079,6 @@ class GwentSocket extends BaseSocket
 			'battle_field'	=> $temp['battle_field'],
 			'users_data'	=> $users_data,
 			'deadless_cards'=> $deadless_cards,
-			'magic_usage'	=> $magic_usage,
 			'step_status'   => $step_status
 		];
 	}
