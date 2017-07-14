@@ -52,6 +52,8 @@ class BattleFieldController extends BaseController{
 					$played_card_actions[] = $action['caption'];
 				}
 			}
+			var_dump('=====================');
+			var_dump($step_status['actions']['disappear']);
 		}
 		if( isset($step_status['played_card']['card']) && !empty($step_status['played_card']['card']) ){
 			foreach($step_status['played_card']['card']['actions'] as $action){
@@ -860,12 +862,12 @@ class BattleFieldController extends BaseController{
 							$magic = self::magicData($magic_id['id']);//Данные о МЭ
 							foreach($magic['actions'] as $action_iter => $action){
 								if($action['caption'] == 'inspiration'){
-									foreach ($action['inspiration_ActionRow'] as $row){
+									foreach($action['inspiration_ActionRow'] as $row){
 										if(empty($battle_field[$player][$row]['special'])){
 											foreach($battle_field[$player][$row]['warrior'] as $card_data){
 												$card = self::getCardNaturalSetting($card_data['id']);
 												foreach($card['actions'] as $action){
-													if($action['caption'] == 'inspiration'){
+													if($action['caption'] != 'inspiration'){
 														$step_status['actions']['disappear'][$player][$row][] = 'inspiration';
 													}
 													break 2;
@@ -885,6 +887,8 @@ class BattleFieldController extends BaseController{
 			(isset($step_status['played_card']['card']) || isset($step_status['played_magic'])) &&
 			(!empty($step_status['played_card']['card']) || !empty($step_status['played_magic']))
 		){
+			var_dump('------------------------------');
+			var_dump($step_status['actions']['disappear']);
 			if(!empty($step_status['played_card']['card'])){
 				$step_status['played_card']['card']['buffs'] = array_values(array_unique($step_status['played_card']['card']['buffs']));
 				$step_status['played_card']['card']['debuffs'] = array_values(array_unique($step_status['played_card']['card']['debuffs']));
@@ -918,6 +922,8 @@ class BattleFieldController extends BaseController{
 					}
 				}
 			}
+			var_dump('+++++++++++++++++++++');
+			var_dump($step_status['actions']['disappear']);
 		}
 
 		return [
