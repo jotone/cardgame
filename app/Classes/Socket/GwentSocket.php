@@ -1239,12 +1239,12 @@ class GwentSocket extends BaseSocket
 
 	protected static function actionProcessing($action, $battle_field, $users_data, $step_status, $user_turn_id, $msg, $magic_usage, $battle){
 		switch($action['caption']){
-			/*case 'block_magic'://БЛОКИРОВКА МАГИИ
-				$magic_usage[$users_data['opponent']['player']][0] = ['id' => $msg->magic, 'allow'=>'0'];
-				$magic_usage[$users_data['opponent']['player']][1] = ['id' => $msg->magic, 'allow'=>'0'];
-				$magic_usage[$users_data['opponent']['player']][2] = ['id' => $msg->magic, 'allow'=>'0'];
-				$step_status['actions'][] = $action['caption'];
-			break;*/
+			case 'block_magic'://БЛОКИРОВКА МАГИИ
+				$magic_usage[$users_data['opponent']['player']][0] = ['id' => Crypt::decrypt($msg->magic), 'allow'=>'0'];
+				$magic_usage[$users_data['opponent']['player']][1] = ['id' => Crypt::decrypt($msg->magic), 'allow'=>'0'];
+				$magic_usage[$users_data['opponent']['player']][2] = ['id' => Crypt::decrypt($msg->magic), 'allow'=>'0'];
+				$step_status['actions']['appear'] = $action['caption'];
+			break;
 
 			case 'call'://ПРИЗЫВ
 				$users_data['user']['card_source'] = 'deck';
