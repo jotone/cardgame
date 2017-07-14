@@ -616,7 +616,7 @@
 							}
 							?>
 							@foreach($ally['magic'] as $value)
-								<?php $disactive = ''; ?>
+								<?php $disactive = ''; $used = '';?>
 								@foreach($magic_usage[$ally['player']] as $activated_in_round => $magic_id)
 									@if($magic_id != 0)
 										<?php
@@ -626,12 +626,15 @@
 										){
 											$disactive = 'disactive';
 										}
+										if(\Illuminate\Support\Facades\Crypt::decrypt($value['id']) == $magic_id['id']){
+											$used = ' used';
+										}
 										?>
 									@else
 										<?php $disactive = 'disactive'; ?>
 									@endif
 								@endforeach
-								<li data-cardid="{{ $value['id'] }}" class="{{ $disable_by_over }} {{ $disactive }}">
+								<li data-cardid="{{ $value['id'] }}" class="{{ $disable_by_over }} {{ $disactive }}{{ $used }}">
 									<img src="{{ URL::asset('/img/card_images/'.$value['img_url']) }}" alt="{{ $value['slug'] }}" title="{{ $value['title'] }}">
 									<div class="info-img">
 										<img class="ignore" data-type="magic" src="{{ URL::asset('/images/info-icon.png') }}" alt="">

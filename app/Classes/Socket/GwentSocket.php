@@ -741,7 +741,7 @@ class GwentSocket extends BaseSocket
 							$user_turn_id = $this->users_data[$type]['id'];
 						}
 
-						$this->step_status['timing'] = $this->users_data[$user_turn_id]['turn_expire'];
+						$this->step_status['timing'] = $this->users_data[$user_turn_id]['turn_expire'] + time();
 						$this->step_status['images'] = [
 							$this->users_data['user']['login'] => $this->users_data['user']['card_images'],
 							$this->users_data['opponent']['login'] => $this->users_data['opponent']['card_images'],
