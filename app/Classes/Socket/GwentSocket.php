@@ -579,6 +579,7 @@ class GwentSocket extends BaseSocket
 						'user_discard'=> serialize($this->users_data['opponent']['discard'])
 					]);
 
+					$this->step_status['magic_usage'] = $this->magic_usage;
 					//Сохраняем поле битвы
 					$battle->battle_field	= serialize($battle_field);
 					$battle->magic_usage	= serialize($this->magic_usage);
@@ -754,6 +755,7 @@ class GwentSocket extends BaseSocket
 
 						$this->step_status['round_status']['current_player'] = $this->users_data[$user_turn_id]['login'];
 						$this->step_status['round_status']['card_source'] = [$this->users_data[$user_turn_id]['player'] => 'hand'];
+						$this->step_status['magic_usage'] = $this->magic_usage;
 
 						foreach($this->users_data as $user_type => $user){
 							if(($user_type == 'user') || ($user_type == 'opponent')){
