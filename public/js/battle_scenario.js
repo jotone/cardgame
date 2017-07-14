@@ -1421,14 +1421,13 @@ function processActions(result){
 							case 'support'://Поддержка
 								var obj = {};
 									obj.field = actionRow  //розметка поля с картами ( id="meele" or "range" or "superRange")
-									obj.cardsMass = (!$.isEmptyObject(result.actions.cards[player])) ? result.actions.cards[player][row]: null;// масив с картами на этом поле
-									obj.effectName = 'support';
-									obj.effectType = 'buff';
+									obj.cardsMass = (!$.isEmptyObject(result.actions.cards[player])) ? result.actions.cards[player][row]: null;// масив с картами на этом поле(с силой карты и с модифицированой силой)
+									obj.effectName = 'support';//назв бафа-дебафа
+									obj.effectType = 'buff';//тип бафа-дебафа
 
 								animatePositiveNegativeEffects(obj);
 							break;
 							case 'brotherhood'://Боевое братство
-
 								var obj = {};
 									obj.field = actionRow;
 									obj.cardsMass = (!$.isEmptyObject(result.actions.cards[player])) ? result.actions.cards[player][row]: null;
@@ -1478,13 +1477,12 @@ function processActions(result){
 
 								var obj = {};
 									obj.field = actionRow;
-									obj.cardIndex = 'undefined';
 									obj.effectName = 'inspiration';
 									obj.effectType = 'buff';
 									obj.effectAnimation = 'fade';
-									obj.newCardStrength = result.actions.cards_strength;
+									obj.newCardStrength = result.actions.cards_strength;//новая сила всех карт - когда спадает воодушевление(при розыгрыше печали) - вставляем новые значения силы всем картам и перешитываем их силы
 
-								//Внимание - Удаление ефекта !
+								//Внимание - Удаление ефекта Воодушевления!
 								animateDeletingPositiveNegativeEffects(obj);
 
 
@@ -1530,8 +1528,7 @@ function processActions(result){
 						switch(action){
 							case 'support':
 								var obj = {};
-									obj.field = actionRow
-									obj.cardIndex = parseInt(item);
+									obj.field = actionRow;
 									obj.effectName = 'support';
 									obj.effectType = 'buff';
 
@@ -1540,8 +1537,7 @@ function processActions(result){
 
 							case 'brotherhood':
 								var obj = {};
-									obj.field = actionRow
-									obj.cardIndex = parseInt(item);
+									obj.field = actionRow;
 									obj.effectName = 'brotherhood';
 									obj.effectType = 'buff';
 
@@ -1551,7 +1547,6 @@ function processActions(result){
 							case 'terrify':
 								var obj = {};
 									obj.field = actionRow;
-									obj.cardIndex = parseInt(item);
 									obj.effectName = 'terrify';
 									obj.effectType = 'debuff';
 
@@ -1561,7 +1556,6 @@ function processActions(result){
 							case 'fury':
 								var obj = {};
 									obj.field = actionRow;
-									obj.cardIndex = parseInt(item);
 									obj.effectName = 'fury';
 									obj.effectType = 'buff';
 
@@ -1777,14 +1771,16 @@ function startBattle() {
 					calculateRightMarginCardHands();
 					fieldBuild(result, true);
 
+					// Не показывать детальный попап карты если:
+					// есть попап "выбора" карт (activate_view)
+					// или розыгрываем магию перегрупировки (activate_magic_regroup)
 					if (
 						result.round_status.activate_popup != 'activate_magic_regroup' && result.round_status.activate_popup != 'activate_view'
 					) {
 						processingMagicEffectPopup(result.played_magic);
 					}
 
-					processingMagicEffectButtons(result.played_magic);
-
+					processingMagicEffectButtons(result.played_magic);//дисейблим кнопки магии
 
 					processActions(result);
 
@@ -2200,18 +2196,17 @@ function detailCardPopupOnOverloading(cardOverloadingImg, card, type) {
 }
 
 function animatePositiveNegativeEffects(obj) {
-	var field = obj.field,
-		cardsMass = obj.cardsMass,
-		effectName = obj.effectName,
-		effectType = obj.effectType;
+	var field = obj.field,//розметка поля с картами ( id="meele" or "range" or "superRange")
+		cardsMass = obj.cardsMass,// масив с картами на этом поле(с силой карты и с модифицированой силой)
+		effectName = obj.effectName,//назв бафа-дебафа
+		effectType = obj.effectType;//тип бафа-дебафа
 
 	var mainRow = field.closest('.convert-stuff');
 	var pointsSum = mainRow.find('.field-for-sum');
 
 	//Анимация на поле
 	switch(effectName){
-		case 'fury':
-
+		case 'fury'://если неистовство - пропустить
 			break;
 		default:
 			mainRow.addClass(effectName+'-'+effectType+'-wrap');
@@ -2239,27 +2234,28 @@ function animatePositiveNegativeEffects(obj) {
 
 				var $cards = field.find('.cards-row-wrap .content-card-item');
 				for(var c in cardsMass){
-					var $card = $($cards[c]);
+					var $card = $($cards[c]);//Карта
 
+					//Проверка на имунитет карты
 					if (
 						(effectType == 'debuff' && $card.is('[data-immune=0]') && $card.is('[data-full-immune=0]') ) || (effectType == 'buff' && $card.is('[data-full-immune=0]'))
 					) {
-						var strength = parseInt(cardsMass[c]['strength']);
+						var strength = parseInt(cardsMass[c]['strength']);//Сила карты(до бафа-дебафа)
 
-						var strengthMod = parseInt(cardsMass[c]['strModif']);
+						var strengthMod = parseInt(cardsMass[c]['strModif']);//Новая(модифицированная) сила карты
 
-						var operation = cardsMass[c]['operation'];
+						var operation = cardsMass[c]['operation'];//Операция - + или - или х2 х3
 
-						if (strength !== NaN && strength !== strengthMod) {
+						if (strength !== NaN && strength !== strengthMod) {//Проверка старая сила карты != новая сила карты
 
 							animateCardStrengthPulsing($card,effectName,effectType,strength,strengthMod,operation);
 
 						}
 					}
 
-					switch(effectType){
+					switch(effectType){//Добавление класов на сому карту(для подсвечивания бафов-дебафов)
 						case 'buff':
-							if ( effectName == 'brotherhood' && (Object.keys(cardsMass).length <= 1)) {
+							if ( effectName == 'brotherhood' && (Object.keys(cardsMass).length <= 1)) {//Если это боевое братство и
 								break;
 							}
 							$card.addClass('buffed '+effectName+'-buffed');
@@ -2271,14 +2267,6 @@ function animatePositiveNegativeEffects(obj) {
 
 				};
 			}
-
-			// setTimeout(function() {
-			// 	pointsSum.addClass('pulsed');
-			// 	setTimeout(function() {
-			// 		pointsSum.removeClass('pulsed');
-			// 	}, 500);
-			// }, 0);
-
 
 			switch(effectType){
 				case 'buff':
@@ -2307,7 +2295,7 @@ function animateCardStrengthPulsing(card,effectName,effectType,strength,strength
 		var newValue = null;
 		var operationType = '';
 
-		switch(operation.charAt(0)){
+		switch(operation.charAt(0)){//чекаем какая будет операция - добавление(+) или убывание(-) или умножение(х2)
 			case '+':
 				operationType = '+';
 				newValue = strengthMod - strength;
@@ -2317,7 +2305,7 @@ function animateCardStrengthPulsing(card,effectName,effectType,strength,strength
 				operationType = '-';
 				newValue = Math.abs(strengthMod - strength);//по модулю
 				break;
-			case 'x':
+			case 'x':// х2 х3 ...
 				operationType = 'x';
 				newValue = operation.substr(1);
 				break;
@@ -2338,12 +2326,11 @@ function animateCardStrengthPulsing(card,effectName,effectType,strength,strength
 }
 
 function animateDeletingPositiveNegativeEffects(obj) {
-	var field = obj.field,
-		cardIndex = obj.cardIndex,
-		effectName = obj.effectName,
-		effectType = obj.effectType;
-		effectAnimation = obj.effectAnimation;
-		newCardStrength = obj.newCardStrength;
+	var field = obj.field,//розметка поля с картами ( id="meele" or "range" or "superRange")
+		effectName = obj.effectName,//назв бафа-дебафа
+		effectType = obj.effectType;//тип бафа-дебафа
+		effectAnimation = obj.effectAnimation;//анимация удаления (fade)
+		newCardStrength = obj.newCardStrength;//новая сила всех карт - когда спадает воодушевление(при розыгрыше печали) - вставляем новые значения силы всем картам и перешитываем их силы
 
 	var mainRow = field.closest('.convert-stuff');
 	var pointsSum = mainRow.find('.field-for-sum');
@@ -2353,7 +2340,6 @@ function animateDeletingPositiveNegativeEffects(obj) {
 	var timer = setInterval(function() {
 		if ( !$('.troll-popup.show').length ) {
 
-
 			mainRow.removeClass(effectName+'-'+effectType+'-wrap '+effectType);
 
 			if(field.children('.'+effectName+'-'+effectType+'.active').length > 0){// удаляем разметку подсвечивания полей
@@ -2361,13 +2347,13 @@ function animateDeletingPositiveNegativeEffects(obj) {
 
 				switch(effectAnimation){
 
-					case 'fade':
+					case 'fade'://удаление через fade потом удаление разметки
 						effectMarkup.fadeOut(500,function(){
 							effectMarkup.remove();
 						})
 						break;
 
-					default:
+					default://удаляем клас - анимация через цсс - удаляем разметку
 						effectMarkup.removeClass('active');
 						setTimeout(function(){
 							effectMarkup.fadeOut("slow",function(){
@@ -2379,7 +2365,7 @@ function animateDeletingPositiveNegativeEffects(obj) {
 
 			var $cards = field.find('.cards-row-wrap .content-card-item');// выборка карты
 
-			switch(effectType){//удаляем класы бафов-дебафов
+			switch(effectType){//удаляем класы бафов-дебафов с карты
 				case 'buff':
 					$cards.removeClass('buffed '+effectName+'-buffed');
 					break;
@@ -2398,12 +2384,12 @@ function animateDeletingPositiveNegativeEffects(obj) {
 
 			}
 
-
-			clearInterval(timer);
+			clearInterval(timer);//очисчаем итервал проверки на открытие попапо
 		}
 	},600);
 }
 
+//Ф-ция удаления карты с поля боя посредством сжигания(или пропадания через fade)
 function animationBurningCardEndDeleting(card,action,cards_strength) {
 	var card = $(card);
 
@@ -2491,7 +2477,7 @@ function createInfoPopup(data){
 	//проверка на магию/карту
 	if (typeof data['strength'] !== 'undefined') {
 
-		//попап с картой
+		//попап с картой !
 
 		var cardData = data;
 		var result = '<div class="content-card-item-main new-card-form';
@@ -2549,6 +2535,7 @@ function createInfoPopup(data){
 			'</div>' +
 			'</div>' + cardDescription +
 			'</div>';
+		// Сформировали разметку поапа
 
 		popup.find('.content-card-info').html(result);
 
@@ -2566,15 +2553,14 @@ function createInfoPopup(data){
 			'max-height':maxImgHeight
 		});
 
-		openTrollPopup(popup);
+		openTrollPopup(popup);//откр попап
 
 		setTimeout(function () {
-			var jsp = popup.find('.jsp-cont-descr').jScrollPane();
+			var jsp = popup.find('.jsp-cont-descr').jScrollPane();//реализуем кастомный скролл
 		}, 100);
-		//console.log(result);
 
 	}else{
-		//попап с магией
+		// попап с магией !
 
 		popup.addClass('mdesc');
 
@@ -2585,6 +2571,7 @@ function createInfoPopup(data){
 			'<div class="magic-img"><img src="/img/card_images/'+cardData['img_url']+'" /></div>'+
 			'<div class="magic-description">'+cardData['text']+'</div>'+
 		'</div>';
+		// Сформировали разметку поапа
 
 		popup.find('.content-card-info').html(result);
 
@@ -2594,12 +2581,14 @@ function createInfoPopup(data){
 }
 
 function createGiveUpPopup(conn,ident){
-	$('#userGiveUpPopup .button-troll.userGiveUp').unbind( "click" );
+
+	$('#userGiveUpPopup .button-troll.userGiveUp').unbind( "click" );//минихук - откл многоразовый бинд на клик
+
 	closeAllTrollPopup();
 	openTrollPopup($('#userGiveUpPopup'));
 
 	$('#userGiveUpPopup .button-troll.userGiveUp').on('click',function(e){
-		if ($(this).attr('data-action') == 'true') {
+		if ($(this).attr('data-action') == 'true') { //Если Да
 			conn.send(
 				JSON.stringify({
 					action: 'userGivesUp',//Отправка сообщения о подключения пользователя к столу
@@ -2607,7 +2596,7 @@ function createGiveUpPopup(conn,ident){
 				})
 			);
 		}else{
-			closeAllTrollPopup();
+			closeAllTrollPopup(); // Если Нет
 		}
 	})
 }
