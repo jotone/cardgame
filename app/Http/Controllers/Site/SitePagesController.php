@@ -27,7 +27,7 @@ class SitePagesController extends BaseController
 		$exchange_options = \DB::table('tbl_etc_data')
 			->select('label_data','meta_key','meta_value', 'meta_key_title')
 			->where('label_data', '=', 'premium_buing')
-			->orderBy('meta_value','asc')
+			->orderBy('id','asc')
 			->get();
 
 		$fractions = Fraction::where('type', '=', 'race')->orderBy('position','asc')->get();
@@ -305,7 +305,7 @@ class SitePagesController extends BaseController
 		$exchange_options = \DB::table('tbl_etc_data')
 			->select('label_data','meta_key','meta_value', 'meta_key_title')
 			->where('label_data', '=', 'premium_buing')
-			->orderBy('meta_value','asc')
+			->orderBy('id','asc')
 			->get();
 
 		return view('game', [
@@ -326,7 +326,7 @@ class SitePagesController extends BaseController
 		$exchange_options = \DB::table('tbl_etc_data')
 			->select('label_data','meta_key','meta_value', 'meta_key_title')
 			->where('label_data', '=', 'premium_buing')
-			->orderBy('meta_value','asc')
+			->orderBy('id','asc')
 			->get();
 
 		$users = User::get();
@@ -380,7 +380,7 @@ class SitePagesController extends BaseController
 		$exchange_options = \DB::table('tbl_etc_data')
 			->select('label_data','meta_key','meta_value', 'meta_key_title')
 			->where('label_data', '=', 'premium_buing')
-			->orderBy('meta_value','asc')
+			->orderBy('id','asc')
 			->get();
 
 		$page_content = Page::where('slug','=','license')->get();
@@ -400,7 +400,7 @@ class SitePagesController extends BaseController
 		$exchange_options = \DB::table('tbl_etc_data')
 			->select('label_data','meta_key','meta_value', 'meta_key_title')
 			->where('label_data', '=', 'premium_buing')
-			->orderBy('meta_value','asc')
+			->orderBy('id','asc')
 			->get();
 
 		$fractions = Fraction::where('type', '=', 'race')->orderBy('position','asc')->get();
@@ -427,7 +427,7 @@ class SitePagesController extends BaseController
 		$exchange_options = \DB::table('tbl_etc_data')
 			->select('label_data','meta_key','meta_value','meta_key_title')
 			->where('label_data', '=', 'premium_buing')
-			->orderBy('meta_value','asc')
+			->orderBy('id','asc')
 			->get();
 
 		$fractions = Fraction::where('type', '=', 'race')->orderBy('position','asc')->get();
@@ -448,7 +448,7 @@ class SitePagesController extends BaseController
 		$exchange_options = \DB::table('tbl_etc_data')
 			->select('label_data','meta_key','meta_value', 'meta_key_title')
 			->where('label_data', '=', 'premium_buing')
-			->orderBy('meta_value','asc')
+			->orderBy('id','asc')
 			->get();
 
 		$fractions = Fraction::where('type', '=', 'race')->orderBy('position','asc')->get();
@@ -479,7 +479,7 @@ class SitePagesController extends BaseController
 		$exchange_options = \DB::table('tbl_etc_data')
 			->select('label_data','meta_key','meta_value', 'meta_key_title')
 			->where('label_data', '=', 'premium_buing')
-			->orderBy('meta_value','asc')
+			->orderBy('id','asc')
 			->get();
 
 		$fractions = Fraction::where('type', '=', 'race')->orderBy('position','asc')->get();
@@ -498,7 +498,7 @@ class SitePagesController extends BaseController
 		$exchange_options = \DB::table('tbl_etc_data')
 			->select('label_data','meta_key','meta_value', 'meta_key_title')
 			->where('label_data', '=', 'premium_buing')
-			->orderBy('meta_value','asc')
+			->orderBy('id','asc')
 			->get();
 
 		$fractions = Fraction::where('type', '=', 'race')->orderBy('position','asc')->get();
@@ -517,7 +517,7 @@ class SitePagesController extends BaseController
 		$exchange_options = \DB::table('tbl_etc_data')
 			->select('label_data','meta_key','meta_value', 'meta_key_title')
 			->where('label_data', '=', 'premium_buing')
-			->orderBy('meta_value','asc')
+			->orderBy('id','asc')
 			->get();
 
 		$fractions = Fraction::where('type', '=', 'race')->orderBy('position','asc')->get();

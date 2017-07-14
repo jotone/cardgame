@@ -509,8 +509,10 @@ $(window).load(function() {
 	$('#userDataTable input[name=user_admin]').change(function(){
 		if($(this).prop('checked')){
 			$(this).next('span').text('Снять права');
+			var type = 0;
 		}else{
 			$(this).next('span').text('Дать права');
+			var type = 1;
 		}
 	});
 
@@ -525,7 +527,7 @@ $(window).load(function() {
 		var energy = $('input[name=user_energy]').val();
 		var premActive = $('input[name=user_premium_active]').prop('checked');
 		var premExpire = $('input[name=premium_expire_data]').val();
-		var role = $('input[name=user_admin]').prop('checked');
+		var role = ($('input[name=user_admin]').prop('checked') == true)? 1: 0;
 
 		$.ajax({
 			url:	'/admin/user/edit',
