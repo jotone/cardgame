@@ -931,8 +931,10 @@ function fieldBuild(stepStatus, addingAnim){
 					case 'deck':
 					case 'discard':
 						for(var i in stepStatus.dropped_cards[player][row]){
-							//var cardSlug = stepStatus.dropped_cards[player][row][i];
-							$('#'+type+'-'+row+' ul.deck-cards-list li').eq(i).addClass('ready-to-remove-from-deck');
+							var cardSlug = stepStatus.dropped_cards[player][row][i];
+							$('#'+type+'-'+row+' ul.deck-cards-list li[data-slug='+cardSlug+']:not(.ready-to-remove-from-deck)').first().addClass('ready-to-remove-from-deck');// удаление по слагу
+
+							//$('#'+type+'-'+row+' ul.deck-cards-list li').eq(i).addClass('ready-to-remove-from-deck'); //Удаление по индексу
 						}
 						$('#'+type+'-'+row+' ul.deck-cards-list li.ready-to-remove-from-deck').remove();
 					break;
@@ -951,8 +953,9 @@ function fieldBuild(stepStatus, addingAnim){
 							for(var i in stepStatus.dropped_cards[player][row]){
 
 								var cardSlug = stepStatus.dropped_cards[player][row][i];
-								var cardRemoving = $('.user-card-stash #sortableUserCards li').eq(i);
-
+								//var cardRemoving = $('.user-card-stash #sortableUserCards li').eq(i);
+								var cardRemoving = $('.user-card-stash #sortableUserCards li[data-slug='+cardSlug+']:not(.ready-to-remove)').first();
+								cardRemoving.addClass('ready-to-remove');
 								if (typeof cardRemoving !== 'undefined') {
 									animationCardReturnToOutage(
 										cardRemoving,
@@ -975,7 +978,7 @@ function fieldBuild(stepStatus, addingAnim){
 						var rowId = intRowToField(row);
 						for(var cardType in stepStatus.dropped_cards[player][row]){
 							if(cardType == 'special'){
-								console.log(stepStatus.dropped_cards[player][row][cardType]);
+
 								animationDeleteSpecialCard(player,rowId);
 							}else{
 								var cardIndex = cardType;
@@ -983,11 +986,10 @@ function fieldBuild(stepStatus, addingAnim){
 								// Узнаю какие карты нужно удалить и даю им класс ready-to-die
 								var currentCardDelete = $('#'+player+'.convert-cards '+rowId+' .cards-row-wrap li').eq(cardIndex);
 								currentCardDelete.addClass('ready-to-die');
-								//checkIfNeedRemoveBuffOnRow(player, row, stepStatus, 'support');
 
 							}
 						}
-
+						//удаление карт с поля через fade
 						animationBurningCardEndDeleting($('.cards-row-wrap li.ready-to-die'),'fade');
 
 				}
@@ -1418,8 +1420,8 @@ function processActions(result){
 						switch(action){
 							case 'support'://Поддержка
 								var obj = {};
-									obj.field = actionRow
-									obj.cardsMass = (!$.isEmptyObject(result.actions.cards[player])) ? result.actions.cards[player][row]: null;
+									obj.field = actionRow  //розметка поля с картами ( id="meele" or "range" or "superRange")
+									obj.cardsMass = (!$.isEmptyObject(result.actions.cards[player])) ? result.actions.cards[player][row]: null;// масив с картами на этом поле
 									obj.effectName = 'support';
 									obj.effectType = 'buff';
 
@@ -2167,13 +2169,16 @@ function animationCardReturnToOutage(cards, time, callback){
 
 //Показать попап при перегрупировке
 function detailCardPopupOnOverloading(cardOverloadingImg, card, type) {
-	var holder = $('#card-start-step');
 
-	var cardOverloadingHolder = '<div class="content-card-item-main" style="background-image: url('+cardOverloadingImg+')"><div card-load-info card-popup><div class="hovered-items"><div class="card-name-property"><p>Перегруппировка</p></div></div></div></div>';
-	holder.find('.content-card-info').empty().append(cardOverloadingHolder);
-	var popContent = createCardDescriptionView(card, card['strength'], 'without-description');
+	var holder = $('#card-start-step');//выборка попапа "шага хода"
 
-	holder.find('.content-card-info').addClass('overloading-animation').append(popContent).end().addClass('overloading');
+	var cardOverloadingHolder = '<div class="content-card-item-main" style="background-image: url('+cardOverloadingImg+')"><div card-load-info card-popup><div class="hovered-items"><div class="card-name-property"><p>Перегруппировка</p></div></div></div></div>';//"псевдо-разметка" первой карты с картинкой перегрупировки и тайтлом перегрупировки
+
+	holder.find('.content-card-info').empty().append(cardOverloadingHolder);//вставляем в разметку
+
+	var popContent = createCardDescriptionView(card, card['strength'], 'without-description');//Рзметка второй карты - которую мы выбрали при перегрупоровке
+
+	holder.find('.content-card-info').addClass('overloading-animation').append(popContent).end().addClass('overloading');//добавляем класс чтоб начать анимацию - показать сначала первую карту - потом вторую
 
 	switch(type){
 		case 'magic':
@@ -2181,14 +2186,14 @@ function detailCardPopupOnOverloading(cardOverloadingImg, card, type) {
 		break
 	}
 
-	openSecondTrollPopup(holder,null);
+	openSecondTrollPopup(holder,null);//откр попап с нащими картами
 
 	setTimeout(function(){
-		holder.find('.content-card-info').removeClass('overloading-animation');
+		holder.find('.content-card-info').removeClass('overloading-animation');//добавляем класс чтоб закончить анимацию
 		setTimeout(function(){
-			closeSecondTrollPopup(holder,null);
+			closeSecondTrollPopup(holder,null);//закр попап
 			setTimeout(function(){
-				holder.removeClass('overloading overloading-magic');
+				holder.removeClass('overloading overloading-magic');//чистим класы для попапа "шага" хода
 			},1000)
 		},2000)
 	},2000);
