@@ -149,17 +149,19 @@ class SiteFunctionsController extends BaseController
 	//Пользователь покупает серебро
 	public function userBuyingSilver(Request $request){
 		self::updateConnention();
+		$data = $request->all();
 
 		$user = Auth::user();
 
-		$gold_to_silver = \DB::table('tbl_etc_data')
-			->select('meta_key','meta_value')
-			->where('meta_key','=','gold_to_silver')
-			->get();
+		$gold_to_silver = \DB::table('tbl_etc_data')->select('meta_value')->where('meta_key','=','gold_to_silver')->first();
 
-		if( $user->user_gold >= $request -> input('gold') ){
-			$user->user_gold -= $request -> input('gold');
-			$user->user_silver = $user->user_silver + $request -> input('gold')*$gold_to_silver[0]->meta_value;
+		if(empty($gold_to_silver)){
+			return json_encode(['message'=>'Error in DB query. Returns ']);
+		}
+
+		if($user->user_gold >= $data['gold']){
+			$user->user_gold -= $data['gold'];
+			$user->user_silver = $user->user_silver + ($data['gold'] * $gold_to_silver->meta_value);
 
 			$result = User::where('login', '=', $user->login)->update([
 				'user_gold'		=> $user->user_gold,
@@ -252,7 +254,7 @@ class SiteFunctionsController extends BaseController
 	}
 
 	public function getUserRating(Request $request){
-		$data = $request -> all();
+		$data = $request->all();
 		$current_user = Auth::user();
 		$user = (isset($data['user_login']))
 			? User::select('login','user_rating')->where('login', '=', $data['user_login'])->get()
@@ -451,6 +453,7 @@ class SiteFunctionsController extends BaseController
 
 	public function validateDeck(Request $request){
 		self::updateConnention();
+		$data = $request->all();
 		$user = Auth::user();
 
 		$current_deck = unserialize($user->user_cards_in_deck);
@@ -461,13 +464,13 @@ class SiteFunctionsController extends BaseController
 			$deck_rules[$value->meta_key] = $value->meta_value;
 		}
 
-		if(!empty($current_deck[$request->input('fraction')])){
+		if(!empty($current_deck[$data['fraction']])){
 			$error = '';
 			$leader_card_quantity = 0;
 			$warrior_card_quantity = 0;
 			$special_card_quantity = 0;
 
-			foreach($current_deck[$request->input('fraction')] as $key => $value){
+			foreach($current_deck[$data['fraction']] as $key => $value){
 				$card = \DB::table('tbl_cards')
 					->select('id','title','forbidden_races','max_quant_in_deck','is_leader','card_type')
 					->where('id','=',$key)
@@ -479,7 +482,7 @@ class SiteFunctionsController extends BaseController
 					if(!empty($card_forbidden_race)){
 						$is_forbidden = 0;
 						foreach($card_forbidden_race as $i => $fraction){
-							if($request->input('fraction') == $fraction) $is_forbidden = 1;
+							if($data['fraction'] == $fraction) $is_forbidden = 1;
 						}
 						if($is_forbidden != 0){
 							$error .= '<p>Карта "'.$card[0]->title.'" недоступна для данной колоды.</p>';
@@ -542,6 +545,7 @@ class SiteFunctionsController extends BaseController
 					}
 				}
 
+				setcookie('current_deck', $data['fraction'], time()+36000, '/');
 				return json_encode(['message' => 'success']);
 			}
 

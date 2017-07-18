@@ -12,8 +12,6 @@ use App\Payment;
 use App\Rubric;
 use App\User;
 
-use App\Http\Controllers\Site\BattleFieldController;
-use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Auth;
 use Crypt;
@@ -237,84 +235,86 @@ class SitePagesController extends BaseController
 	}
 
 	//Играть
-	public function gamesPage(Request $request){
-		SiteFunctionsController::updateConnention();
-		$user = Auth::user();
-		$create_delay = EtcData::select('meta_value')
-			->where('label_data','=','timing')
-			->where('meta_key','=','creation_table_time')
-			->first();
+	public function gamesPage(){
+		if(isset($_COOKIE['current_deck'])){
+			SiteFunctionsController::updateConnention();
+			$user = Auth::user();
+			$create_delay = EtcData::select('meta_value')
+				->where('label_data','=','timing')
+				->where('meta_key','=','creation_table_time')
+				->first();
 
-		//Данные Лиг
-		$leagues = \DB::table('tbl_league')->select('title','min_lvl')->orderBy('min_lvl','asc')->get();
+			//Данные Лиг
+			$leagues = \DB::table('tbl_league')->select('title','min_lvl')->orderBy('min_lvl','asc')->get();
 
-		//Текущие колоды пользователя
-		$current_deck = unserialize($user->user_cards_in_deck);
+			//Текущие колоды пользователя
+			$current_deck = unserialize($user->user_cards_in_deck);
 
-		if(!empty($current_deck[$request->input('currentRace')])) {
-			//Вес колоды
-			$deck_weight = 0;
+			if(!empty($current_deck[$_COOKIE['current_deck']])) {
+				//Вес колоды
+				$deck_weight = 0;
 
-			//Подсчет веса колоды
-			foreach($current_deck[$request->input('currentRace')] as $key => $value){
-				$card = Card::where('id', '=', $key)->get();
-				if(isset($card[0])){
-					$deck_weight += $card[0]->card_value * $value;
+				//Подсчет веса колоды
+				foreach($current_deck[$_COOKIE['current_deck']] as $key => $value){
+					$card = Card::where('id', '=', $key)->get();
+					if(isset($card[0])){
+						$deck_weight += $card[0]->card_value * $value;
+					}
 				}
 			}
-		}
 
-		//Текущая лига
-		$current_user_league = '';
-		foreach ($leagues as $league) {
-			//если Вес колоды больше минимального уровня вхождения в лигу
-			if($deck_weight >= $league->min_lvl){
-				$current_user_league = $league->title;
-			}
-		}
-		//Расы
-		$fractions = Fraction::where('type','=','race')->orderBy('position','asc')->get();
-		//Активные для данной лиги столы
-		$battles = Battle::where('league','=',$current_user_league)->where('fight_status', '<', 3)->get();
-
-		$tmp_battles = ['allow' => [], 'back' => []];
-		foreach($battles as $battle_iter => $battle_data){
-			$delay = strtotime($battle_data->created_at) + $create_delay->meta_value;
-			if(strtotime(date('Y-m-d H:i:s')) >= $delay){
-				$user_creator = User::find($battle_data['creator_id']);
-				$current_battle_members = BattleMembers::where('battle_id', '=', $battle_data['id'])->count();
-
-				if( ($user['id'] == $battle_data['creator_id']) || ($user['id'] == $battle_data['opponent_id']) ){
-					$tmp_battles['back'][$battle_data['id']] = [
-						'data'		=> $battle_data,
-						'creator'	=> $user_creator['login'],
-						'users_count'=>$current_battle_members
-					];
-				}else if( ($current_battle_members != 2) && ($current_battle_members != 0) ){
-					$tmp_battles['allow'][$battle_data['id']] = [
-						'data'		=> $battle_data,
-						'creator'	=> $user_creator['login'],
-						'users_count'=>$current_battle_members
-					];
+			//Текущая лига
+			$current_user_league = '';
+			foreach ($leagues as $league) {
+				//если Вес колоды больше минимального уровня вхождения в лигу
+				if($deck_weight >= $league->min_lvl){
+					$current_user_league = $league->title;
 				}
 			}
+			//Расы
+			$fractions = Fraction::where('type','=','race')->orderBy('position','asc')->get();
+			//Активные для данной лиги столы
+			$battles = Battle::where('league','=',$current_user_league)->where('fight_status', '<', 3)->get();
+
+			$tmp_battles = ['allow' => [], 'back' => []];
+			foreach($battles as $battle_iter => $battle_data){
+				$delay = strtotime($battle_data->created_at) + $create_delay->meta_value;
+				if(strtotime(date('Y-m-d H:i:s')) >= $delay){
+					$user_creator = User::find($battle_data['creator_id']);
+					$current_battle_members = BattleMembers::where('battle_id', '=', $battle_data['id'])->count();
+
+					if( ($user['id'] == $battle_data['creator_id']) || ($user['id'] == $battle_data['opponent_id']) ){
+						$tmp_battles['back'][$battle_data['id']] = [
+							'data'		=> $battle_data,
+							'creator'	=> $user_creator['login'],
+							'users_count'=>$current_battle_members
+						];
+					}else if( ($current_battle_members != 2) && ($current_battle_members != 0) ){
+						$tmp_battles['allow'][$battle_data['id']] = [
+							'data'		=> $battle_data,
+							'creator'	=> $user_creator['login'],
+							'users_count'=>$current_battle_members
+						];
+					}
+				}
+			}
+
+			\DB::table('users')->where('login','=',$user->login)->update(['user_current_deck' => $_COOKIE['current_deck']]);
+
+			$exchange_options = \DB::table('tbl_etc_data')
+				->select('label_data','meta_key','meta_value', 'meta_key_title')
+				->where('label_data', '=', 'premium_buing')
+				->orderBy('id','asc')
+				->get();
+
+			return view('game', [
+				'exchange_options' => $exchange_options,
+				'fractions'		=> $fractions,
+				'deck_weight'	=> Crypt::encrypt($deck_weight),
+				'battles'		=> $tmp_battles,
+				'league'		=> Crypt::encrypt($current_user_league)
+			]);
 		}
-
-		\DB::table('users')->where('login','=',$user->login)->update(['user_current_deck' => $request->input('currentRace')]);
-
-		$exchange_options = \DB::table('tbl_etc_data')
-			->select('label_data','meta_key','meta_value', 'meta_key_title')
-			->where('label_data', '=', 'premium_buing')
-			->orderBy('id','asc')
-			->get();
-
-		return view('game', [
-			'exchange_options' => $exchange_options,
-			'fractions'		=> $fractions,
-			'deck_weight'	=> Crypt::encrypt($deck_weight),
-			'battles'		=> $tmp_battles,
-			'league'		=> Crypt::encrypt($current_user_league)
-		]);
 	}
 
 	//Рейтинг

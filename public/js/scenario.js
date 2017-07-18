@@ -1035,12 +1035,15 @@ function closeAllTrollPopup(){
 }
 //Покупка Серебра
 function showSilverBuyingPopup(){
+	$(document).off('click', '.buy-more-silver');
 	$(document).on('click', '.buy-more-silver', function(e){
 		e.preventDefault();
 		closeAllTrollPopup();
 		openTrollPopup($('#buySomeSilver'));
 		$('#buySomeSilver .button-troll').addClass('unactive');
-		$('#buySomeSilver .button-troll').click(function(e){
+
+		$('#buySomeSilver').off('click', '.button-troll');
+		$('#buySomeSilver').on('click', '.button-troll', function(e){
 			e.preventDefault();
 			var goldToSell = parseInt($('#buySomeSilver input[name=goldToSell]').val());
 			$.ajax({
@@ -1284,7 +1287,7 @@ function showUserDecks(){
 			success:function(data){
 				var res = JSON.parse(data);
 				switch(res['message']){
-					case 'success':		$('#choose-rase-block #gameForm').submit(); break;
+					case 'success':		location = '/games'; break;
 					case 'in_battle':	location = '/play/'+res['room']; break;
 					default:
 						resultPopupShow(res['message']);
@@ -1759,4 +1762,5 @@ $(document).ready(function(){
 		$(this).closest('.pay-buttons-wrap').find('label').removeClass('active');
 		$(this).addClass('active');
 	})
+	console.log(Date.now());
 });

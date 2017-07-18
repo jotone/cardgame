@@ -45,7 +45,7 @@ Route::get('/logout', [
 Route::group(['middleware' => 'notAuth'], function() {
 	//Представления страниц
 	//Столы
-	Route::post('/games', [
+	Route::get('/games', [
 		'as'	=> 'user-active-games',
 		'uses'	=> 'Site\SitePagesController@gamesPage'
 	]);

@@ -4,13 +4,13 @@ namespace App\Http\Controllers\Site;
 use App\Battle;
 use App\BattleMembers;
 use App\Http\Controllers\Admin\AdminFunctions;
-use App\Http\Controllers\Site\BattleFieldController;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Auth;
 use Crypt;
 class SiteGameController extends BaseController
 {
+
 	public function createRoom(Request $request){
 		SiteFunctionsController::updateConnention();
 		$data = $request->all();
@@ -23,6 +23,7 @@ class SiteGameController extends BaseController
 
 		$user_settings = self::battleGetUserSettings($user);
 
+		Battle::where('opponent_id','=',0)->where('creator_id','=',$user->id)->delete();
 		$battle = Battle::create([
 			'creator_id'		=> $user->id,
 			'players_quantity'	=> $data['players'],
@@ -201,6 +202,9 @@ class SiteGameController extends BaseController
 		$user = Auth::user();
 		//Данные о столе
 		$battle_data = Battle::find($data['id']);
+		if(empty($battle_data)){
+			return json_encode(['message' => 'Данный стол уже занят.']);
+		}
 
 		if($battle_data->creator_id == $user['id']){
 			return json_encode(['message' => 'success']);
@@ -245,12 +249,6 @@ class SiteGameController extends BaseController
 		$battle_members = BattleMembers::where('battle_id', '=', $data['battle_id'])->get(); //Данные текущей битвы
 
 		$users_result_data = [];
-
-		$time_shift = time() - $data['time'];
-		\DB::table('tbl_battle_members')
-			->where('battle_id', '=', $data['battle_id'])
-			->where('user_id', '=', $user['id'])
-			->update(['time_shift' => $time_shift]);
 
 		foreach($battle_members as $key => $value){
 			$user_in_battle = \DB::table('users')
@@ -351,18 +349,18 @@ class SiteGameController extends BaseController
 
 		$user_hand = self::buildCardDeck($user_hand);
 		$user_deck = self::buildCardDeck($user_deck);
+		$timing_settings = self::getTimingSettings();
+		$expire_time = ($timing_settings['first_step_r1'] + $data['time'])*1000;
+
 		$users_result_data[$user->login] = [
 			'deck_count'=> count($user_deck),
 			'deck'		=> $user_deck,
 			'hand'		=> $user_hand
 		];
 
-		$timing_settings = SiteGameController::getTimingSettings();
-		$expire_time = $data['time'] + $timing_settings['first_step_r1'];
-
-		\DB::table('tbl_battle_members')->where('user_id', '=', $user->id)->update([
-			'user_ready' => 1,
-			'turn_expire' => $expire_time
+		\DB::table('tbl_battle_members')->where('user_id', '=', $user['id'])->update([
+			'user_ready'	=> 1,
+			'turn_expire'	=> $expire_time
 		]);
 
 		return json_encode($users_result_data);
@@ -372,8 +370,7 @@ class SiteGameController extends BaseController
 		$user = Auth::user();
 		$battle_member = \DB::table('tbl_battle_members')->select('battle_id','user_id')->where('user_id', '=', $user->id)->first();
 
-		$turn_expire_time = \DB::table('tbl_etc_data')
-			->select('label_data','meta_key','meta_value')
+		$turn_expire_time = \DB::table('tbl_etc_data')->select('meta_value')
 			->where('label_data','=','timing')
 			->where('meta_key','=','max_step_time')
 			->first();
