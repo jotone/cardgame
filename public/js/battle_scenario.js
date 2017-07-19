@@ -266,7 +266,7 @@ function setDecksValues(counts, images){
 
 			//Если пользователь не готов (не выбраны карты для игры)
 			if(0 == parseInt(userData[key]['ready'])){
-                console.log('is not_ready');
+				console.log('is not_ready');
 				if(userData[key]['hand'].length > 0){
 					//Вывод карт руки и колоды
 					$('#selecthandCardsPopup h5 span').text(userData[key]['can_change_cards']);
@@ -1088,7 +1088,7 @@ function buildBattleField(added, dropped){
 
 					if(typeof dropped[player][row]['special'] != 'undefined'){
 						if(dropped[player][row]['special'].length > 0){
-							$('#'+player+'.convert-cards '+rowInField+' .image-inside-line').fadeOut(500,function(){
+							$('#'+player+'.convert-cards '+rowInField+' .image-inside-line li').fadeOut(500,function(){
 								$('#'+player+'.convert-cards '+rowInField+' .image-inside-line').empty();
 							});
 						}
@@ -1332,6 +1332,7 @@ function processActions(result){
 					for(var item in result.actions.appear[player][row]){
 						item = parseInt(item);
 						var action = result.actions.appear[player][row][item];
+						console.log(result.actions.appear);
 
 						switch(action){
 							case 'support'://Поддержка
@@ -1580,6 +1581,9 @@ function startBattle(){
 
 				$('.convert-stuff').removeAttr('class').addClass('convert-stuff');
 				$('.debuff-or-buff-anim').remove();
+				if(!$.isEmptyObject(result.actions.card_strength)){
+                    setCardStrength(result.actions.card_strength);
+				}
 
 				circleRoundIndicator();
 
@@ -1611,6 +1615,7 @@ function startBattle(){
 					checkMagiaUsage(result);
 
 					convertTimeToStr(result.timing);
+					console.log(result.timing);
 					clearInterval(TimerInterval);
 					if(result.timing > 0){
 						startTimer(result.round_status.current_player);

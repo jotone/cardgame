@@ -1668,14 +1668,14 @@ function showPopRaseInfo() {
 
 
 $(document).ready(function(){
-	if( (!$('.login-page').length>0) && (!$('.registration-main-page').length > 0) ) getUserData();  //Получить данные пользователя (по идее должна не работать только после логинизации)
-	showFormOnMain();                       //Украшение формы логина на главной
-	showWindowAboutOnMain();                //Кнопка "ОБ ИГРЕ" на главной
+	if( (!$('.login-page').length>0) && (!$('.registration-main-page').length > 0) ) getUserData();	//Получить данные пользователя (по идее должна не работать только после логинизации)
+	showFormOnMain();						//Украшение формы логина на главной
+	showWindowAboutOnMain();				//Кнопка "ОБ ИГРЕ" на главной
 	fancyboxForm();
-	settingsInputFile();                    //Страница "Настройки". Украшение файл приемника
-	initScrollpane();                       //Инициализация скролла на страницах "Мои карты", "Магазин", ("Волшебство не проверялось")
-	draggableCards();                       //Инициализация перетягивания карт
-	underDragCardFix();                     //Фикс перетягивания
+	settingsInputFile();					//Страница "Настройки". Украшение файл приемника
+	initScrollpane();						//Инициализация скролла на страницах "Мои карты", "Магазин", ("Волшебство не проверялось")
+	draggableCards();						//Инициализация перетягивания карт
+	underDragCardFix();						//Фикс перетягивания
 	incrementDecrementInputNumber();
 	if($('.ranking-page').length>0){rankingPageStarter();} //инициализация скриптов страницы рейтинга
 	showGoldBuyingPopup();
@@ -1762,5 +1762,4 @@ $(document).ready(function(){
 		$(this).closest('.pay-buttons-wrap').find('label').removeClass('active');
 		$(this).addClass('active');
 	})
-	console.log(Date.now());
 });

@@ -815,7 +815,7 @@ class BattleFieldController extends BaseController{
 									}
 
 									if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
-										$step_status['played_card']['strength'] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'];
+										$step_status['played_card']['strength'] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'] * $action_data['inspiration_multValue'];
 										$step_status['played_card']['card']['buffs'][] = 'inspiration';
 									}
 								}
@@ -874,7 +874,7 @@ class BattleFieldController extends BaseController{
 
 													if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
 														if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
-															$step_status['played_card']['strength'] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'];
+															$step_status['played_card']['strength'] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'] * $action['inspiration_multValue'];
 															$step_status['played_card']['card']['buffs'][] = 'inspiration';
 														}
 													}
