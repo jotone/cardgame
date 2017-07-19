@@ -2083,8 +2083,9 @@ class GwentSocket extends BaseSocket
 			}else{
 				foreach($battle_field[$player] as $card_iter => $card_data){
 					$type = ($card_data['login'] == $users_data['user']['login'])? 'user': 'opponent';
+					$player_type = $users_data[$type]['player'];
 					$users_data[$type]['discard'][] = $card_data['id'];
-					$step_status['added_cards'][$player]['discard'][] = BattleFieldController::cardData($card_data['id']);
+					$step_status['added_cards'][$player_type]['discard'][] = BattleFieldController::cardData($card_data['id']);
 				}
 			}
 		}
