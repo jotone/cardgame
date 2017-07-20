@@ -684,7 +684,6 @@ class GwentSocket extends BaseSocket
 						$this->users_data['p1']['login'] => $round_status['p1'],
 						$this->users_data['p2']['login'] => $round_status['p2']
 					];
-					var_dump($gain_cards_count);
 
 					$clear_result	= self::clearBattleField($battle, $battle_field, $this->users_data, $this->magic_usage, $gain_cards_count, $this->step_status);
 					$battle_field	= $clear_result['battle_field'];
@@ -757,8 +756,6 @@ class GwentSocket extends BaseSocket
 
 						foreach($this->users_data as $user_type => $user){
 							if(($user_type == 'user') || ($user_type == 'opponent')){
-								var_dump($user_type);
-								var_dump($this->users_data[$user_type]['hand']);
 								$battle_data = BattleMembers::find($this->users_data[$user_type]['battle_member_id']);
 								$battle_data['user_deck']		= serialize($this->users_data[$user_type]['deck']);
 								$battle_data['user_hand']		= serialize($this->users_data[$user_type]['hand']);
@@ -1028,6 +1025,7 @@ class GwentSocket extends BaseSocket
 			case 'returnCardToHand':
 				$battle_field = unserialize($battle->battle_field);
 				$this->magic_usage = unserialize($battle->magic_usage);
+
 				$player = $this->users_data[$msg->ident->userId]['player'];
 				$field_buffs = BattleFieldController::getBattleBuffs($battle_field);
 
@@ -1071,14 +1069,14 @@ class GwentSocket extends BaseSocket
 					}
 				}
 				if(isset($this->step_status['actions']['disappear'])){
-					foreach($this->step_status['actions']['disappear'] as $player => $rows){
+					foreach($this->step_status['actions']['disappear'] as $action_player => $rows){
 						foreach($rows as $row => $data){
-							if(empty($this->step_status['actions']['disappear'][$player][$row])){
-								unset($this->step_status['actions']['disappear'][$player][$row]);
+							if(empty($this->step_status['actions']['disappear'][$action_player][$row])){
+								unset($this->step_status['actions']['disappear'][$action_player][$row]);
 							}
 						}
-						if(empty($this->step_status['actions']['disappear'][$player])){
-							unset($this->step_status['actions']['disappear'][$player]);
+						if(empty($this->step_status['actions']['disappear'][$action_player])){
+							unset($this->step_status['actions']['disappear'][$action_player]);
 						}
 					}
 				}
@@ -2001,17 +1999,14 @@ class GwentSocket extends BaseSocket
 
 		//Добавление карт из колоды каждому игроку
 		$gain_cards_data = self::userGainCards($users_data['user'], $gain_cards_count['user'], $step_status);
-		var_dump('user:');
-		var_dump($gain_cards_data);
 		$users_data['user'] = $gain_cards_data['array'];
 		$step_status = $gain_cards_data['step_status'];
 
-		var_dump('opponent');
 		$gain_cards_data = self::userGainCards($users_data['opponent'], $gain_cards_count['opponent'], $step_status);
-		var_dump($gain_cards_data);
 		$users_data['opponent'] = $gain_cards_data['array'];
 		$step_status = $gain_cards_data['step_status'];
 
+		
 		//Очищение поля битвы от карт
 		foreach($battle_field as $player => $rows){
 			if($player != 'mid'){

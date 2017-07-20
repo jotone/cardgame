@@ -946,12 +946,12 @@ class BattleFieldController extends BaseController{
 			if(!empty($played_card_actions)){
 				if(!empty($step_status['played_card']['card'])){
 					foreach($step_status['played_card']['card']['actions'] as $action){
-						$step_status = self::battleInfoFinishHelper($action, $step_status);
+						$step_status = self::battleInfoFinishHelper($action, $step_status, 'card');
 					}
 				}else{
 					foreach($step_status['played_magic'] as $player => $magic_data){
 						foreach($magic_data['actions'] as $action){
-							$step_status = self::battleInfoFinishHelper($action, $step_status);
+							$step_status = self::battleInfoFinishHelper($action, $step_status, 'magic',$users_data);
 						}
 					}
 				}
@@ -981,23 +981,35 @@ class BattleFieldController extends BaseController{
 		];
 	}
 
-	protected static function battleInfoFinishHelper($action, $step_status){
+	protected static function battleInfoFinishHelper($action, $step_status, $type, $users_data = []){
 		switch($action['caption']){
 			case 'brotherhood':
 				$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
-				if(isset($step_status['actions']['cards'][$player])){
-					unset($step_status['actions']['cards'][$player]);
-				}
-				if(isset($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']])){
-					foreach($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']] as $row => $data){
-						if($row != $step_status['played_card']['move_to']['row']){
-							unset($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']][$row]);
+
+				if(!empty($player)){
+					if(isset($step_status['actions']['cards'][$player])){
+						unset($step_status['actions']['cards'][$player]);
+					}
+					if(isset($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']])){
+						foreach($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']] as $row => $data){
+							if($row != $step_status['played_card']['move_to']['row']){
+								unset($step_status['actions']['cards'][$step_status['played_card']['move_to']['player']][$row]);
+							}
 						}
 					}
 				}
-				break;
+			break;
 			case 'inspiration':
-				$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
+				$player = '';
+				if($type == 'card'){
+					$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
+				}else{
+					foreach($users_data as $player_type => $data){
+						if($data['login'] = $step_status['round_status']['current_player']){
+							$player = $data['player'];
+						}
+					}
+				}
 				if(isset($step_status['actions']['cards'][$player])){
 					unset($step_status['actions']['cards'][$player]);
 				}
@@ -1012,7 +1024,16 @@ class BattleFieldController extends BaseController{
 				}
 				break;
 			case 'support':
-				$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
+				$player = '';
+				if($type == 'card'){
+					$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
+				}else{
+					foreach($users_data as $player_type => $data){
+						if($data['login'] = $step_status['round_status']['current_player']){
+							$player = $data['player'];
+						}
+					}
+				}
 				if(isset($step_status['actions']['cards'][$player])){
 					unset($step_status['actions']['cards'][$player]);
 				}
@@ -1023,7 +1044,7 @@ class BattleFieldController extends BaseController{
 						}
 					}
 				}
-				break;
+			break;
 			case 'terrify':
 				if($step_status['played_card']['move_to']['player'] != 'mid'){
 					if($action['fear_actionTeamate'] == 0){
@@ -1039,7 +1060,7 @@ class BattleFieldController extends BaseController{
 						}
 					}
 				}
-				break;
+			break;
 		}
 		return $step_status;
 	}

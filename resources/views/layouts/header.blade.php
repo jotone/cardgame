@@ -300,11 +300,9 @@ $a = unserialize('a:12:{s:17:"notification_type";s:12:"p2p-incoming";s:6:"amount
 				<ul>
 					@foreach($fractions as $key => $value)
 						@if($value['type'] == 'race')
-
 							<li>
 								<div class="description">
 									<div class="txt"> {!! $value['description'] !!}</div>
-
 								</div>
 
 								<div class="image-conteiner">

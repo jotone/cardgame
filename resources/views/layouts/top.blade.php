@@ -55,7 +55,7 @@
 					<div class="prem-info"><p>Дата окончания: <b>{{ substr($user['premium_expire_date'],0, -6)}}</b> </p></div>
 					@endif
 					<a href="#" class="button-push">
-						<div class="button-PRO"> <p> PREMIUM </p></div>
+						<div class="button-PRO"><p> PREMIUM </p></div>
 					</a>
 				</div>
 			</div>
