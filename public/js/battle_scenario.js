@@ -1302,11 +1302,8 @@ function incomeCardSelection(conn, ident, card_source){
 // /Функиции отправки выбраных карт для призыва на поле
 
 function processActions(result){
-	console.log('yarr');
 	if(!$.isEmptyObject(result.actions.appear)){
-		console.log('a')
 		if (typeof result.actions.appear === 'string'){
-			console.log('b1');
 			switch(result.actions.appear){
 				case 'cure':
 					setTimeout(function(){
@@ -1327,19 +1324,13 @@ function processActions(result){
 				break;
 			}
 		}else{
-            console.log('b2');
-            console.log(result.actions.appear);
 			for(var player in result.actions.appear){
-				console.log(player)
 				for(var row in result.actions.appear[player]){
 					row = parseInt(row);
-					console.log(row)
 					var actionRow = $('#'+player+'.convert-cards '+ intRowToField(row));
-					console.log(actionRow);
 					for(var item in result.actions.appear[player][row]){
 						item = parseInt(item);
 						var action = result.actions.appear[player][row][item];
-                        console.log(action)
 
 						switch(action){
 							case 'support'://Поддержка
@@ -1588,7 +1579,7 @@ function startBattle(){
 				$('.convert-stuff').removeAttr('class').addClass('convert-stuff');
 				$('.debuff-or-buff-anim').remove();
 				if(!$.isEmptyObject(result.actions.card_strength)){
-                    setCardStrength(result.actions.card_strength);
+					setCardStrength(result.actions.card_strength);
 				}
 
 				circleRoundIndicator();
@@ -1621,7 +1612,6 @@ function startBattle(){
 					checkMagiaUsage(result);
 
 					convertTimeToStr(result.timing);
-					console.log(result.timing);
 					clearInterval(TimerInterval);
 					if(result.timing > 0){
 						startTimer(result.round_status.current_player);
@@ -1717,8 +1707,8 @@ function startBattle(){
 						//},1000)
 					}else{
 						fieldBuild(result, true);
-						processActions(result);
 					}
+					processActions(result);f
 
 					setDecksValues(result.counts, result.images);
 
