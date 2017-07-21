@@ -932,12 +932,10 @@ class BattleFieldController extends BaseController{
 			}
 		}
 
-
 		if(
 			(isset($step_status['played_card']['card']) || isset($step_status['played_magic'])) &&
 			(!empty($step_status['played_card']['card']) || !empty($step_status['played_magic']))
 		){
-
 			if(!empty($step_status['played_card']['card'])){
 				$step_status['played_card']['card']['buffs'] = array_values(array_unique($step_status['played_card']['card']['buffs']));
 				$step_status['played_card']['card']['debuffs'] = array_values(array_unique($step_status['played_card']['card']['debuffs']));
@@ -1000,16 +998,19 @@ class BattleFieldController extends BaseController{
 				}
 			break;
 			case 'inspiration':
-				$player = '';
 				if($type == 'card'){
 					$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
 				}else{
-					foreach($users_data as $player_type => $data){
-						if($data['login'] = $step_status['round_status']['current_player']){
-							$player = $data['player'];
-						}
+					$type = ($step_status['round_status']['current_player'] == $users_data['user']['login'])? 'opponent': 'user';
+
+					$player_id = $users_data[$type]['id'];
+					$player_status = \DB::table('tbl_battle_members')->select('round_passed')->where('user_id','=',$player_id)->first();
+					if($player_status->round_passed == 0){
+						$type = ($type == 'user')? 'opponent': 'user';
 					}
+					$player = $users_data[$type]['player'];
 				}
+
 				if(isset($step_status['actions']['cards'][$player])){
 					unset($step_status['actions']['cards'][$player]);
 				}
@@ -1024,15 +1025,17 @@ class BattleFieldController extends BaseController{
 				}
 				break;
 			case 'support':
-				$player = '';
 				if($type == 'card'){
 					$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
 				}else{
-					foreach($users_data as $player_type => $data){
-						if($data['login'] = $step_status['round_status']['current_player']){
-							$player = $data['player'];
-						}
+					$type = ($step_status['round_status']['current_player'] == $users_data['user']['login'])? 'user': 'opponent';
+
+					$player_id = $users_data[$type]['id'];
+					$player_status = \DB::table('tbl_battle_members')->select('round_passed')->where('user_id','=',$player_id)->first();
+					if($player_status->round_passed == 1){
+						$type = ($type == 'user')? 'opponent': 'user';
 					}
+					$player = $users_data[$type]['player'];
 				}
 				if(isset($step_status['actions']['cards'][$player])){
 					unset($step_status['actions']['cards'][$player]);

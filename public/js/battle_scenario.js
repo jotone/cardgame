@@ -1578,9 +1578,6 @@ function startBattle(){
 
 				$('.convert-stuff').removeAttr('class').addClass('convert-stuff');
 				$('.debuff-or-buff-anim').remove();
-				if(!$.isEmptyObject(result.actions.card_strength)){
-					setCardStrength(result.actions.card_strength);
-				}
 
 				circleRoundIndicator();
 
@@ -1622,8 +1619,12 @@ function startBattle(){
 					userMakeAction(conn, result.round_status.card_source, allowToAction);//Функция разрешает пользователю действие
 
 					setTimeout(function(){
+						if(!$.isEmptyObject(result.actions.cards_strength)){
+							setCardStrength(result.actions.cards_strength);
+						}
 						recalculateBattleStrength();
 					},700);
+					processActions(result)
 
 					setTimeout(function(){
 						$('#successEvent').removeClass('show');
@@ -1708,7 +1709,7 @@ function startBattle(){
 					}else{
 						fieldBuild(result, true);
 					}
-					processActions(result);f
+					processActions(result);
 
 					setDecksValues(result.counts, result.images);
 
