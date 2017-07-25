@@ -256,14 +256,12 @@ class SiteFunctionsController extends BaseController
 	public function getUserRating(Request $request){
 		$data = $request->all();
 		$current_user = Auth::user();
-		$user = (isset($data['user_login']))
-			? User::select('login','user_rating')->where('login', '=', $data['user_login'])->get()
-			: User::select('login','user_rating')->where('login', '=', $current_user['login'])->get();
+		$user = User::select('login','user_rating')->where('login', '=', $current_user['login'])->get();
 
 		if(!empty($user[0])){
 			$users_rates = [];
 
-			$users = User::get();
+			$users = (isset($data['login']) && !empty($data['login']))? User::where('login','LIKE','%'.$data['login'].'%')->get(): User::get();
 
 			foreach($users as $user_iter => $user_to_rate_data){
 				$users_rates[] = self::calcUserRating($data['league'], $user_to_rate_data);
@@ -272,6 +270,7 @@ class SiteFunctionsController extends BaseController
 			usort($users_rates, function($a, $b){return ($b['rating'] - $a['rating']);});
 			$indexes = [];
 
+			$user_current_index = 0;
 			$user_rates_count = count($users_rates);
 			for($i = 0; $i < $user_rates_count; $i++){
 				if($i<3) $indexes[] = $i;//Первые 20 пользователей

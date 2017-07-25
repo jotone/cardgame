@@ -331,11 +331,7 @@ class SitePagesController extends BaseController
 			->orderBy('id','asc')
 			->get();
 
-		if(!empty($login)){
-			$users = User::where('login','LIKE','%'.$login.'%')->get();
-		}else{
-			$users = User::get();
-		}
+		$users = (!empty($login))? User::where('login','LIKE','%'.$login.'%')->get(): User::get();
 
 		foreach($users as $user_iter => $user_to_rate_data){
 			$users_rates[] = SiteFunctionsController::calcUserRating('all', $user_to_rate_data);

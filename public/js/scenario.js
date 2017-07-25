@@ -1394,10 +1394,12 @@ function changeChekInputInFilterDeck(){
 			var league = $(this).attr('data-league');
 			var ind = $(this).index()+1;
 			if(!$(this).hasClass('loaded')){
+				var path = window.location.pathname.split('/');
+				path = (path.length >= 3)? path[2]: '';
 				$.ajax({
 					url:	'/user_rating',
 					type:	'GET',
-					data:	{league:league},
+					data:	{league:league, login:path},
 					success:function(data){
 						var res = JSON.parse(data);
 						if(res['message'] == 'success'){
