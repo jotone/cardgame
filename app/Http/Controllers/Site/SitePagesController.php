@@ -6,6 +6,7 @@ use App\BattleMembers;
 use App\Card;
 use App\Fraction;
 use App\EtcData;
+use Illuminate\Http\Request;
 use App\League;
 use App\Page;
 use App\Payment;
@@ -318,7 +319,8 @@ class SitePagesController extends BaseController
 	}
 
 	//Рейтинг
-	public function ratingPage(){
+
+	public function ratingPage($login = ''){
 		SiteFunctionsController::updateConnention();
 		$user = Auth::user();
 		$leagues = League::orderBy('min_lvl', 'desc')->get();
@@ -329,7 +331,12 @@ class SitePagesController extends BaseController
 			->orderBy('id','asc')
 			->get();
 
-		$users = User::get();
+		if(!empty($login)){
+			$users = User::where('login','LIKE','%'.$login.'%')->get();
+		}else{
+			$users = User::get();
+		}
+
 		foreach($users as $user_iter => $user_to_rate_data){
 			$users_rates[] = SiteFunctionsController::calcUserRating('all', $user_to_rate_data);
 		}
@@ -338,6 +345,7 @@ class SitePagesController extends BaseController
 
 		$indexes = [];
 
+		$user_current_index = 0;
 		$user_rates_count = count($users_rates);
 		for($i = 0; $i < $user_rates_count; $i++){
 			if($i<3) $indexes[] = $i;//Первые 20 пользователей

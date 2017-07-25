@@ -86,7 +86,7 @@ Route::group(['middleware' => 'notAuth'], function() {
 		]);
 
 	//Рейтинг
-	Route::get('/rating', [
+	Route::get('/rating/{login?}',[
 		'as'	=> 'rating-page',
 		'uses'	=> 'Site\SitePagesController@ratingPage'
 	]);

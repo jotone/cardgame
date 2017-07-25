@@ -1428,6 +1428,13 @@ function changeChekInputInFilterDeck(){
 			}
 			checkPseudo();
 		});
+		$('form[name=searchRatingForm] button').click(function(){
+			var login = $(this).closest('form[name=searchRatingForm]').find('input[type=text]').val();
+			if(login.length > 2){
+				var path = window.location.pathname.split('/');
+				location = '/'+path[1]+'/'+login;
+			}
+		});
 	}
 	//END ranking tabs
 	// construct rating

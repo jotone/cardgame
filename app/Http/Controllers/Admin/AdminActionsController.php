@@ -2,7 +2,6 @@
 namespace App\Http\Controllers\Admin;
 
 use \App\Action;
-use App\Http\Controllers\Admin\AdminFunctions;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Http\Request;
 

@@ -32,9 +32,9 @@ $errors = $errors->all();
 							@endforeach
 						</ul>
 						<div class="ranking-page-search">
-							<form action="">
+							<form name="searchRatingForm">
 								<input type="text" required="required" placeholder="Введите имя игрока" data-activeUser="">
-								<button type="submit"></button>
+								<button type="button"></button>
 							</form>
 						</div>
 					</div>
