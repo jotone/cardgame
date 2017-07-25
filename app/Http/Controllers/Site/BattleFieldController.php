@@ -609,7 +609,11 @@ class BattleFieldController extends BaseController{
 																'operation'	=> '-'
 															];
 														}
-														if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
+
+														if(
+															(isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ||
+															(!empty($step_status['played_magic']))
+														){
 															if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
 																$step_status['played_card']['strength'] = $strength;
 																$step_status['played_card']['card']['debuffs'][] = 'terrify';
@@ -876,7 +880,7 @@ class BattleFieldController extends BaseController{
 											foreach($battle_field[$player][$row]['warrior'] as $card_iter => $card_data){
 												$card = self::cardData($card_data['id']);
 
-												$allow_inspiration = self::checkForSimpleImmune($action['inspiration_ignoreImmunity'], $card['actions']);
+												$allow_inspiration = self::checkForFullImmune($action['inspiration_ignoreImmunity'], $card['actions']);
 
 												if($allow_inspiration){
 													if( (isset($step_status['played_magic'])) && (!empty($step_status['played_magic'])) ){
@@ -888,9 +892,12 @@ class BattleFieldController extends BaseController{
 														];
 													}
 
-													if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
+													if(
+														(isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ||
+														(!empty($step_status['played_magic']))
+													){
 														if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
-															$step_status['played_card']['strength'] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'] * $action['inspiration_multValue'];
+															$step_status['played_card']['strength'] = $card_data['strength'] * $action['inspiration_multValue'];
 															$step_status['played_card']['card']['buffs'][] = 'inspiration';
 														}
 													}
