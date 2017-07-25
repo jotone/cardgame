@@ -508,6 +508,9 @@ class GwentSocket extends BaseSocket
 						//Убираем карту из текущй колоды
 						$source = (isset($msg->source->p1))? $msg->source->p1: $msg->source->p2;
 						$this->users_data[$user_type][$source] = self::dropCardFromDeck($this->users_data[$user_type][$source], $current_card['id']);
+						if( ($source == 'deck') || ($source == 'discard') ){
+							$this->step_status['dropped_cards'][$this->users_data[$msg->ident->userId]['player']][$source][] = $this->step_status['played_card']['card']['caption'];
+						}
 						$current_actions = $current_card['actions'];
 					}
 
@@ -1000,7 +1003,8 @@ class GwentSocket extends BaseSocket
 			break;
 
 			case 'dropCard':
-				if($msg->player != $this->users_data['user']['player']) {
+				if($msg->player != $this->users_data['user']['player']){
+					var_dump('yep');
 					$position = -1;
 					foreach ($this->users_data[$msg->player][$msg->deck] as $card_iter => $card_data) {
 						if ($card_data == Crypt::decrypt($msg->card)) {

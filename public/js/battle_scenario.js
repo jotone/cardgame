@@ -1403,6 +1403,12 @@ function processActions(result){
 								var type = result.actions.type; //magic or card
 								detailCardPopupOnOverloading(cardOverloadingImg, card, type);
 							break;
+
+							case 'obscure':
+								if(!$.isEmptyObject(result.actions.cards_strength)){
+									setCardStrength(result.actions.cards_strength);
+								}
+							break;
 						}
 					}
 				}

@@ -811,7 +811,7 @@ class BattleFieldController extends BaseController{
 					if($action_data['caption'] == 'inspiration'){
 						foreach($battle_field[$player][$row]['warrior'] as $card_iter => $card_data){
 							$card_data = self::getCardNaturalSetting($card_data['id']);
-							$allow_inspiration = self::checkForSimpleImmune($action_data['inspiration_ignoreImmunity'], $card_data['actions']);
+							$allow_inspiration = self::checkForFullImmune($action_data['inspiration_ignoreImmunity'], $card_data['actions']);
 
 							if($allow_inspiration){
 								if(
