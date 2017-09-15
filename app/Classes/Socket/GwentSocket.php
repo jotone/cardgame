@@ -370,6 +370,7 @@ class GwentSocket extends BaseSocket
 
 			case 'userMadeAction':
 				if($battle->fight_status == 2){
+					
 					//Данные о текущем пользователе
 					$battle_field = unserialize($battle->battle_field);//Данные о поле битвы
 					//Установка источника хода по умолчанию
@@ -427,7 +428,7 @@ class GwentSocket extends BaseSocket
 					if($msg->card != ''){
 						$current_card_id = Crypt::decrypt($msg->card);
 						$current_card = BattleFieldController::cardData($current_card_id);
-						$current_card_row = self::strRowToInt($msg->BFData->row);
+						$current_card_row = (isset($msg->BFData->row))? self::strRowToInt($msg->BFData->row): 3;
 
 						$current_card_field = (isset($msg->BFData->field))? $msg->BFData->field: 'mid';
 
@@ -505,7 +506,7 @@ class GwentSocket extends BaseSocket
 						}
 						$current_actions = $current_card['actions'];
 					}
-
+					
 					//Применение действий
 					$add_time = true;
 					$view_cards_strength = false;
@@ -536,8 +537,9 @@ class GwentSocket extends BaseSocket
 					}
 					//Сортировка колод
 					$this->users_data = self::sortDecksByStrength($this->users_data);
-
+					
 					$battle_info = BattleFieldController::battleInfo($battle, $battle_field, $this->users_data, $this->magic_usage, $this->step_status);
+					
 					$this->step_status = $battle_info['step_status'];
 					$battle_field = $battle_info['battle_field'];
 					$round_passed_summ = $this->users_data['user']['round_passed'] + $this->users_data['opponent']['round_passed'];
