@@ -31,10 +31,6 @@ class GwentSocket extends BaseSocket
 		$conn -> close();
 	}
 
-	private static function msec(){
-		return (int) round(microtime(true) * 1000);
-	}
-
 	public function onOpen(ConnectionInterface $conn){
 		//Пользователь присоединяется к сессии
 		$this->clients->attach($conn); //Добавление клиента
@@ -76,20 +72,19 @@ class GwentSocket extends BaseSocket
 
 	//Обработчик каждого сообщения
 	public function onMessage(ConnectionInterface $from, $msg){
-		$start_time = self::msec() - 500;
 		$msg = json_decode($msg); // сообщение от пользователя arr[action, ident[battleId, UserId, Hash]]
-		var_dump(date('Y-m-d H:i:s'));
-		var_dump($msg);
+		/*var_dump(date('Y-m-d H:i:s'));
+		var_dump($msg);*/
 		if(!isset($this->battles[$msg->ident->battleId])){
 			$this->battles[$msg->ident->battleId] = new \SplObjectStorage;
 		}
+
+		$timing_settings = SiteGameController::getTimingSettings();
 
 		if(!$this->battles[$msg->ident->battleId]->contains($from)){
 			$this->battles[$msg->ident->battleId]->attach($from);
 		}
 		$SplBattleObj = $this->battles;
-
-		$timing_settings = SiteGameController::getTimingSettings();
 
 		$battle = Battle::find($msg->ident->battleId); //Даные битвы
 		$this->battle_id = $msg->ident->battleId;
@@ -210,19 +205,18 @@ class GwentSocket extends BaseSocket
 				if($battle->fight_status <= 1){
 					if(2 == count($battle_members)){
 						if(0 == $battle->fight_status){
-							$battle->turn_expire = $timing_settings['card_change']*1000 + self::msec();
+							$battle->turn_expire = $timing_settings['card_change'] + time();
 							$battle->fight_status = 1; // Подключилось нужное количество пользователей
 							$battle->save();
 						}
 
 						$this->step_status['round_status']['current_player'] = $user_turn;
-						$this->step_status['timing'] = $battle->turn_expire;
+						$this->step_status['timing'] = $battle->turn_expire - time();
 
 						$result = $this->step_status;
 						$result['message'] = 'usersAreJoined';
 						$result['joined_user'] = $this->users_data['user']['login'];
 						$result['battleInfo'] = $msg->ident->battleId;
-						$result['timing'] += self::msec() - $start_time;
 
 						self::sendMessageToSelf($from, $result); //Отправляем результат отправителю
 						self::sendMessageToOthers($from, $result, $this->battles[$msg->ident->battleId]);
@@ -252,7 +246,7 @@ class GwentSocket extends BaseSocket
 						$this->users_data['opponent']['login']=> $this->users_data['opponent']['energy']
 					];
 
-					$this->step_status['timing'] = $battle->turn_expire;
+					$this->step_status['timing'] = $battle->turn_expire - time();
 					$this->step_status['images'] = [
 						$this->users_data['user']['login'] => $this->users_data['user']['card_images'],
 						$this->users_data['opponent']['login'] => $this->users_data['opponent']['card_images'],
@@ -262,7 +256,6 @@ class GwentSocket extends BaseSocket
 					$result['message'] = 'allUsersAreReady';
 					$result['battleInfo'] = $msg->ident->battleId;
 
-					$result['timing'] += self::msec() - $start_time;
 					self::sendMessageToSelf($from, $result);
 				}
 			break;
@@ -308,7 +301,7 @@ class GwentSocket extends BaseSocket
 						}
 
 						$user_timing = \DB::table('tbl_battle_members')->select('turn_expire')->where('user_id','=',$battle->user_id_turn)->first();
-						$battle->turn_expire = $user_timing->turn_expire + self::msec()*2 - $start_time;
+						$battle->turn_expire = $user_timing->turn_expire + time();
 
 						$player_source = (empty($this->users_data['opponent']['player_source']))
 							? $this->users_data['opponent']['player']
@@ -324,7 +317,7 @@ class GwentSocket extends BaseSocket
 							$this->users_data['user']['login']	=> $this->users_data['user']['energy'],
 							$this->users_data['opponent']['login']=> $this->users_data['opponent']['energy']
 						];
-						$this->step_status['timing'] = $battle->turn_expire;
+						$this->step_status['timing'] = $battle->turn_expire - time();
 						$this->step_status['images'] = [
 							$this->users_data['user']['login'] => $this->users_data['user']['card_images'],
 							$this->users_data['opponent']['login'] => $this->users_data['opponent']['card_images'],
@@ -333,7 +326,6 @@ class GwentSocket extends BaseSocket
 						$result = $this->step_status;
 						$result['message'] = 'allUsersAreReady';
 						$result['battleInfo'] = $msg->ident->battleId;
-						$result['timing'] += self::msec() - $start_time;
 
 						if($battle->fight_status <= 1){
 							self::sendMessageToOthers($from, $result, $this->battles[$msg->ident->battleId]);
@@ -570,9 +562,7 @@ class GwentSocket extends BaseSocket
 					if($turn_expire > $timing_settings['max_step_time']){
 						$turn_expire = $timing_settings['max_step_time'];
 					}
-					$finish_time = self::msec() - $start_time;
-
-					$this->step_status['timing'] = $this->users_data[$showTimerOfUser]['turn_expire'] + $finish_time + self::msec();
+					$this->step_status['timing'] = $this->users_data[$showTimerOfUser]['turn_expire'];
 
 					\DB::table('tbl_battle_members')->where('id', '=', $this->users_data['user']['battle_member_id'])->update([
 						'user_deck'		=> serialize($this->users_data['user']['deck']),
@@ -583,7 +573,7 @@ class GwentSocket extends BaseSocket
 						'card_to_play'	=> serialize($this->users_data['user']['cards_to_play']),
 						'round_passed'	=> '0',
 						'addition_data'	=> $this->step_status['round_status']['activate_popup'],
-						'turn_expire'	=> $turn_expire*1000
+						'turn_expire'	=> $turn_expire
 					]);
 					\DB::table('tbl_battle_members')->where('id', '=', $this->users_data['opponent']['battle_member_id'])->update([
 						'user_deck'	=> serialize($this->users_data['opponent']['deck']),
@@ -596,7 +586,7 @@ class GwentSocket extends BaseSocket
 					$battle->battle_field	= serialize($battle_field);
 					$battle->magic_usage	= serialize($this->magic_usage);
 					$battle->user_id_turn	= $user_turn_id;
-					$battle->turn_expire	= $this->step_status['timing'];
+					$battle->turn_expire	= $this->users_data[$showTimerOfUser]['turn_expire'] + time();
 					$battle->save();
 
 					self::sendUserMadeAction($this->users_data, $this->step_status, $msg, $SplBattleObj, $from);
@@ -610,7 +600,7 @@ class GwentSocket extends BaseSocket
 
 				\DB::table('tbl_battle_members')->where('id','=',$this->users_data[$msg->user]['battle_member_id'])->update([
 					'round_passed' => 1,
-					'turn_expire' => $msg->timing * 1000
+					'turn_expire' => $msg->timing
 				]);
 
 				$users_passed_count = $this->users_data[$enemy]['round_passed'] + 1;
@@ -622,11 +612,12 @@ class GwentSocket extends BaseSocket
 					$this->step_status['round_status']['card_source'] = [$this->users_data[$enemy]['player'] => 'hand'];
 					$this->step_status['round_status']['cards_to_play'] = [];
 					$this->step_status['round_status']['round'] = $battle->round_count;
-					$this->step_status['timing'] = $this->users_data[$enemy]['turn_expire'] + self::msec()*2 - $start_time;
+					$this->step_status['timing'] = $this->users_data[$enemy]['turn_expire'];
+					var_dump($this->users_data[$enemy]['turn_expire']);
 
-					$battle->user_id_turn = $this->users_data[$enemy]['id'];;
+					$battle->user_id_turn = $this->users_data[$enemy]['id'];
 					$battle->pass_count++;
-					$battle->turn_expire = $this->step_status['timing'];
+					$battle->turn_expire = $this->users_data[$enemy]['turn_expire'] + time();
 					$battle->save();
 
 					self::sendUserMadeAction($this->users_data, $this->step_status, $msg, $SplBattleObj, $from);
@@ -729,9 +720,10 @@ class GwentSocket extends BaseSocket
 						//timing and cursed player
 						foreach($this->users_data as $type => $user_data){
 							if(($type == 'user') || ($type == 'opponent')){
-								$timing = $this->users_data[$type]['turn_expire'] + $timing_settings['first_step_r'.$battle->round_count]*1000;
-								if($timing > ($timing_settings['max_step_time'] * 1000)){
-									$timing = $timing_settings['max_step_time'] * 1000;
+								$timing = $this->users_data[$type]['turn_expire'] + $timing_settings['first_step_r'.$battle->round_count];
+								var_dump($timing);
+								if($timing > ($timing_settings['max_step_time'])){
+									$timing = $timing_settings['max_step_time'];
 								}
 								if($this->users_data[$type]['current_deck'] == 'cursed'){
 									$cursed_players[] = $this->users_data[$type]['player'];
@@ -775,11 +767,11 @@ class GwentSocket extends BaseSocket
 							}
 						}
 
-						$this->step_status['timing'] = $this->users_data[$user_turn_id]['turn_expire'] + self::msec();
+						$this->step_status['timing'] = $this->users_data[$user_turn_id]['turn_expire'];
 
 						$battle->first_turn_user_id = $user_turn_id;
 						$battle->user_id_turn = $user_turn_id;
-						$battle->turn_expire = $this->step_status['timing'];
+						$battle->turn_expire = $this->step_status['timing'] + time();
 						$battle->save();
 
 						$result = $this->step_status;
@@ -849,7 +841,6 @@ class GwentSocket extends BaseSocket
 						}
 					}
 				}
-
 			break;
 
 			case 'changeCardInHand':
@@ -960,7 +951,7 @@ class GwentSocket extends BaseSocket
 				}
 
 				$battle->user_id_turn = $this->users_data[$player]['id'];;
-				$battle->turn_expire = $turn_expire*1000 + self::msec();
+				$battle->turn_expire = $turn_expire + time();
 				$battle->save();
 
 				\DB::table('tbl_battle_members')
@@ -968,11 +959,11 @@ class GwentSocket extends BaseSocket
 					->update([
 						'addition_data'	=> '',
 						'round_passed'	=> '0',
-						'turn_expire'	=> $turn_expire*1000
+						'turn_expire'	=> $turn_expire
 					]);
 				$showTimerOfUser = $this->users_data[$player]['pseudonim'];
 
-				$this->step_status['timing'] = $this->users_data[$showTimerOfUser]['turn_expire'] + self::msec()*2 - $start_time;
+				$this->step_status['timing'] = $this->users_data[$showTimerOfUser]['turn_expire'];
 				self::sendUserMadeAction($this->users_data, $this->step_status, $msg, $SplBattleObj, $from);
 				break;
 
@@ -1004,7 +995,6 @@ class GwentSocket extends BaseSocket
 
 			case 'dropCard':
 				if($msg->player != $this->users_data['user']['player']){
-					var_dump('yep');
 					$position = -1;
 					foreach ($this->users_data[$msg->player][$msg->deck] as $card_iter => $card_data) {
 						if ($card_data == Crypt::decrypt($msg->card)) {
@@ -1037,7 +1027,7 @@ class GwentSocket extends BaseSocket
 				$player = $this->users_data[$msg->ident->userId]['player'];
 				$field_buffs = BattleFieldController::getBattleBuffs($battle_field);
 
-				$turn_expire = $this->users_data[$msg->ident->userId]['turn_expire'] + $timing_settings['additional_time']*1000;
+				$turn_expire = $this->users_data[$msg->ident->userId]['turn_expire'] + $timing_settings['additional_time'];
 				\DB::table('tbl_battle_members')
 					->where('id','=',$this->users_data[$msg->ident->userId]['battle_member_id'])
 					->update(['turn_expire' => $turn_expire]);
@@ -1101,10 +1091,10 @@ class GwentSocket extends BaseSocket
 
 				$user_type = (0 != $this->users_data['opponent']['round_passed'])? 'user': 'opponent';
 
-				$this->step_status['timing'] = $turn_expire + self::msec() - $start_time;
+				$this->step_status['timing'] = $turn_expire;
 				$battle->battle_field	= serialize($battle_field);
 				$battle->user_id_turn	= $this->users_data[$user_type]['id'];
-				$battle->turn_expire	= $this->step_status['timing'];
+				$battle->turn_expire	= $this->step_status['timing'] + time();
 				$battle->save();
 
 				$card_image = ($msg->type == 'card')
@@ -2067,7 +2057,6 @@ class GwentSocket extends BaseSocket
 					$battle_field[$player][$row]['warrior'] = array_values($battle_field[$player][$row]['warrior']);
 				}
 
-				var_dump($step_status['dropped_cards']['p1']);
 				if(!empty($card_to_stay)){
 					foreach($card_to_stay as $key => $value){
 						$destination = explode('_',$key);
@@ -2322,7 +2311,7 @@ class GwentSocket extends BaseSocket
 			//Закрытие соккета
 			$_this->clients->detach($conn);
 		}else{
-			if(self::msec() < $battle->turn_expire){
+			if(time() < $battle->turn_expire){
 				sleep(2);
 				if($battle->disconected_count == 2){
 					self::waitForRoundEnds($_this, $conn);
@@ -2358,14 +2347,14 @@ class GwentSocket extends BaseSocket
 					$turn_expire = 0;
 				}
 
-				$turn_expire = $turn_expire + $timing_settings['first_step_r'.$battle->round_count] + self::msec();
+				$turn_expire = $turn_expire + $timing_settings['first_step_r'.$battle->round_count];
 				if($turn_expire > $timing_settings['max_step_time']){
 					$turn_expire = $timing_settings['max_step_time'];
 				}
 
 				$battle->user_id_turn = $user_turn_id;
 				$battle->first_turn_user_id =$user_turn_id;
-				$battle->turn_expire = $turn_expire;
+				$battle->turn_expire = $turn_expire + time();
 				$battle->pass_count = $battle->pass_count +1;
 
 				if($battle->pass_count > 1) {

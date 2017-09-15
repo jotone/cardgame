@@ -1,0 +1,266 @@
+/* helping adds*/
+.clear {
+  clear: both;
+  font-size: 1px;
+  line-height: 1px;
+  height: 0;
+  overflow: hidden; }
+
+.cfix:after {
+  content: '';
+  display: block;
+  height: 0;
+  font-size: 1px;
+  line-height: 1px;
+  overflow: hidden;
+  clear: both; }
+
+.juster {
+  display: inline-block;
+  width: 100%;
+  height: 0;
+  overflow: hidden; }
+
+.jfix-after:after {
+  content: '';
+  display: inline-block;
+  width: 100%;
+  height: 0;
+  overflow: hidden; }
+
+.vfix {
+  height: 100%;
+  width: 0px;
+  display: inline-block;
+  vertical-align: middle; }
+
+.vfix-before:before {
+  content: '';
+  height: 100%;
+  width: 0;
+  display: inline-block;
+  vertical-align: middle; }
+
+.hidden-block {
+  position: absolute;
+  left: -99999em;
+  top: -99999em; }
+
+/* /helping adds*/
+/* ctext */
+.ctext h1, .ctext h2, .ctext h3, .ctext h4, .ctext h5, .ctext h6 {
+  line-height: 1.25;
+  margin-bottom: 15px;
+  font-weight: 700; }
+
+.ctext h1 {
+  font-size: 36px; }
+
+.ctext h2 {
+  font-size: 32px; }
+
+.ctext h3 {
+  font-size: 28px; }
+
+.ctext h4 {
+  font-size: 24px; }
+
+.ctext h5 {
+  font-size: 20px; }
+
+.ctext h6 {
+  font-size: 16px; }
+
+.ctext p {
+  margin-bottom: 10px;
+  font-size: 14px; }
+
+/* /ctext */
+/* base styles*/
+*, *:before, *:after {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  outline: none; }
+
+*, body, html {
+  -webkit-text-size-adjust: none;
+  -webkit-appearance: none;
+  max-height: 9001em; }
+
+html {
+  height: 100%; }
+
+body {
+  min-height: 100%;
+  width: 100%;
+  min-width: 320px;
+  font-family: "Muller",arial,sans-serif;
+  background: #fff;
+  color: #3d3d3d;
+  position: relative;
+  font-size: 16px;
+  line-height: 1;
+  /* styles for wp-admin panel */
+  /* /styles for wp-admin panel */ }
+  body.customize-support .wp-panel-show {
+    top: 32px; }
+
+img {
+  vertical-align: bottom;
+  border: 0;
+  max-width: 100%; }
+
+/* adapted styles for wp-admin panel */
+@media screen and (max-width: 782px) {
+  body.customize-support .wp-panel-show {
+    top: 46px; }
+  #wpadminbar {
+    position: fixed !important; } }
+
+/* /adapted styles for wp-admin panel */
+/* /base styles */
+/* wraps styling*/
+.mbox {
+  max-width: 1196px;
+  width: 100%;
+  padding: 0 15px;
+  margin: 0 auto;
+  position: relative; }
+
+.mbox:after {
+  content: "";
+  clear: both;
+  font-size: 1px;
+  line-height: 1px;
+  height: 0;
+  overflow: hidden;
+  display: block; }
+
+/* /wraps styling*/
+.footer_placeholder {
+  height: 200px; }
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 2;
+  overflow: hidden; }
+
+input::-webkit-input-placeholder, textarea::-webkit-input-placeholder {
+  color: #212121; }
+
+input:-moz-placeholder, textarea:-moz-placeholder {
+  color: #212121;
+  opacity: 1; }
+
+input::-moz-placeholder, textarea::-moz-placeholder {
+  color: #212121;
+  opacity: 1; }
+
+input:-ms-input-placeholder, textarea:-ms-input-placeholder {
+  color: #212121; }
+
+/*End Layout*/
+/*fonts*/
+@font-face {
+  font-family: "HelveticaNeueCyr";
+  src: url("/fonts/HelveticaNeueCyr-Thin.eot");
+  src: url("/fonts/HelveticaNeueCyr-Thin.eot?#iefix") format("embedded-opentype"), url("/fonts/HelveticaNeueCyr-Thin.woff") format("woff"), url("/fonts/HelveticaNeueCyr-Thin.ttf") format("truetype"), url("/fonts/HelveticaNeueCyr-Thin.svg#HelveticaNeueCyr") format("svg");
+  font-weight: 100;
+  font-style: normal; }
+
+@font-face {
+  font-family: "HelveticaNeueCyr";
+  src: url("/fonts/HelveticaNeueCyr-UltraLight.eot");
+  src: url("/fonts/HelveticaNeueCyr-UltraLight.eot?#iefix") format("embedded-opentype"), url("/fonts/HelveticaNeueCyr-UltraLight.woff") format("woff"), url("/fonts/HelveticaNeueCyr-UltraLight.ttf") format("truetype"), url("/fonts/HelveticaNeueCyr-UltraLight.svg#HelveticaNeueCyr") format("svg");
+  font-weight: 200;
+  font-style: normal; }
+
+@font-face {
+  font-family: "HelveticaNeueCyr";
+  src: url("/fonts/HelveticaNeueCyr-Light.eot");
+  src: url("/fonts/HelveticaNeueCyr-Light.eot?#iefix") format("embedded-opentype"), url("/fonts/HelveticaNeueCyr-Light.woff") format("woff"), url("/fonts/HelveticaNeueCyr-Light.ttf") format("truetype"), url("/fonts/HelveticaNeueCyr-Light.svg#HelveticaNeueCyr") format("svg");
+  font-weight: 300;
+  font-style: normal; }
+
+@font-face {
+  font-family: "HelveticaNeueCyr";
+  src: url("/fonts/HelveticaNeueCyr-Roman.eot");
+  src: url("/fonts/HelveticaNeueCyr-Roman.eot?#iefix") format("embedded-opentype"), url("/fonts/HelveticaNeueCyr-Roman.woff") format("woff"), url("/fonts/HelveticaNeueCyr-Roman.ttf") format("truetype"), url("/fonts/HelveticaNeueCyr-Roman.svg#HelveticaNeueCyr") format("svg");
+  font-weight: 400;
+  font-style: normal; }
+
+@font-face {
+  font-family: "HelveticaNeueCyr";
+  src: url("/fonts/HelveticaNeueCyr-Bold.eot");
+  src: url("/fonts/HelveticaNeueCyr-Bold.eot?#iefix") format("embedded-opentype"), url("/fonts/HelveticaNeueCyr-Bold.woff") format("woff"), url("/fonts/HelveticaNeueCyr-Bold.ttf") format("truetype"), url("/fonts/HelveticaNeueCyr-Bold.svg#HelveticaNeueCyr") format("svg");
+  font-weight: 700;
+  font-style: normal; }
+
+@font-face {
+  font-family: "HelveticaNeueCyr";
+  src: url("/fonts/HelveticaNeueCyr-Medium.eot");
+  src: url("/fonts/HelveticaNeueCyr-Medium.eot?#iefix") format("embedded-opentype"), url("/fonts/HelveticaNeueCyr-Medium.woff") format("woff"), url("/fonts/HelveticaNeueCyr-Medium.ttf") format("truetype"), url("/fonts/HelveticaNeueCyr-Medium.svg#HelveticaNeueCyr") format("svg");
+  font-weight: 500;
+  font-style: normal; }
+
+@font-face {
+  font-family: "GothamPro";
+  src: url("/fonts/GothamProRegular.eot");
+  src: url("/fonts/GothamProRegular.eot?#iefix") format("embedded-opentype"), url("/fonts/GothamProRegular.woff") format("woff"), url("/fonts/GothamProRegular.ttf") format("truetype"), url("/fonts/GothamProRegular.svg#GothamPro") format("svg");
+  font-weight: 400;
+  font-style: normal; }
+
+@font-face {
+  font-family: "Muller";
+  src: url("/fonts/MullerThin.eot");
+  src: url("/fonts/MullerThin.eot?#iefix") format("embedded-opentype"), url("/fonts/MullerThin.woff") format("woff"), url("/fonts/MullerThin.ttf") format("truetype"), url("/fonts/MullerThin.svg#Muller") format("svg");
+  font-weight: 100;
+  font-style: normal; }
+
+@font-face {
+  font-family: "Muller";
+  src: url("/fonts/MullerUltraLight.eot");
+  src: url("/fonts/MullerUltraLight.eot?#iefix") format("embedded-opentype"), url("/fonts/MullerUltraLight.woff") format("woff"), url("/fonts/MullerUltraLight.ttf") format("truetype"), url("/fonts/MullerUltraLight.svg#Muller") format("svg");
+  font-weight: 200;
+  font-style: normal; }
+
+@font-face {
+  font-family: "Muller";
+  src: url("/fonts/MullerLight.eot");
+  src: url("/fonts/MullerLight.eot?#iefix") format("embedded-opentype"), url("/fonts/MullerLight.woff") format("woff"), url("/fonts/MullerLight.ttf") format("truetype"), url("/fonts/MullerLight.svg#Muller") format("svg");
+  font-weight: 300;
+  font-style: normal; }
+
+@font-face {
+  font-family: "Muller";
+  src: url("/fonts/MullerRegular.eot");
+  src: url("/fonts/MullerRegular.eot?#iefix") format("embedded-opentype"), url("/fonts/MullerRegular.woff") format("woff"), url("/fonts/MullerRegular.ttf") format("truetype"), url("/fonts/MullerRegular.svg#Muller") format("svg");
+  font-weight: 400;
+  font-style: normal; }
+
+@font-face {
+  font-family: "Muller";
+  src: url("/fonts/MullerBold.eot");
+  src: url("/fonts/MullerBold.eot?#iefix") format("embedded-opentype"), url("/fonts/MullerBold.woff") format("woff"), url("/fonts/MullerBold.ttf") format("truetype"), url("/fonts/MullerBold.svg#Muller") format("svg");
+  font-weight: 700;
+  font-style: normal; }
+
+@font-face {
+  font-family: "Muller";
+  src: url("/fonts/MullerMedium.eot");
+  src: url("/fonts/MullerMedium.eot?#iefix") format("embedded-opentype"), url("/fonts/MullerMedium.woff") format("woff"), url("/fonts/MullerMedium.ttf") format("truetype"), url("/fonts/MullerMedium.svg#Muller") format("svg");
+  font-weight: 500;
+  font-style: normal; }
+
+@font-face {
+  font-family: "GothamPro";
+  src: url("/fonts/GothamProRegular.eot");
+  src: url("/fonts/GothamProRegular.eot?#iefix") format("embedded-opentype"), url("/fonts/GothamProRegular.woff") format("woff"), url("/fonts/GothamProRegular.ttf") format("truetype"), url("/fonts/GothamProRegular.svg#GothamPro") format("svg");
+  font-weight: 400;
+  font-style: normal; }
+
+/*/fonts*/

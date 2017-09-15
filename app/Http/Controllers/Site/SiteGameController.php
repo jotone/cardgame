@@ -297,15 +297,15 @@ class SiteGameController extends BaseController
 
 			$users_result_data[$user_in_battle->login] = [
 				'img_url'		=> $user_in_battle->img_url,
-				'deck_slug'		=> $value -> user_deck_race,
+				'deck_slug'		=> $value->user_deck_race,
 				'deck_title'	=> $current_user_deck_race->title,
 				'deck_descr'	=> $current_user_deck_race->short_description,
 				'deck'			=> $deck,
 				'deck_count'	=> $deck_card_count,
 				'hand'			=> $hand,
 				'magic'			=> $user_magic_effect_data,
-				'energy'		=> $value -> user_energy,
-				'ready'			=> $value -> user_ready,
+				'energy'		=> $value->user_energy,
+				'ready'			=> $value->user_ready,
 				'can_change_cards'=> $value->available_to_change,
 				'current_deck'	=> $user_in_battle->user_current_deck,
 				'deck_img'		=> $current_user_deck_race->card_img
@@ -314,7 +314,7 @@ class SiteGameController extends BaseController
 
 		return json_encode([
 			'message'	=> 'success',
-			'userData'	=> $users_result_data
+			'userData'	=> $users_result_data,
 		]);
 	}
 
@@ -350,7 +350,7 @@ class SiteGameController extends BaseController
 		$user_hand = self::buildCardDeck($user_hand);
 		$user_deck = self::buildCardDeck($user_deck);
 		$timing_settings = self::getTimingSettings();
-		$expire_time = ($timing_settings['first_step_r1'] + $data['time'])*1000;
+		$expire_time = $timing_settings['first_step_r1'] + $data['time'];
 
 		$users_result_data[$user->login] = [
 			'deck_count'=> count($user_deck),

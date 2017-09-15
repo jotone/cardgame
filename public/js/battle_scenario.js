@@ -22,10 +22,11 @@ function ajaxErrorMsg(jqXHR, exception) {
 
 //Timer Functions
 	function convertTimeToStr(seconds){
-		seconds = Math.floor((seconds - Date.now()) / 1000);
+		seconds = parseInt(seconds);
 		if(seconds > timeOut){
 			seconds = timeOut;
 		}
+
 		if(seconds >= 0){
 			var time = {'m':Math.floor(seconds / 60), 's':seconds % 60};
 			for(var i in time){
@@ -744,10 +745,9 @@ function userMakeAction(conn, cardSource, allowToAction){
 			}else{
 				var card = $('#sortableUserCards li.active').attr('data-cardid');
 			}
-
 			var magic = $('.user-describer .magic-effects-wrap .active').attr('data-cardid');
 			var BFData = {
-				row:	$(this).attr('id'),
+				row:	($(this).hasClass('field-for-cards'))? $(this).attr('id'): $(this).closest('.field-for-cards').attr('id'),
 				field:	$(this).parents('.convert-cards').attr('id')
 			};
 			if(typeof magic != "undefined"){
@@ -1530,8 +1530,9 @@ function startBattle(){
 						}
 
 						convertTimeToStr(result.timing);
-						if(result.timing > 0){
+						if( (result.timing > 0) && (!timerStarted) ){
 							startTimer(result.round_status.current_player);
+							timerStarted = true;
 						}
 					}
 				});
@@ -1784,6 +1785,7 @@ var timeOut;
 var TimerInterval;
 var conn;
 var currentRound = 0;
+var timerStarted = false;
 
 $.get('/get_socket_settings', function (data) {
 	socketResult = JSON.parse(data); //Получение данных настроек соккета
@@ -1793,7 +1795,7 @@ $.get('/get_socket_settings', function (data) {
 		userId:	socketResult['user'],
 		hash:	socketResult['hash']
 	};
-	timeOut = socketResult['timeOut'];
+	timeOut = parseInt(socketResult['timeOut']);
 
 	$(document).ready(function () {
 		startBattle();

@@ -1,0 +1,955 @@
+@media screen and (max-width: 1600px){
+	.wrapper-acordeon .shadow-hidden-blocks .shadow-item .name{width: 100%; text-align: center;}
+	.wrapper-acordeon .shadow-hidden-blocks .shadow-item .name{width: 100%; text-align: center;}
+}
+
+@media screen and (max-width: 1366px){
+	.wrap-rent-header {padding-top: 0;}
+	.wrap-rent-header .rent-title {margin-top: 0; font-size: 53px;}
+	.wrap-rent-header p { padding-bottom: 25px; padding-top: 15px; z-index: 10; position: relative;}
+	.wrap-rent-header .rent-title {margin-top: 0; font-size: 53px;}
+	.wrap-rent-header .el-button {margin-bottom: 0; z-index: 10; position: relative;}
+	.wrap-rent-header .operation-lising-pic {margin-top: -80px;}
+	.cooperations {padding-top: 0;}
+	.cooperations .title-cooperations {font-size: 53px; line-height: 70px; padding-bottom: 0;}
+	.cooperations .coop-advantages {padding-bottom: 0; z-index: 10; position: relative;}
+	.cooperations .cooperation-people-pic {margin-top: -50px;}
+	.wrapper-acordeon .shadow-hidden-blocks .shadow-item .name{width: 100%; text-align: center; font-size: 27px;}
+	.wrapper-acordeon .main-slider .slide .headline{top: 28%;}
+	.wrapper-acordeon .main-slider .slide .headline{padding: 0 20px;}
+	.wrap-exc{height: 85vh;}
+}
+
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) {
+	.el-header-bg.viphall-header {
+		background-attachment: scroll;
+		-webkit-background-size: cover;
+		-moz-background-size: cover;
+		-o-background-size: cover;
+		background-size: cover;
+	}
+}
+
+@media screen and (max-width: 1280px) {
+	.sort-bar .options .filter{display: block;}
+	.wrapper-about{padding: 36px 20px 28px;}
+	.wrapper-details.nondrive-details{padding: 40px 20px 0;}
+	.el-tariffs .tarif-item-book:nth-child(5n){margin-right: 66px;}
+	.el-tariffs .tarif-item-book:nth-child(4n){margin-right: 0;}
+	.filter-tab-item {
+		-webkit-justify-content: space-around;
+		-ms-flex-pack: distribute;
+		justify-content: space-around;
+	}
+	.event-wrap{padding: 0 10px;}
+	.wrap-tariffs{padding: 70px 10px 60px;}
+	.first-step, .third-step{padding: 67px 10px 60px;}
+	.recomended-cars .prev, .recomended-cars .prev-watched, .watched-cars .prev, .watched-cars .prev-watched{left: -10px;}
+	.recomended-cars .next, .recomended-cars .next-watched, .watched-cars .next, .watched-cars .next-watched{right: -10px;}
+	.event-order{padding: 25px 15px 30px;}
+	.el-tariffs .tarif-item{margin-right: 20px;}
+	.wrapper-details{padding: 10px 15px 20px;}
+}
+
+@media screen and (max-width: 1150px) {
+	.wrap-transport-slider .left-bar-slider .white-block{width: 431px;}
+	.wrap-transport-slider .left-bar-slider .iphone{width: 99%; right: -222px;}
+	.content-wrap .all-cars{width: 100%;}
+	.content-wrap{position: relative;}
+	.left-bar{
+		position: absolute;
+		top: 0;
+		left: 0;
+		background: #fff;
+		z-index: 10;
+		width: 35%;
+		height: 94%;
+	}
+	.wrap-exc .title-exc{font-size: 62px;}
+	.event-wrap .event-left{width: 60%;
+	}
+}
+
+@media screen and (max-width: 1100px) {
+	.wrap-transport-slider .left-bar-slider .white-block{width: 410px;}
+	.wrap-transport-slider .left-bar-slider .iphone{width: 99%; right: -211px;}
+	.sort-bar .options{width: 22%;}
+	.el-calc-tabs .wrap-tabs .tabs li a{font-size: 18px;}
+	.filter-tab-item .excursion-item{width: 48%;}
+	.first-step .headline .title, .third-step .headline .title{font-size: 37px;}
+	.first-step .headline .steps ul li, .third-step .headline .steps ul li{margin-left: 10px;}
+	.first-step .order-info .info-items, .first-step .contacts .full-info{
+		-webkit-justify-content: space-around;
+		-ms-flex-pack: distribute;
+		justify-content: space-around;
+	}
+	.first-step .order-info .info-items .item, .first-step .contacts .main-info .form_input, .first-step .contacts .full-info .form_input{width: 47%;}
+	.first-step .contacts .full-info{height: 600px;}
+	.wrap-tariffs .tariff-item{width: 98%;}
+	.filter-tab-item .excursion-item .exc-text .info {
+		display: -webkit-flex;
+		display: -moz-flex;
+		display: -ms-flex;
+		display: -o-flex;
+		display: flex;
+		-webkit-flex-direction: column;
+		-moz-flex-direction: column;
+		-ms-flex-direction: column;
+		-o-flex-direction: column;
+		flex-direction: column;
+	}
+}
+
+@media screen and (max-width: 1024px) {
+	.left-bar .wrap-sort .sort-item .arrows{right: -10px; top: 70px;}
+	.left-bar .wrap-slider .slide-item .text{padding: 10px; font-size: 14px;}
+	.sort-bar{padding-right: 0;}
+	.sort-bar .sort a{width: 275px;}
+	.wrapper-acordeon .main-slider .slide .headline{padding: 0 25px; font-size: 28px;}
+	.wrap-transport-slider .text-slider .slide .desc{padding-right: 35px;}
+	.wrap-transport-slider .left-bar-slider .iphone{
+		top: 64px;
+		right: -208px;
+		width: 102%;
+	}
+	.wrap-transport-slider .left-bar-slider .white-block{height: 70%; width: 386px;}
+	.filter-tab-item .excursion-item{width: 49%;}
+	.wrap-transport-slider .title-slider .slide{font-size: 35px;}
+	.wrap-revievs{padding-bottom: 210px;}
+	.cooperations .title-cooperations{font-size: 58px;}
+	.cooperations .coop-advantages{font-size: 18px;}
+	.wrap-work .work-title{font-size: 37px;}
+	.wrap-slider-card{
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: column;
+		-moz-box-orient: vertical;
+		-moz-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+		-webkit-box-align: center;
+		-webkit-align-items: center;
+		-moz-box-align: center;
+		-ms-flex-align: center;
+		align-items: center;
+	}
+	.right-card{width: 50%;}
+	.slick-slide img{width: 100%;}
+	.wrap-slider-card .slider-card{width: 65%;}
+	.el-calc-tabs .wrap-tabs .tab-content .content.custom-info .right-tab-bar .functional{width: 50%;}
+	.all-cars .car-item img{width: auto;}
+	.el-tariffs .tarif-item{padding-bottom: 25px;}
+	.el-tariffs{padding-bottom: 0;}
+	.lower-button{bottom: 40%!important;}
+}
+
+@media screen and (max-width: 992px){
+	.wrap-transport-slider .title-slider .slide{font-size: 32px;}
+	.wrap-transport-slider .left-bar-slider .white-block{width: 381px;}
+	.wrapper-acordeon .main-slider .slide .headline{
+		padding: 0 5px;
+		font-size: 26px;
+		margin: 0 auto;
+		width: 100%;
+	}
+	.wrap-transport-slider .left-bar-slider{width: 100%;}
+	.wrap-transport-slider .left-bar-slider .iphone{right: -442px;}
+	.wrap-transport-slider .left-bar-slider .white-block{
+		width: 628px;
+		height: 78%;
+		opacity: .9;
+	}
+	.wrap-transport-slider .title-slider{
+		width: 50%;
+		top: 25%;
+		right: 0;
+		z-index: 10;
+		left: 0;
+	}
+	.wrap-transport-slider .text-slider{
+		width: 60%;
+		right: 0;
+		top: 35%;
+		left: 0;
+		z-index: 10;
+	}
+	.wrap-transport-slider .text-slider .slide .desc{font-size: 18px; letter-spacing: .5px;}
+	.wrap-transport-slider .text-slider .slide .goto .link p{font-size: 17px;}
+	.all-cars .car-item{width: 50%;}
+	.all-cars .car-item{border-right: 1px solid #d6d6d6; border-left: 1px solid #d6d6d6;}
+	.wrap-work .wrap-pluses .item-plus{padding: 0 10px 20px;}
+	.wrap-rent-header .rent-title{font-size: 58px;}
+	.wrap-rent-header p{width: 65%;}
+	.el-calc-tabs .wrap-tabs .tab-content .content.car-model .car-item .photo{width: 80%; margin: 0 auto;}
+	.el-calc-tabs .wrap-tabs .tab-content .content.car-model .car-item p{text-align: center;}
+	.wrap-rent-header .rent-title{font-size: 54px; line-height: 60px;}
+	.why-rent .wrap-adventages.leasing-advantages{width: 100%;}
+	.wrap-exc .title-exc{font-size: 58px; width: 80%;}
+	.event-wrap{
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: column;
+		-moz-box-orient: vertical;
+		-moz-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+		-webkit-box-pack: center;
+		-webkit-justify-content: center;
+		-moz-box-pack: center;
+		-ms-flex-pack: center;
+		justify-content: center;
+	}
+	.event-wrap .event-left{width: 100%; padding-top: 15px;}
+	.filter-tab-item .excursion-item{width: 100%;}
+	.wrap-tariffs .tariff-item .visible{width: 940px;}
+	.wrap-tariffs .tariff-item{overflow: scroll;}
+	.wrapper-details .available-tariffs .tar-item{width: 210px; padding-right: 5px;}
+	.wrapper-details .tariffs-description .prompts{width: 100%;}
+	.filter-tab-item .excursion-item .exc-text .info{
+		display: -webkit-flex;
+		display: -moz-flex;
+		display: -ms-flex;
+		display: -o-flex;
+		display: flex;
+		-webkit-flex-direction: row;
+		-moz-flex-direction: row;
+		-ms-flex-direction: row;
+		-o-flex-direction: row;
+		flex-direction: row;
+	}
+	.wrap-rent-header .operation-lising-pic {margin-top: 0px;}
+	.wrapper-acordeon .huge-hidden-blocks{display: none;}
+}
+
+@media screen and (max-width: 960px){
+	.wrap-transport-slider .left-bar-slider .white-block{width: 605px;}
+	.wrap-transport-slider .left-bar-slider .iphone{right: -419px;}
+	.wrap-clients .logos{
+		-webkit-flex-wrap: wrap;
+		-ms-flex-wrap: wrap;
+		flex-wrap: wrap;
+	}
+	.wrap-clients .logos .logo-item{width: 33%;}
+	.el-tariffs .tarif-item-book:nth-child(4n){margin-right: 66px;}
+	.el-calc-tabs .wrap-tabs .tabs li{width: 30%; margin-bottom: 15px;}
+	.el-calc-tabs .wrap-tabs .tab-content .content.custom-info{
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: column;
+		-moz-box-orient: vertical;
+		-moz-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+		-webkit-box-align: center;
+		-webkit-align-items: center;
+		-moz-box-align: center;
+		-ms-flex-align: center;
+		align-items: center;
+	}
+	.el-calc-tabs .wrap-tabs .tab-content .content.car-model{
+		-webkit-justify-content: space-around;
+		-ms-flex-pack: distribute;
+		justify-content: space-around;
+	}
+	.el-calc-tabs .wrap-tabs .tab-content .content.custom-info .right-tab-bar.smaller{
+		width: 100%;
+		padding-right: 10px;
+		padding-left: 10px;
+		-webkit-justify-content: space-around;
+		-ms-flex-pack: distribute;
+		justify-content: space-around;
+		padding-bottom: 15px;
+	}
+	.el-calc-tabs .wrap-tabs .tab-content .content.custom-info .left-tab-bar{width: 55%;}
+	.el-calc-tabs .wrap-tabs .tab-content .content.custom-info .left-tab-bar.big{
+		width: 70%;
+		padding-top: 11px;
+		text-align: center;
+	}
+	.first-step .headline .steps ul, .third-step .headline .steps ul{
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: column;
+		-moz-box-orient: vertical;
+		-moz-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+		-webkit-justify-content: space-around;
+		-ms-flex-pack: distribute;
+		justify-content: space-around;
+		padding-right: 25px;
+	}
+	.first-step .headline .steps ul li, .third-step .headline .steps ul li{width: 200px; margin-bottom: 5px;}
+	.first-step .tariffs .tarif-title, .first-step .order-info .info-title, .first-step .contacts .contacts-title{font-size: 22px;}
+	.first-step .contacts .main-info{
+		-webkit-justify-content: space-around;
+		-ms-flex-pack: distribute;
+		justify-content: space-around;
+	}
+}
+
+@media screen and (max-width: 930px){
+	.wrap-transport-slider .left-bar-slider .white-block{width: 590px;}
+	.wrap-transport-slider .left-bar-slider .iphone{right: -403px;}
+	.event-order .tariffs .tariffs-description .prompts, .event-order .tariffs .tariffs-description .include{width: 50%;}
+	.wrap-tariffs .tariff-item .unvisible .wrap-table{width: 870px; overflow-y: scroll;
+	}
+}
+
+@media screen and (max-width: 900px){
+	.wrap-transport-slider .left-bar-slider .white-block{width: 568px;}
+	.wrap-transport-slider .left-bar-slider .iphone{right: -380px;}
+}
+
+@media screen and (max-width: 860px){
+	.wrap-transport-slider .left-bar-slider .white-block{width: 536px;}
+	.wrap-transport-slider .left-bar-slider .iphone{right: -42%;}
+}
+
+@media screen and (max-width: 830px){
+	.wrap-transport-slider .left-bar-slider .white-block{width: 522px;}
+	.sort-bar{
+		-webkit-box-align: center;
+		-webkit-align-items: center;
+		-moz-box-align: center;
+		-ms-flex-align: center;
+		align-items: center;
+	}
+	.sort-bar .options{width: 35%;}
+	.sort-bar .sort{
+		-webkit-box-align: end;
+		-webkit-align-items: flex-end;
+		-moz-box-align: end;
+		-ms-flex-align: end;
+		align-items: flex-end;
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: column;
+		-moz-box-orient: vertical;
+		-moz-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+	}
+	.sort-bar .sort a{margin-top: 15px;}
+	.wrapper-about .about-desc .about-text{width: 100%;}
+	.wrapper-about .about-desc{
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: reverse;
+		-webkit-flex-direction: column-reverse;
+		-moz-box-orient: vertical;
+		-moz-box-direction: reverse;
+		-ms-flex-direction: column-reverse;
+		flex-direction: column-reverse;
+		-webkit-box-align: center;
+		-webkit-align-items: center;
+		-moz-box-align: center;
+		-ms-flex-align: center;
+		align-items: center;
+	}
+	.wrapper-about .about-desc .about-text .title{text-align: center;}
+	.cooperations .title-cooperations{font-size: 50px; line-height: 70px;}
+	.cooperations .coop-advantages{line-height: 21px;}
+	.wrap-work .wrap-pluses{
+		-webkit-flex-wrap: wrap;
+		-ms-flex-wrap: wrap;
+		flex-wrap: wrap;
+	}
+	.wrap-work .wrap-pluses .item-plus{width: 30%;}
+	.wrap-work .wrap-auto{
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: column;
+		-moz-box-orient: vertical;
+		-moz-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+		-webkit-flex-wrap: wrap;
+		-ms-flex-wrap: wrap;
+		flex-wrap: wrap;
+		-webkit-box-align: center;
+		-webkit-align-items: center;
+		-moz-box-align: center;
+		-ms-flex-align: center;
+		align-items: center;
+	}
+	.wrap-work .wrap-auto .jq-selectbox:first-child{margin-bottom: 35px;}
+	.right-card{width: 90%; text-align: center;}
+	.right-card .wrap-color .colors{
+		-webkit-box-pack: center;
+		-webkit-justify-content: center;
+		-moz-box-pack: center;
+		-ms-flex-pack: center;
+		justify-content: center;
+	}
+	.wrap-slider-card .slider-card{width: 95%;}
+	.wrap-rent-header .rent-title{font-size: 49px; line-height: 50px;}
+	.wrap-rent-header p{
+		width: 75%;
+		font-size: 20px;
+		line-height: 24px;
+		padding-top: 11px;
+		padding-bottom: 20px;
+	}
+	.why-rent .rent-title{font-size: 35px;}
+	.event-wrap .event-right{
+		position: relative;
+		height: 300px;
+		width: 100%;
+	}
+	.viphall h2, .vescort h2{font-size: 34px;}
+	.third-step .wrap-confirm .car-info{
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: column;
+		-moz-box-orient: vertical;
+		-moz-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+	}
+	.third-step .wrap-confirm .car-info .car-info-details{padding-left: 0;}
+	.left-bar {
+		height: auto;
+		padding-bottom: 40px;
+		border-bottom: 1px solid #ccc;
+	}
+}
+
+@media screen and (max-width: 800px){
+	.wrap-transport-slider .left-bar-slider .white-block{width: 504px;}
+	.wrap-transport-slider .left-bar-slider .iphone{right: -41%;}
+	.big-slider .wrap-icons .slider-nav .slick-slide{width: 140px;}
+	.wrapper-about, .wrapper-about .about-desc .about-text .desc, .big-slider{padding-right: 0; overflow: hidden;}
+	.wrapper-about .about-desc .about-text .desc-desc{padding-right: 20px;}
+	.el-tariffs .tarif-item-book, .el-tariffs .tarif-item-book:nth-child(4n), .el-tariffs .tarif-item-book:nth-child(5n){margin-right: 45px;}
+	.left-bar{
+		height: auto;
+		padding-bottom: 40px;
+		border-bottom: 1px solid #ccc;
+	}
+	.event-wrap .event-right{height: 450px;}
+}
+
+@media screen and (max-width: 767px){
+	.about-rent .photo{display: none;}
+	.about-rent .text{width: 100%;}
+	.index-about .wrap-items .item{
+		text-align: center;
+		width: 50%;
+		padding: 0 40px 30px;
+	}
+	.index-about .wrap-items{
+		-webkit-flex-wrap: wrap;
+		-ms-flex-wrap: wrap;
+		flex-wrap: wrap;
+	}
+	.wrap-transport-slider .left-bar-slider .white-block{width: 484px;}
+	.wrap-transport-slider .left-bar-slider .iphone{right: -40%;}
+	.wrap-transport-slider .title-slider .slide{font-size: 29px;}
+	.wrap-conditions .wrap-tabs{width: 100%;}
+	.cooperations{padding-top: 30px;}
+	.cooperations .title-cooperations{line-height: 60px; font-size: 40px;}
+	.cooperations .coop-advantages{width: 70%;}
+	.wrap-work .wrap-pluses .item-plus{width: 45%;}
+	.wrap-work .wrap-car{
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: column;
+		-moz-box-orient: vertical;
+		-moz-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+		-webkit-box-align: center;
+		-webkit-align-items: center;
+		-moz-box-align: center;
+		-ms-flex-align: center;
+		align-items: center;
+	}
+	.wrap-work .wrap-car .about-car{padding-top: 20px; padding-bottom: 0;}
+	.wrap-work .wrap-auto .jq-selectbox{width: 70%;}
+	.wrap-work .wrap-car .about-car .wrap-text{padding-left: 20px;}
+	.el-tariffs{
+		-webkit-box-pack: center;
+		-webkit-justify-content: center;
+		-moz-box-pack: center;
+		-ms-flex-pack: center;
+		justify-content: center;
+	}
+	#video-popup, #video-popup iframe{width: 100%; height: auto;}
+	.wrap-rent-header .rent-title{font-size: 50px; line-height: 70px;}
+	.wrap-rent-header p{width: 80%;}
+	.why-rent .wrap-adventages{width: 100%;}
+	.el-calc-tabs .wrap-tabs .tab-content .content.custom-info .right-tab-bar .functional{width: 50%;}
+	.el-calc-tabs .wrap-tabs .tab-content .content.custom-info .right-tab-bar{width: 100%;}
+	.why-rent .wrap-adventages{
+		-webkit-box-pack: center;
+		-webkit-justify-content: center;
+		-moz-box-pack: center;
+		-ms-flex-pack: center;
+		justify-content: center;
+	}
+	.why-rent .wrap-adventages.leasing-advantages .item{width: 33%;}
+	.wrap-exc .title-exc{font-size: 50px;}
+	.event-wrap .event-left h2{font-size: 35px;}
+	.event-wrap .event-left p{
+		margin: 0 0 13px 0;
+		font-size: 15px;
+		line-height: 18px;
+	}
+	.first-step .order-info .info-items .item .more, .first-step .wrap-zones .more{font-size: 14px;}
+	.event-order .tariffs .tariffs-description{
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: column;
+		-moz-box-orient: vertical;
+		-moz-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+	}
+	.event-order .tariffs .tariffs-description .prompts, .event-order .tariffs .tariffs-description .include{width: 100%;}
+	.event-order .order-info .order{
+		-webkit-flex-wrap: wrap;
+		-ms-flex-wrap: wrap;
+		flex-wrap: wrap;
+		-webkit-justify-content: space-around;
+		-ms-flex-pack: distribute;
+		justify-content: space-around;
+	}
+	.event-order .order-info .order .order-item{width: 47%;}
+	.wrapper-acordeon .main-slider .slide img{object-fit: cover; height: 100%;}
+	.wrapper-acordeon .main-slider .slide{height: 90vh;}
+}
+
+@media screen and (max-width: 730px){
+	.wrap-transport-slider .left-bar-slider .white-block{width: 455px;}
+	.wrap-transport-slider .left-bar-slider .iphone{right: -38%;}
+	.first-step .order-info .info-items .item, .first-step .contacts .main-info .form_input, .first-step .contacts .full-info .form_input{width: 98%;}
+	.first-step .contacts .full-info{height: auto;}
+	.first-step .order-info .info-items .item .more{margin-top: 0; margin-left: 0;
+	}
+}
+
+@media screen and (max-width: 690px){
+	.wrap-transport-slider .left-bar-slider .white-block{width: 429px;}
+	.wrap-transport-slider .left-bar-slider .iphone{right: -36%;}
+	.big-slider .wrap-icons .slider-nav .slick-slide{width: 195px;}
+	.wrap-tariffs .tarif-title{font-size: 64px;}
+	.event-order .book-title{font-size: 37px; padding-bottom: 20px;}
+}
+
+@media screen and (max-width: 666px){
+	.wrap-transport-slider .left-bar-slider .iphone{right: -217px; width: 100%;}
+	.wrap-transport-slider .left-bar-slider .white-block{width: 417px;}
+	.index-about .wrap-items .item{padding: 0 10px 30px;}
+	.wrap-rent-header .rent-title{font-size: 43px; line-height: 50px;}
+	.wrap-rent-header p{font-size: 18px; width: 90%;}
+	.el-calc-tabs .wrap-tabs .tab-content .content.custom-info .right-tab-bar .functional{width: 100%;}
+	.el-calc-tabs .wrap-tabs .tab-content .content.car-model{padding: 13px 10px 0;}
+	.first-step .headline, .third-step .headline{
+		-webkit-box-pack: center;
+		-webkit-justify-content: center;
+		-moz-box-pack: center;
+		-ms-flex-pack: center;
+		justify-content: center;
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: column;
+		-moz-box-orient: vertical;
+		-moz-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+	}
+	.first-step .headline .title, .third-step .headline .title{text-align: center;}
+	.first-step .headline .steps ul, .third-step .headline .steps ul{padding-left: 0; padding-top: 30px;}
+	.romantic-header {padding-bottom: 280px;}
+}
+
+@media screen and (max-width: 630px){
+	.wrap-transport-slider .left-bar-slider .white-block{width: 392px;}
+	.wrap-transport-slider .left-bar-slider .iphone{right: -34%;}
+	.wrap-transport-slider .title-slider .slide{font-size: 27px;}
+	.wrap-rent-header .rent-title{font-size: 39px;}
+}
+
+@media screen and (max-width: 600px) {
+	.wrap-transport-slider .left-bar-slider .white-block{width: 373px; height: 71%;}
+	.wrapper-acordeon .shadow-hidden-blocks .shadow-item .name{font-size: 25px;}
+	.big-slider .wrap-navigation .slider-for .slide .buttons{
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: column;
+		-moz-box-orient: vertical;
+		-moz-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+	}
+	.wrap-clients .logos .logo-item{width: 50%; padding-bottom: 15px;}
+	.wrap-revievs{padding-bottom: 160px;}
+	.wrap-revievs .revievs .title-revievs{font-size: 60px;}
+	.wrap-revievs .revievs a{min-width: 225px;}
+	#add-review{padding: 15px 20px;}
+	#add-review .add-review .name, #add-review .add-review .coment, #add-review .add-review .jq-selectbox__select, #order-call .add-review .name, #order-call .add-review .coment, #order-call .add-review .jq-selectbox__select{font-size: 13px;}
+	#add-review .add-review .wrap-send, #order-call .add-review .wrap-send{
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: column;
+		-moz-box-orient: vertical;
+		-moz-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+	}
+	#add-review .add-review .wrap-send button{width: 85%; margin-top: 20px;}
+	.cooperations .title-cooperations{line-height: 50px; font-size: 35px;}
+	.cooperations .coop-advantages{width: 90%; font-size: 17px;}
+	.wrap-exc .title-exc{font-size: 41px;}
+}
+
+@media screen and (max-width: 570px){
+	.wrap-transport-slider .left-bar-slider .white-block{width: 352px; height: 66%;}
+	.wrap-transport-slider .title-slider .slide{font-size: 25px;}
+	.all-cars .car-item{width: 100%;}
+	.sort-bar .options{
+		width: 20%;
+		-webkit-box-align: start;
+		-webkit-align-items: flex-start;
+		-moz-box-align: start;
+		-ms-flex-align: start;
+		align-items: flex-start;
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: column;
+		-moz-box-orient: vertical;
+		-moz-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+	}
+	.sort-bar .options .filter:hover{padding-bottom: 15px;}
+	.left-bar{width: 50%;}
+	.reviev-item .reviev-text{
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: column;
+		-moz-box-orient: vertical;
+		-moz-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+		padding: 8px 0 15px;
+	}
+	.reviev-item .reviev-text .wrap-name{padding-bottom: 10px;}
+	.reviev-item{padding-top: 15px;}
+	.reviev-item .reviev-text .wrap-opinion{width: 100%;}
+	.reviev-item .stars{text-align: right; margin-bottom: -25px;}
+	.reviev-item .reviev-text .wrap-name{width: 60%;}
+	.wrapper-details .details p{font-size: 19px;}
+	.wrapper-details .tariffs .tarif-title{font-size: 21px;}
+	.why-rent .wrap-adventages .item{width: 50%;}
+	.viphall h2, .vescort h2{text-align: center;}
+	.third-step .wrap-confirm .conf-title{font-size: 21px;}
+	.third-step .wrap-confirm .car-info .car-info-details .name{font-size: 34px;}
+	.third-step .wrap-confirm .car-info .car-info-details .pluses .item p{font-size: 14px;}
+	.filter-tab-item .excursion-item .exc-text .info {
+		display: -webkit-flex;
+		display: -moz-flex;
+		display: -ms-flex;
+		display: -o-flex;
+		display: flex;
+		-webkit-flex-direction: column;
+		-moz-flex-direction: column;
+		-ms-flex-direction: column;
+		-o-flex-direction: column;
+		flex-direction: column;
+	}
+}
+
+@media screen and (max-width: 530px) {
+	.wrap-transport-slider .left-bar-slider .white-block {
+		width: 335px;
+		height: 70%;
+		opacity: 1;
+	}
+	.wrap-transport-slider .left-bar-slider .iphone{display: none;}
+	.wrap-transport-slider .title-slider{top: 18%; width: 65%;}
+	.wrap-transport-slider .text-slider{top: 28%; width: 65%;}
+	.wrap-transport-slider .title-slider .slide{font-size: 28px;}
+	.wrap-transport-slider .left-bar-slider .arrows .next-wide, .wrap-transport-slider .left-bar-slider .arrows .prev-wide{width: 40px; height: 40px;}
+	.wrap-transport-slider .left-bar-slider .arrows .prev-wide:hover:before, .wrap-transport-slider .left-bar-slider .arrows .next-wide:hover:before{width: 40px; height: 40px;}
+	.wrap-transport-slider .left-bar-slider .arrows .next-wide:after, .wrap-transport-slider .left-bar-slider .arrows .prev-wide:after{width: 10px; height: 10px; top: 37%;}
+	.wrap-transport-slider .left-bar-slider .wide-slider .slide{padding-top: 50px;}
+	.wrapper-acordeon .huge-hidden-blocks{display: none;}
+	.big-slider .wrap-icons .slider-nav .slick-slide{width: 160px;}
+	.wrapper-about .about-desc .picture{width: 80%;}
+	.wrap-conditions .wrap-tabs .btn{font-size: 14px;}
+	.wrap-conditions .wrap-content .content .list li{font-size: 15px;}
+	.wrap-conditions .wrap-content .content p{font-size: 17px;}
+	.right-card .card-title{font-size: 31px;}
+	.right-card p{padding-bottom: 20px;}
+	.right-card .ask a span{font-size: 15px;}
+	.right-card .advantages .adv-item p, .right-card .options span{font-size: 14px;}
+	.right-card .video span img, .right-card .options span img{width: 70%;}
+	.el-tariffs .tarif-item-book, .el-tariffs .tarif-item-book:nth-child(4n), .el-tariffs .tarif-item-book:nth-child(5n){margin-right: 20px;}
+	.el-calc-tabs .wrap-tabs .tabs li{width: 40%;}
+	.el-calc-tabs .wrap-tabs .tab-content .content.custom-info .left-tab-bar{width: 95%;}
+	.el-calc-tabs .wrap-tabs .tab-content .content.custom-info .left-tab-bar.big{width: 100%; text-align: center; padding-left: 0;}
+	.why-rent .wrap-adventages.leasing-advantages .item{width: 50%;}
+	.filter-tab-item .excursion-item .exc-text .info .info-desc{font-size: 14px;}
+	.event-order .order-info .order .order-item{width: 100%;}
+}
+
+@media screen and (max-width: 479px) {
+	.about-rent .text .take-car{
+		font-size: 30px;
+		padding-bottom: 15px;
+		padding-right: 0;
+	}
+	.about-rent .text p{padding-bottom: 15px; font-size: 14px;}
+	.index-about .title{font-size: 34px;}
+	#call-popup{padding: 40px 20px 40px;}
+	.el-calc-tabs .wrap-tabs .tab-content .content.car-model{padding: 13px 0px 0;}
+	.el-calc-tabs .wrap-tabs .tab-content .content.car-model .car-item{width: 50%;}
+	.el-calc-tabs .wrap-tabs .tab-content .content.custom-info .right-tab-bar .info{padding-top: 0;}
+	.el-calc-tabs .wrap-tabs .tab-content .content.custom-info .right-tab-bar{padding-top: 5px;}
+	.wrap-rent-header p{
+		font-size: 16px;
+		width: 100%;
+		line-height: 19px;
+	}
+	.wrap-rent-header .rent-title{line-height: 40px;}
+	.filter-tab-item .excursion-item .exc-text{padding: 15px;}
+	.first-step .tariffs .tarif-title, .first-step .order-info .info-title, .first-step .contacts .contacts-title{font-size: 20px;}
+	.big-slider .wrap-icons .slider-nav .slide p{font-size: 13px;}
+
+}
+
+@media screen and (max-width: 470px) {
+	.wrap-transport-slider .left-bar-slider .white-block{width: 293px;}
+	.sort-bar .sort a{width: 220px;}
+	.sort-bar .sort .dropdown-sorting{width: auto;}
+	.sort-bar .sort{
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: column;
+		-moz-box-orient: vertical;
+		-moz-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+		width: 100%;
+		-webkit-box-align: start;
+		-webkit-align-items: flex-start;
+		-moz-box-align: start;
+		-ms-flex-align: start;
+		align-items: flex-start;
+	}
+	.sort-bar .options{
+		width: 100%;
+		-webkit-box-orient: horizontal;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: row;
+		-moz-box-orient: horizontal;
+		-moz-box-direction: normal;
+		-ms-flex-direction: row;
+		flex-direction: row;
+		padding-right: 15px;
+	}
+	.wrapper-details .available-tariffs .tar-item:hover .prompt-hidden{  -webkit-transform: translateX(-50%);    transform: translateX(-50%);
+	}
+	.left-bar{width: 100%;}
+	.wrap-work .wrap-pluses .item-plus{width: 75%;}
+	.wrap-work .wrap-pluses .item-plus:first-child{padding-left: 10px;}
+	.wrap-work .wrap-pluses .item-plus:last-child{padding-right: 10px;}
+	.wrap-work .work-title{font-size: 32px;}
+	.cooperations .title-cooperations{line-height: 40px; font-size: 30px;}
+	.wrap-work .wrap-car .about-car .wrap-text{padding-left: 20px;}
+	.wrap-work .wrap-pluses .item-plus{width: 95%;}
+	.wrap-work .work-title{font-size: 30px;}
+	.right-card .functions:hover .options-hidden .item .price{font-size: 20px;}
+	.el-calc-tabs .wrap-tabs .tab-content .content.custom-info .left-tab-bar .about-car .model, .el-calc-tabs .wrap-tabs .tab-content .content.custom-info .right-tab-bar .info{font-size: 18px;}
+	.third-step .wrap-confirm .car-info .car-info-details .pluses .item{margin-right: 30px;}
+}
+
+@media screen and (max-width: 450px){
+	.wrap-transport-slider .left-bar-slider .white-block{width: 267px;}
+	.wrap-transport-slider .title-slider .slide{font-size: 25px;}
+	.wrap-transport-slider .text-slider .slide .desc{
+		font-size: 16px;
+		letter-spacing: 0;
+		line-height: 18px;
+	}
+	.wrap-transport-slider .text-slider .slide .goto .link p{font-size: 15px; padding-right: 5px;}
+	.wrap-revievs{padding-top: 75px;}
+	.wrap-revievs .revievs .title-revievs{font-size: 40px;}
+	.wrap-revievs .revievs a{min-width: 175px;}
+	.right-card .options span:last-child{border-bottom: 0;}
+	.right-card .video span, .right-card .options span{text-align: left;}
+	.el-calc-tabs .wrap-tabs .tab-content .content.car-model .car-item{width: 100%;}
+	.filter-tab-item .excursion-item{height: 265px; margin-bottom: 40px;}
+	.filter-tab-item .excursion-item .exc-photo{width: 35%;}
+	.filter-tab-item .excursion-item .exc-text{width: 65%;}
+	.filter-tab-item .excursion-item .exc-text .info .info-title{font-size: 15px;}
+	.filter-tab-item .excursion-item .exc-text .info{padding-bottom: 10px;}
+	.wrap-tariffs .tarif-title{font-size: 54px;}
+	.wrapper-details .available-tariffs .tar-item{width: 100%;}
+	.wrapper-details .dop-tarifs{font-size: 22px;}
+}
+
+@media screen and (max-width: 420px){
+	.wrap-transport-slider .left-bar-slider .white-block{width: 258px;}
+	.wrap-transport-slider .text-slider .slide .desc{padding-right: 0;}
+	.wrap-transport-slider .title-slider .slide{font-size: 22px;}
+	.wrap-transport-slider .text-slider .slide .goto .link .arrow{width: 25px; height: 25px;}
+	.wrap-transport-slider .text-slider .slide .goto .link p{padding-right: 5px; font-size: 15px;}
+	.wrap-transport-slider .text-slider .slide .desc{
+		font-size: 16px;
+		line-height: 18px;
+		padding-right: 15px;
+	}
+	.big-slider .wrap-icons .slider-nav .slick-slide{width: 120px;}
+	.wrapper-about .about-desc .about-text .title, .big-slider .wrap-icons .transport-title, .big-slider .wrap-navigation .slider-for .slide .transport-title, .wrap-clients .clients-title{font-size: 35px;}
+	.wrap-conditions .wrap-tabs {
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: column;
+		-moz-box-orient: vertical;
+		-moz-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+	}
+	.wrap-conditions .wrap-tabs .btn:first-child {
+		-webkit-border-bottom-left-radius: 0px;
+		-moz-border-radius-bottomleft: 0px;
+		border-bottom-left-radius: 0px;
+		-webkit-border-top-right-radius: 15px;
+		-moz-border-radius-topright: 15px;
+		border-top-right-radius: 15px;
+		border-bottom: 0;
+	}
+	.wrap-conditions .wrap-tabs .btn:last-child {
+		-webkit-border-top-right-radius: 0px;
+		-moz-border-radius-topright: 0px;
+		border-top-right-radius: 0px;
+		-webkit-border-bottom-left-radius: 15px;
+		-moz-border-radius-bottomleft: 15px;
+		border-bottom-left-radius: 15px;
+		border-top: 0;
+	}
+	.wrap-conditions .wrap-tabs .btn.second {
+		border-right: 1px solid #fdb903;
+		border-left: 1px solid #fdb903;
+		margin: 0;
+	}
+	.right-card{width: 100%;}
+	.right-card .advantages {
+		-webkit-box-pack: center;
+		-webkit-justify-content: center;
+		-moz-box-pack: center;
+		-ms-flex-pack: center;
+		justify-content: center;
+	}
+	.right-card .advantages .adv-item{width: 30%;}
+	.wrap-rent-header .rent-title{font-size: 35px; line-height: 40px;}
+	.wrap-rent-header p{font-size: 17px; line-height: 21px;}
+	.el-calc-tabs .wrap-tabs .tabs li{width: 47%;}
+	.filter-tab-item .excursion-item .exc-text .info{padding-bottom: 5px;}
+	.filter-tab-item .excursion-item .exc-text .info .time{padding-right: 5px;}
+	.filter-tab-item .excursion-item{
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: reverse;
+		-webkit-flex-direction: column-reverse;
+		-moz-box-orient: vertical;
+		-moz-box-direction: reverse;
+		-ms-flex-direction: column-reverse;
+		flex-direction: column-reverse;
+		height: auto;
+	}
+	.filter-tab-item .excursion-item .exc-text{width: 100%;}
+	.filter-tab-item .excursion-item .exc-photo{width: 100%; height: 250px;}
+	.filter-tab-item .excursion-item .exc-photo img{height: auto; width: auto;}
+	.first-step .wrap-zones .zones-title{font-size: 20px;}
+	.third-step .end-price{font-size: 23px;}
+	.third-step .wrap-confirm .car-info .car-info-details .name{font-size: 31px;}
+	.third-step .wrap-confirm .car-info .car-info-details .pluses .item{margin-right: 0;}
+	.third-step .wrap-confirm .car-info .car-info-details .pluses{
+		-webkit-justify-content: space-around;
+		-ms-flex-pack: distribute;
+		justify-content: space-around;
+	}
+}
+
+@media screen and (max-width: 380px) {
+	.wrap-transport-slider .left-bar-slider .white-block{display: none;}
+	.wrap-transport-slider .left-bar-slider .wide-slider{opacity: 0;}
+	.wrap-transport-slider .title-slider{width: 100%;}
+	.wrap-transport-slider .text-slider{width: 100%;}
+	.wrapper-acordeon .shadow-hidden-blocks .shadow-item .name{font-size: 29px;}
+	.wrapper-acordeon .main-slider .slide .headline{font-size: 35px;}
+	.wrap-transport-slider .left-bar-slider .arrows{
+		-webkit-box-pack: center;
+		-webkit-justify-content: center;
+		-moz-box-pack: center;
+		-ms-flex-pack: center;
+		justify-content: center;
+		padding: 0;
+	}
+	.wrapper-about .about-desc .about-text .title, .big-slider .wrap-icons .transport-title, .big-slider .wrap-navigation .slider-for .slide .transport-title, .wrap-clients .clients-title{font-size: 31px;}
+	.wrap-work .wrap-auto .jq-selectbox{width: 100%;}
+	.wrap-work .wrap-car .about-car .wrap-text{padding-right: 10px; padding-left: 10px;}
+	.wrap-work .call-us a{display: block;}
+	#order-call{padding: 30px 10px;}
+	#order-call .write-rev{font-size: 27px;}
+	.right-card .ask a span{text-align: left;}
+	.right-card .card-title{font-size: 26px;}
+	.right-card p, .right-card .wrap-color .color-content .content{font-size: 18px;}
+	/*.right-card a{margin-top: 0;}*/
+	.right-card .functions:hover .options-hidden {
+		-webkit-box-orient: vertical;
+		-webkit-box-direction: normal;
+		-webkit-flex-direction: column;
+		-moz-box-orient: vertical;
+		-moz-box-direction: normal;
+		-ms-flex-direction: column;
+		flex-direction: column;
+	}
+	.right-card .functions:hover .options-hidden .item{padding-bottom: 10px;}
+	.why-rent .wrap-adventages .item{width: 100%; padding-top: 15px;}
+	.why-rent .wrap-adventages .item p{max-width: 85%;}
+	.why-rent .rent-title{
+		font-weight: 200;
+		font-size: 33px;
+		color: #333;
+		margin-bottom: 10px;
+	}
+	.wrap-rent-header .rent-title{font-size: 30px;}
+	.el-calc-tabs .wrap-tabs .tabs li{width: 90%; margin-bottom: 5px;}
+	.why-rent .wrap-adventages .item p{font-size: 13px;}
+	.why-rent .rent-title{font-size: 29px;}
+	.el-calc-tabs .calc-title{font-size: 35px;}
+	.wrap-exc .title-exc{font-size: 36px;}
+	.event-wrap .event-left h2{font-size: 31px;}
+	.event-wrap .event-left p{font-size: 14px;}
+	.filter-tab-item .excursion-item .exc-photo{height: 190px;}
+	.first-step .headline .title, .third-step .headline .title{font-size: 34px;}
+	.first-step .headline .steps ul li, .third-step .headline .steps ul li{font-size: 18px;}
+	.first-step .order-info .info-items .item .jq-selectbox__select{font-size: 14px;}
+	.first-step .desc{font-size: 16px;}
+	.third-step .wrap-confirm .car-info .car-info-details .name{font-size: 28px;}
+	.third-step .end-price{font-size: 21px;}
+	.event-order .book-title{font-size: 33px;}
+	.wrap-rent-header .operation-lising-pic {margin-top: 20px;}
+	.cooperations .cooperation-people-pic {margin-top: -50px;}
+}
+
+@media screen and (max-width: 320px){
+	.index-about .wrap-items .item{width: 100%;}
+	.big-slider .wrap-icons .slider-nav .slick-slide{width: 100px;}
+	.wrap-revievs{background-position: 0 390px;}
+	.wrap-work .wrap-car .about-car .wrap-prices .day, .wrap-work .wrap-car .about-car .wrap-prices .month, .wrap-work .wrap-car .about-car .wrap-prices .year{font-size: 27px;}
+	.wrap-work .wrap-car .about-car .wrap-text .text{font-size: 18px;}
+	.el-calc-tabs .wrap-tabs .tab-content .content.custom-info .right-tab-bar .functional .func-title{font-size: 19px; padding-bottom: 10px;}
+	.el-calc-tabs .wrap-tabs .tab-content .content.custom-info .right-tab-bar .functional .wrap-range .desc{padding-bottom: 0;}
+}
+
+@media screen and (max-height: 800px){
+	.big-slider .wrap-icons .transport-title{padding: 32px 0 5px;}
+	.big-slider .wrap-navigation .slider-for .slide .transport-title{padding: 5px 0 10px;}
+	.big-slider .wrap-navigation .slider-for .slide .slide-desc{padding-bottom: 10px;}
+	.big-slider .wrap-navigation .slider-for .slide .buttons{padding-bottom: 15px;}
+	.big-slider .wrap-icons .slider-nav .slide .icon{width: 55%;}
+}
