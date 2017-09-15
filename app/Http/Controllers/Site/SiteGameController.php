@@ -335,7 +335,7 @@ class SiteGameController extends BaseController
 	}
 
 	protected function userReady(Request $request){
-		$data = $request->all();
+		//$data = $request->all();
 
 		$user = Auth::user();
 
@@ -350,7 +350,7 @@ class SiteGameController extends BaseController
 		$user_hand = self::buildCardDeck($user_hand);
 		$user_deck = self::buildCardDeck($user_deck);
 		$timing_settings = self::getTimingSettings();
-		$expire_time = $timing_settings['first_step_r1'] + $data['time'];
+		$expire_time = $timing_settings['step_time'];// + $data['time'];
 
 		$users_result_data[$user->login] = [
 			'deck_count'=> count($user_deck),
@@ -372,8 +372,9 @@ class SiteGameController extends BaseController
 
 		$turn_expire_time = \DB::table('tbl_etc_data')->select('meta_value')
 			->where('label_data','=','timing')
-			->where('meta_key','=','max_step_time')
+			->where('meta_key','=','step_time')
 			->first();
+
 		return json_encode([
 			'battle'	=> $battle_member->battle_id,
 			'user'		=> $user->id,

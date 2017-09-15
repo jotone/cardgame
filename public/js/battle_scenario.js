@@ -511,12 +511,12 @@ function setDecksValues(counts, images){
 		if($('#selecthandCardsPopup input[name=userTurn]').length > 0){
 			turn = (typeof $('#selecthandCardsPopup input[name=userTurn]:checked').val() == "undefined")? $('.convert-right-info .user-describer').attr('id'): $('#selecthandCardsPopup input[name=userTurn]:checked').val();
 		}
-		var time = parseInt($('#selecthandCardsPopup .timer-in-popup span[data-time=minute]').text()) * 60 + parseInt($('#selecthandCardsPopup .timer-in-popup span[data-time=seconds]').text());
+		//var time = parseInt($('#selecthandCardsPopup .timer-in-popup span[data-time=minute]').text()) * 60 + parseInt($('#selecthandCardsPopup .timer-in-popup span[data-time=seconds]').text());
 		$.ajax({
 			url:	'/game_user_change_cards',
 			type:	'PUT',
 			headers:{'X-CSRF-TOKEN':token},
-			data:	{time:time},
+			//data:	{time:time},
 			success:function(data){
 				data = JSON.parse(data);
 				var player = $('.user-describer').attr('id');
@@ -2131,7 +2131,6 @@ function animatePositiveNegativeEffects(obj) {
 		field.append('<div class="debuff-or-buff-anim '+effectName+'-'+effectType+'" ></div>');
 		effectMarkup = field.children('.'+effectName+'-'+effectType);
 	}
-
 
 	//мини-хук - показывать анимаци только когда закрытый попап показ карты хода
 	var timer = setInterval(function(){
