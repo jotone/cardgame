@@ -1,4 +1,4 @@
-// ajax error message
+// ajax error message  |   php artisan gwentServer:init
 function ajaxErrorMsg(jqXHR, exception) {
 	var msg = '';
 	if(jqXHR.status === 0){
@@ -116,7 +116,7 @@ function openSecondTrollPopup(id, customClass){
 }
 
 function resultPopupShow(message){
-	$('#successEvent').find('.result').text(message);
+	$('#successEvent').find('.result').html(message);
 	openTrollPopup($('#successEvent'));
 }
 
@@ -1686,7 +1686,13 @@ function startBattle(){
 			//Пользователь сделал действие
 			case 'userMadeAction':
 				if( (result.round_status.status.length > 0) || (!$.isEmptyObject(result.round_status.status)) ){
-					resultPopupShow('Противник пасует');
+
+					if(result.round_status.current_player == $('.user-describer').attr('id')){
+						resultPopupShow('Противник пасует.'+"<br>"+'Теперь до конца раунда ходите только Вы.');
+					} else {
+						resultPopupShow('Вы пасуете.'+"<br>"+'Теперь до конца раунда ходит только противник.');
+					}
+
 				}
 				if(!$.isEmptyObject(result.played_magic)){
 					calculateRightMarginCardHands();
