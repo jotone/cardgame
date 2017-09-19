@@ -323,7 +323,10 @@ class BattleFieldController extends BaseController{
 											];
 										}
 
-										if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
+										if(
+											($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])) &&
+											($step_status['round_status']['current_player'] != $users_data[$player]['login'])
+										){
 											$step_status['played_card']['strength'] = $strength;
 											$step_status['played_card']['card']['buffs'][] = 'support';
 										}
@@ -389,7 +392,10 @@ class BattleFieldController extends BaseController{
 												}
 
 												if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
-													if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
+													if(
+														($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])) &&
+														($step_status['round_status']['current_player'] != $users_data[$player]['login'])
+													){
 														$step_status['played_card']['strength'] = $strength;
 														$step_status['played_card']['card']['buffs'][] = 'support';
 													}
@@ -507,6 +513,7 @@ class BattleFieldController extends BaseController{
 												}
 											}else{
 												$strength = $card_data['strength'] - $action['fear_strenghtValue'];
+
 												if($strength < 1){
 													$strength = 1;
 													if($card['strength'] == 0){
@@ -527,11 +534,13 @@ class BattleFieldController extends BaseController{
 														];
 													}
 
-													if(empty($step_status['played_magic'])){
-														if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
-															$step_status['played_card']['strength'] = $strength;
-															$step_status['played_card']['card']['debuffs'][] = 'terrify';
-														}
+													if(
+														(empty($step_status['played_magic'])) &&
+														($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])) &&
+														($step_status['round_status']['current_player'] != $users_data[$player]['login'])
+													){
+														$step_status['played_card']['strength'] = $strength;
+														$step_status['played_card']['card']['debuffs'][] = 'terrify';
 													}
 												}
 
@@ -611,10 +620,9 @@ class BattleFieldController extends BaseController{
 														}
 
 														if(
-															(isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card']))/* ||
-															(!empty($step_status['played_magic']))*/
+															(isset($step_status['played_card']['card'])) &&
+															(!empty($step_status['played_card']['card']))
 														){
-
 															if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
 																$step_status['played_card']['strength'] = $strength;
 																$step_status['played_card']['card']['debuffs'][] = 'terrify';
@@ -746,40 +754,44 @@ class BattleFieldController extends BaseController{
 			}
 		}
 
-		if( (isset($cards_to_brotherhood)) && (!empty($cards_to_brotherhood)) ){
-			foreach($cards_to_brotherhood as $player => $group_data){
-				foreach($group_data as $group_ident => $cards_ids){
+		if( (isset($cards_to_brotherhood)) && (!empty($cards_to_brotherhood)) ) {
+			foreach ($cards_to_brotherhood as $player => $group_data) {
+				foreach ($group_data as $group_ident => $cards_ids) {
 					$cards_to_brotherhood[$player][$group_ident] = array_unique($cards_to_brotherhood[$player][$group_ident]);
 				}
 			}
 
-			foreach($cards_to_brotherhood as $player => $group_data){
-				foreach($group_data as $group_ident => $cards_ids){
+			foreach ($cards_to_brotherhood as $player => $group_data) {
+				foreach ($group_data as $group_ident => $cards_ids) {
 					$group_data = explode('_', $group_ident);
 					$count_group = 0;
 					$mult_group = 1;
-					foreach($battle_field[$player] as $row => $cards){
-						foreach($cards['warrior'] as $card){
-							if(in_array($card['id'], $cards_ids)){
+					foreach ($battle_field[$player] as $row => $cards) {
+						foreach ($cards['warrior'] as $card) {
+							if (in_array($card['id'], $cards_ids)) {
 								$count_group++;
 							}
 						}
 					}
-					if($count_group > 0){
+					if ($count_group > 0) {
 						$mult_group = $count_group;
-						if($mult_group > $group_data[1]){
+						if ($mult_group > $group_data[1]) {
 							$mult_group = $group_data[1];
 						}
 					}
 
-					foreach($battle_field[$player] as $row => $cards){
-						foreach($cards['warrior'] as $card_iter => $card){
+					foreach ($battle_field[$player] as $row => $cards) {
+						foreach ($cards['warrior'] as $card_iter => $card) {
 							if(in_array($card['id'], $cards_ids)){
 								$card = self::getCardNaturalSetting($card['id']);
 
-								if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) && (in_array($group_data[0], $card['group'])) ){
-									if(in_array($group_data[0], $step_status['played_card']['card']['group'])) {
-										if($count_group > 1) {
+								if(
+									(isset($step_status['played_card']['card'])) &&
+									(!empty($step_status['played_card']['card'])) &&
+									(in_array($group_data[0], $card['group']))
+								){
+									if (in_array($group_data[0], $step_status['played_card']['card']['group'])) {
+										if ($count_group > 1) {
 											if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
 												$step_status['played_card']['card']['buffs'][] = 'brotherhood';
 											}
@@ -800,6 +812,7 @@ class BattleFieldController extends BaseController{
 								$field_status[$player][$row]['warrior'][$card_iter]['buffs'][] = 'brotherhood';
 								$field_status[$player][$row]['warrior'][$card_iter]['buffs'] = array_values(array_unique($field_status[$player][$row]['warrior'][$card_iter]['buffs']));
 								$field_status[$player][$row]['warrior'][$card_iter]['strength'] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'];
+								$field_status[$player][$row]['warrior'][$card_iter]['strengthModified'] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'];
 							}
 						}
 					}
