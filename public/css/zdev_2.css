@@ -912,7 +912,7 @@
 	vertical-align:top;
 	text-align:center;
 	position:relative;
-	z-index: 3;
+	z-index: 11;
 }
 #sortableUserCards li .content-card-item-main{ width:103px; height:150px; border:1px solid #d8d8d8; }
 #sortableUserCards li{
