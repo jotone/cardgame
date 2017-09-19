@@ -894,7 +894,7 @@ class BattleFieldController extends BaseController{
 													}
 
 													if(isset($step_status['played_card']['card']) && !empty($step_status['played_card']['card'])){
-															if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
+														if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
 															$step_status['played_card']['strength'] = $card_data['strength'] * $action['inspiration_multValue'];
 															$step_status['played_card']['card']['buffs'][] = 'inspiration';
 														}
@@ -902,7 +902,7 @@ class BattleFieldController extends BaseController{
 
 													if(isset($fury_cards[$player][$row][$card_iter])){
 														$fury_cards[$player][$row][$card_iter]['strength'] = $fury_cards[$player][$row][$card_iter]['strModif'];
-														$fury_cards[$player][$row][$card_iter]['strModif'] = $strength;
+														$fury_cards[$player][$row][$card_iter]['strModif'] = $fury_cards[$player][$row][$card_iter]['strModif'] * $action['inspiration_multValue'];
 													}
 
 													$battle_field[$player][$row]['warrior'][$card_iter]['strength'] *= $action['inspiration_multValue'];
@@ -969,7 +969,7 @@ class BattleFieldController extends BaseController{
 				}else{
 					foreach($step_status['played_magic'] as $player => $magic_data){
 						foreach($magic_data['actions'] as $action){
-							$step_status = self::battleInfoFinishHelper($action, $step_status, 'magic',$users_data);
+							$step_status = self::battleInfoFinishHelper($action, $step_status, 'magic', $users_data);
 						}
 					}
 				}
