@@ -611,9 +611,10 @@ class BattleFieldController extends BaseController{
 														}
 
 														if(
-															(isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ||
-															(!empty($step_status['played_magic']))
+															(isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card']))/* ||
+															(!empty($step_status['played_magic']))*/
 														){
+
 															if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
 																$step_status['played_card']['strength'] = $strength;
 																$step_status['played_card']['card']['debuffs'][] = 'terrify';
@@ -893,7 +894,7 @@ class BattleFieldController extends BaseController{
 													}
 
 													if(isset($step_status['played_card']['card']) && !empty($step_status['played_card']['card'])){
-															if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
+														if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
 															$step_status['played_card']['strength'] = $card_data['strength'] * $action['inspiration_multValue'];
 															$step_status['played_card']['card']['buffs'][] = 'inspiration';
 														}
@@ -901,7 +902,7 @@ class BattleFieldController extends BaseController{
 
 													if(isset($fury_cards[$player][$row][$card_iter])){
 														$fury_cards[$player][$row][$card_iter]['strength'] = $fury_cards[$player][$row][$card_iter]['strModif'];
-														$fury_cards[$player][$row][$card_iter]['strModif'] = $strength;
+														$fury_cards[$player][$row][$card_iter]['strModif'] = $fury_cards[$player][$row][$card_iter]['strModif'] * $action['inspiration_multValue'];
 													}
 
 													$battle_field[$player][$row]['warrior'][$card_iter]['strength'] *= $action['inspiration_multValue'];
@@ -968,7 +969,7 @@ class BattleFieldController extends BaseController{
 				}else{
 					foreach($step_status['played_magic'] as $player => $magic_data){
 						foreach($magic_data['actions'] as $action){
-							$step_status = self::battleInfoFinishHelper($action, $step_status, 'magic',$users_data);
+							$step_status = self::battleInfoFinishHelper($action, $step_status, 'magic', $users_data);
 						}
 					}
 				}
@@ -1042,23 +1043,26 @@ class BattleFieldController extends BaseController{
 						}
 					}
 				}
-				break;
+			break;
 			case 'support':
 				if($type == 'card'){
 					$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
 				}else{
-					$type = ($step_status['round_status']['current_player'] == $users_data['user']['login'])? 'user': 'opponent';
-					var_dump($type);
-
-					$player_id = $users_data[$type]['id'];
-					$player_status = \DB::table('tbl_battle_members')->select('round_passed')->where('user_id','=',$player_id)->first();
-					if($player_status->round_passed == 1){
-						$type = ($type == 'user')? 'opponent': 'user';
+					if($step_status['round_status']['current_player'] == $users_data['user']['login']){
+						$ally = 'user';
+						$enemy = 'opponent';
+					}else{
+						$ally = 'opponent';
+						$enemy = 'user';
 					}
-					var_dump($type);
-					$player = $users_data[$type]['player'];
-					var_dump($player);
+					$enemy_id = $users_data[$enemy]['id'];
+					$enemy_status = \DB::table('tbl_battle_members')->select('round_passed')->where('user_id','=',$enemy_id)->first();
+					if($enemy_status->round_passed == 1){
+						$ally = ($ally == 'user')? 'opponent': 'user';
+					}
+					$player = $users_data[$ally]['player'];
 				}
+
 				if(isset($step_status['actions']['cards'][$player])){
 					unset($step_status['actions']['cards'][$player]);
 				}

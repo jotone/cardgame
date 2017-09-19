@@ -73,8 +73,8 @@ class GwentSocket extends BaseSocket
 	//Обработчик каждого сообщения
 	public function onMessage(ConnectionInterface $from, $msg){
 		$msg = json_decode($msg); // сообщение от пользователя arr[action, ident[battleId, UserId, Hash]]
-		var_dump(date('Y-m-d H:i:s'));
-		var_dump($msg);
+		/*var_dump(date('Y-m-d H:i:s'));
+		var_dump($msg);*/
 		if(!isset($this->battles[$msg->ident->battleId])){
 			$this->battles[$msg->ident->battleId] = new \SplObjectStorage;
 		}
@@ -391,6 +391,7 @@ class GwentSocket extends BaseSocket
 						$this->step_status['round_status']['current_player'] = $this->users_data['opponent']['login'];
 						$user_turn_id = $this->users_data['opponent']['id'];
 					}
+					
 
 					$self_drop = 0;
 					if($msg->magic != ''){
@@ -424,6 +425,7 @@ class GwentSocket extends BaseSocket
 							'user_magic'	=> serialize($this->users_data['user']['user_magic'])
 						]);
 					}
+					
 
 					if($msg->card != ''){
 						$current_card_id = Crypt::decrypt($msg->card);
@@ -506,7 +508,7 @@ class GwentSocket extends BaseSocket
 						}
 						$current_actions = $current_card['actions'];
 					}
-					
+
 					//Применение действий
 					$add_time = true;
 					$view_cards_strength = false;
@@ -535,11 +537,12 @@ class GwentSocket extends BaseSocket
 							break;
 						}
 					}
+
 					//Сортировка колод
 					$this->users_data = self::sortDecksByStrength($this->users_data);
-					
+
 					$battle_info = BattleFieldController::battleInfo($battle, $battle_field, $this->users_data, $this->magic_usage, $this->step_status);
-					
+
 					$this->step_status = $battle_info['step_status'];
 					$battle_field = $battle_info['battle_field'];
 					$round_passed_summ = $this->users_data['user']['round_passed'] + $this->users_data['opponent']['round_passed'];
@@ -562,7 +565,6 @@ class GwentSocket extends BaseSocket
 					}
 
 					$this->step_status['timing'] = $turn_expire;//$this->users_data[$showTimerOfUser]['turn_expire'];
-
 
 					\DB::table('tbl_battle_members')->where('id', '=', $this->users_data['user']['battle_member_id'])->update([
 						'user_deck'		=> serialize($this->users_data['user']['deck']),
@@ -960,7 +962,7 @@ class GwentSocket extends BaseSocket
 
 				$this->step_status['timing'] = $this->users_data[$showTimerOfUser]['turn_expire'];
 				self::sendUserMadeAction($this->users_data, $this->step_status, $msg, $SplBattleObj, $from);
-				break;
+			break;
 
 			case 'userGivesUp':
 				$battle->fight_status = 3;
@@ -1022,7 +1024,6 @@ class GwentSocket extends BaseSocket
 				$player = $this->users_data[$msg->ident->userId]['player'];
 				$field_buffs = BattleFieldController::getBattleBuffs($battle_field);
 
-				//$turn_expire = $this->users_data[$msg->ident->userId]['turn_expire'];
 				$turn_expire = $timing_settings['step_time'];
 				\DB::table('tbl_battle_members')
 					->where('id','=',$this->users_data[$msg->ident->userId]['battle_member_id'])
@@ -1796,7 +1797,6 @@ class GwentSocket extends BaseSocket
 					foreach($action['inspiration_ActionRow'] as $row){
 						$step_status['actions']['appear'][$msg->BFData->field][$row][] = $action['caption'];
 					}
-
 				}
 			break;
 
@@ -2057,7 +2057,6 @@ class GwentSocket extends BaseSocket
 					foreach($card_to_stay as $key => $value){
 						$destination = explode('_',$key);
 						$battle_field[$destination[0]][$destination[1]]['warrior'][] = $value;
-						//$step_status['added_cards'][$destination[0]][$destination[1]]['warrior'][] = BattleFieldController::cardData($value['id']);
 						foreach($step_status['dropped_cards'][$destination[0]][$destination[1]]['warrior'] as $card_iter => $card_caption){
 							if($card_caption == $value['caption']){
 								unset($step_status['dropped_cards'][$destination[0]][$destination[1]]['warrior'][$card_iter]);
@@ -2110,7 +2109,7 @@ class GwentSocket extends BaseSocket
 									foreach($action['support_ActionRow'] as $action_row){
 										$appear[$player][$action_row][] = $action['caption'];
 									}
-									break;
+								break;
 
 								case 'terrify':
 									if($action['fear_actionTeamate'] == 1){
@@ -2123,7 +2122,7 @@ class GwentSocket extends BaseSocket
 											$appear[$action_player][$action_row][] = $action['caption'];
 										}
 									}
-									break;
+								break;
 							}
 						}
 					}
