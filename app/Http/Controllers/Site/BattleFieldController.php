@@ -1048,14 +1048,19 @@ class BattleFieldController extends BaseController{
 				if($type == 'card'){
 					$player = ($step_status['played_card']['move_to']['player'] == 'p1')? 'p2': 'p1';
 				}else{
-					$type = ($step_status['round_status']['current_player'] == $users_data['user']['login'])? 'user': 'opponent';
-
-					$player_id = $users_data[$type]['id'];
-					$player_status = \DB::table('tbl_battle_members')->select('round_passed')->where('user_id','=',$player_id)->first();
-					if($player_status->round_passed == 1){
-						$type = ($type == 'user')? 'opponent': 'user';
+					if($step_status['round_status']['current_player'] == $users_data['user']['login']){
+						$ally = 'user';
+						$enemy = 'opponent';
+					}else{
+						$ally = 'opponent';
+						$enemy = 'user';
 					}
-					$player = $users_data[$type]['player'];
+					$enemy_id = $users_data[$enemy]['id'];
+					$enemy_status = \DB::table('tbl_battle_members')->select('round_passed')->where('user_id','=',$enemy_id)->first();
+					if($enemy_status->round_passed == 1){
+						$ally = ($ally == 'user')? 'opponent': 'user';
+					}
+					$player = $users_data[$ally]['player'];
 				}
 
 				if(isset($step_status['actions']['cards'][$player])){
