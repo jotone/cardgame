@@ -623,7 +623,10 @@ class BattleFieldController extends BaseController{
 															(isset($step_status['played_card']['card'])) &&
 															(!empty($step_status['played_card']['card']))
 														){
-															if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
+															if(
+																($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])) &&
+																($step_status['round_status']['current_player'] == $users_data[$player]['login'])
+															){
 																$step_status['played_card']['strength'] = $strength;
 																$step_status['played_card']['card']['debuffs'][] = 'terrify';
 															}
