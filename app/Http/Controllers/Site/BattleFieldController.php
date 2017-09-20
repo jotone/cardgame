@@ -848,14 +848,15 @@ class BattleFieldController extends BaseController{
 										];
 									}
 
-									if(empty($step_status['played_magic'])){
-										if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
+									if( (empty($step_status['played_magic'])) && ($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])) ){
+										$is_spy = self::checkIfSpy($card_data['id']);
+										if(($step_status['round_status']['current_player'] != $users_data[$player]['login']) xor ($is_spy === 1)){
 											$step_status['played_card']['strength'] = $battle_field[$player][$row]['warrior'][$card_iter]['strength'] * $action_data['inspiration_multValue'];
 											$step_status['played_card']['card']['buffs'][] = 'inspiration';
 										}
 									}
-									
 								}
+
 								if(isset($fury_cards[$player][$row][$card_iter])){
 									$fury_cards[$player][$row][$card_iter]['strength'] = $fury_cards[$player][$row][$card_iter]['strModif'];
 									$fury_cards[$player][$row][$card_iter]['strModif'] = $strength;
@@ -911,8 +912,11 @@ class BattleFieldController extends BaseController{
 
 													if(isset($step_status['played_card']['card']) && !empty($step_status['played_card']['card'])){
 														if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
-															$step_status['played_card']['strength'] = $card_data['strength'] * $action['inspiration_multValue'];
-															$step_status['played_card']['card']['buffs'][] = 'inspiration';
+															$is_spy = self::checkIfSpy($card_data['id']);
+															if(($step_status['round_status']['current_player'] != $users_data[$player]['login']) xor ($is_spy === 1)){
+																$step_status['played_card']['strength'] = $card_data['strength'] * $action['inspiration_multValue'];
+																$step_status['played_card']['card']['buffs'][] = 'inspiration';
+															}
 														}
 													}
 
@@ -1203,7 +1207,9 @@ class BattleFieldController extends BaseController{
 	public static function processActions($actions){
 		$result = [];
 		foreach($actions as $action){
-			$action = get_object_vars($action);
+			if(!is_array($action)){
+				$action = get_object_vars($action);
+			}
 			$action_type = \DB::table('tbl_actions')->select('type')->where('id','=',$action['action'])->first();
 			$action['caption'] = $action_type->type;
 			$result[] = $action;
@@ -1314,6 +1320,18 @@ class BattleFieldController extends BaseController{
 	public static function cardSimpleView($id, $strength_override = -1, $quantity = 0){
 		$card = self::cardData($id);
 		return self::cardView($card, $strength_override, $quantity);
+	}
+
+	public static function checkIfSpy($card_id){
+		$card = self::getCardNaturalSetting($card_id);
+		$actions = self::processActions($card['actions']);
+		$is_spy = 0;
+		foreach($actions as $action){
+			if($action['caption'] == 'spy'){
+				$is_spy = ($action['spy_fieldChoise'] == 1)? 1: -1;
+			}
+		}
+		return $is_spy;
 	}
 
 	public static function sortingDeck(&$deck){
