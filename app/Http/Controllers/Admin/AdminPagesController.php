@@ -358,8 +358,11 @@ class AdminPagesController extends BaseController
 				? '<a data-type="banUser" id="'.$user->id.'" href="#">Забанить</a>'
 				: '<a data-type="unbanUser" id="'.$user->id.'" href="#">Снять бан</a>';
 			$admin_status = ($user->user_role == 0)
-				? 'Простой смертный'
+				? ''
 				: 'Администратор';
+			$premium_status = ($user->premium_activated > 0)
+				? 'Активирован до: '.date('Y/m/d', strtotime($user->premium_expire_date))
+				: 'Не активирован';
 
 			$output[$key]['id']		= $user -> id;
 			$output[$key]['login']	= $user -> login;
@@ -372,6 +375,7 @@ class AdminPagesController extends BaseController
 			$output[$key]['created']= date('Y/m/d  H:i', strtotime($user->created_at));
 			$output[$key]['updated']= date('Y/m/d  H:i', strtotime($user->updated_at));
 			$output[$key]['ban']	= $ban;
+			$output[$key]['premium']= $premium_status;
 			$output[$key]['admin_status'] = $admin_status;
 		}
 		return view('admin.users', ['users' => $output]);

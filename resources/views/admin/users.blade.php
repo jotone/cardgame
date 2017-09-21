@@ -15,6 +15,7 @@
 			<th>Энергия</th>
 			<th>Создан</th>
 			<th>Последняя Активность</th>
+			<th>Премиум аккаунт</th>
 			<th>Статус</th>
 			<th>Бан</th>
 		</tr>
@@ -37,6 +38,7 @@
 			<td>{{ $user['energy'] }}</td>
 			<td>{{ $user['created'] }}</td>
 			<td>{{ $user['updated'] }}</td>
+			<td>{{ $user['premium'] }}</td>
 			<td>{{ $user['admin_status'] }}</td>
 			<td>{!! $user['ban'] !!}</td>
 		</tr>
