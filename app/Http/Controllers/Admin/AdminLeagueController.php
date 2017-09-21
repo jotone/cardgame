@@ -1,7 +1,8 @@
 <?php
 namespace App\Http\Controllers\Admin;
 
-use \App\League;
+use App\League;
+use App\SummaryLeague;
 use App\Http\Controllers\Admin\AdminFunctions;
 use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Http\Request;
@@ -24,9 +25,17 @@ class AdminLeagueController extends BaseController
 				}
 			}
 			$data_to_save['slug'] = '_'.AdminFunctions::str2url($data_to_save['title']);
-
 			if(!isset($data_to_save['leagueId'])){
 				$result = League::create($data_to_save);
+				SummaryLeague::create([
+					'league'	=>$data_to_save['slug'],
+					'knight'	=>'a:0:{}',
+					'forest'	=>'a:0:{}',
+					'highlander'=>'a:0:{}',
+					'cursed'	=>'a:0:{}',
+					'undead'	=>'a:0:{}',
+					'monsters'	=>'a:0:{}'
+				]);
 			}else{
 				$result = League::find($data_to_save['leagueId']);
 				foreach($data_to_save as $field => $value){
@@ -47,7 +56,8 @@ class AdminLeagueController extends BaseController
 	protected function leagueDrop(Request $request){
 		$data = $request -> all();
 		$result = League::find($data['leagueId']);
+		SummaryLeague::where('league','=',$result->slug)->delete();
 		$result -> delete();
-		return redirect(route('admin-main'));
+		return redirect(route('admin-leagues'));
 	}
 }

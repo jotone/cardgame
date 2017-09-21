@@ -269,6 +269,11 @@ Route::group(['middleware' => 'admin'], function() {
 			'uses'	=> 'Admin\AdminFractionController@dropFraction'
 		]);
 
+	//Статистика
+	Route::get('/admin/statistics',[
+		'as'=> 'admin-statistics',
+		'uses'=> 'Admin\AdminStatisticsController@index'
+	]);
 
 	//Настройки лиг
 	Route::get('/admin/leagues', [

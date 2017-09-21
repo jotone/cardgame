@@ -4,8 +4,8 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 
 class Page extends Model{
-    protected $table = 'tbl_pages';
-    protected $fillable = [
-        'title', 'slug', 'text'
-    ];
+	protected $table = 'tbl_pages';
+	protected $fillable = [
+		'title', 'slug', 'text'
+	];
 }

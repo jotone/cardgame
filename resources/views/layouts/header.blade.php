@@ -30,10 +30,6 @@ $a = unserialize('a:12:{s:17:"notification_type";s:12:"p2p-incoming";s:6:"amount
 	<link rel="stylesheet" href="{{ URL::asset('css/zdev_2_adapt.css') }}">
 	<link rel="stylesheet" href="{{ URL::asset('css/zdev_4.css') }}">
 	<link rel="stylesheet" href="{{ URL::asset('css/zdev_4_adapt.css') }}">
-	<link rel="stylesheet" href="{{ URL::asset('css/zdev_5.css') }}">
-	<link rel="stylesheet" href="{{ URL::asset('css/zdev_5_adapt.css') }}">
-	<link rel="stylesheet" href="{{ URL::asset('css/zdev_6.css') }}">
-	<link rel="stylesheet" href="{{ URL::asset('css/zdev_6_adapt.css') }}">
 	<link rel="stylesheet" href="{{ URL::asset('css/zdev_10.css') }}">
 	<link rel="stylesheet" href="{{ URL::asset('css/zdev_10_adapt.css') }}">
 	<!-- endbuild -->

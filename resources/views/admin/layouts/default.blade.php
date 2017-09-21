@@ -1,3 +1,3 @@
 @include('admin.layouts.header')
-    @yield('content')
+	@yield('content')
 @include('admin.layouts.footer')

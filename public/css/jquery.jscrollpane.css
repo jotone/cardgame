@@ -5,115 +5,115 @@
  * may not operate correctly without them.
  */
 .jspContainer {
-  overflow: hidden;
-  position: relative;
+	overflow: hidden;
+	position: relative;
 
 }
 
 .jspPane {
-  position: absolute;
-  margin-right: 13px;
-  margin-left: 0!important;
+	position: absolute;
+	margin-right: 13px;
+	margin-left: 0!important;
 }
 
 .jspVerticalBar:after,
 .jspVerticalBar:before{
-  content: '';
-  display: block;
-  position: absolute;
-  background-image: url(../images/ScrollArrowUp.png);
-  width: 9px;
-  height: 18px;
-  background-position: 50%;
-  left: 1px;
+	content: '';
+	display: block;
+	position: absolute;
+	background-image: url(../images/ScrollArrowUp.png);
+	width: 9px;
+	height: 18px;
+	background-position: 50%;
+	left: 1px;
 }
 .jspVerticalBar:after{
-  -webkit-transform: rotate(180deg);
-  -moz-transform: rotate(180deg);
-  -ms-transform: rotate(180deg);
-  -o-transform: rotate(180deg);
-  transform: rotate(180deg);
-  bottom: 0px;
+	-webkit-transform: rotate(180deg);
+	-moz-transform: rotate(180deg);
+	-ms-transform: rotate(180deg);
+	-o-transform: rotate(180deg);
+	transform: rotate(180deg);
+	bottom: 0px;
 }
 .jspVerticalBar:before{
-  top: 0px;
+	top: 0px;
 }
 .jspVerticalBar {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 11px;
-  height: 100%;
-  padding: 4px 0;
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 11px;
+	height: 100%;
+	padding: 4px 0;
 
 }
 .jspDragTop{
-  width: 0;
-  height: 50%;
-  border-right: 1px dotted #f8be67;
-  position: absolute;
-  left: 1px;
-  top: 25%;
+	width: 0;
+	height: 50%;
+	border-right: 1px dotted #f8be67;
+	position: absolute;
+	left: 1px;
+	top: 25%;
 }
 .jspHorizontalBar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 16px;
-  background: red; }
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: 100%;
+	height: 16px;
+	background: red; }
 
 .jspCap {
-  display: none; }
+	display: none; }
 
 .jspHorizontalBar .jspCap {
-  float: left; }
+	float: left; }
 
 .jspTrack {
-  padding: 0 2px;
-  border: 1px solid #5e3d1d;
-  border-radius: 5px;
-  position: relative;
+	padding: 0 2px;
+	border: 1px solid #5e3d1d;
+	border-radius: 5px;
+	position: relative;
 }
 
 .jspDrag {
-  background: #8a5e34;
-  border:1px solid #5e3d1d;
-  border-radius: 2px;
-  position: relative;
-  top: 0;
-  left: 0;
-  cursor: pointer; }
+	background: #8a5e34;
+	border:1px solid #5e3d1d;
+	border-radius: 2px;
+	position: relative;
+	top: 0;
+	left: 0;
+	cursor: pointer; }
 
 .jspHorizontalBar .jspTrack,
 .jspHorizontalBar .jspDrag {
-  float: left;
-  height: 100%; }
+	float: left;
+	height: 100%; }
 
 .jspArrow {
-  background: #50506d;
-  text-indent: -20000px;
-  display: block;
-  cursor: pointer;
-  padding: 0;
-  margin: 0; }
+	background: #50506d;
+	text-indent: -20000px;
+	display: block;
+	cursor: pointer;
+	padding: 0;
+	margin: 0; }
 
 .jspArrow.jspDisabled {
-  cursor: default;
-  background: #80808d; }
+	cursor: default;
+	background: #80808d; }
 
 .jspVerticalBar .jspArrow {
-  height: 16px; }
+	height: 16px; }
 
 .jspHorizontalBar .jspArrow {
-  width: 16px;
-  float: left;
-  height: 100%; }
+	width: 16px;
+	float: left;
+	height: 100%; }
 
 .jspVerticalBar .jspArrow:focus {
-  outline: none; }
+	outline: none; }
 
 .jspCorner {
-  background: #eeeef4;
-  float: left;
-  height: 100%; }
+	background: #eeeef4;
+	float: left;
+	height: 100%; }
