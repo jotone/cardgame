@@ -323,12 +323,12 @@ class BattleFieldController extends BaseController{
 											];
 										}
 
-										if(
-											($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])) &&
-											($step_status['round_status']['current_player'] != $users_data[$player]['login'])
-										){
-											$step_status['played_card']['strength'] = $strength;
-											$step_status['played_card']['card']['buffs'][] = 'support';
+										if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
+											$is_spy = self::checkIfSpy($card_data['id']);
+											if(($step_status['round_status']['current_player'] != $users_data[$player]['login']) xor ($is_spy == 1)){
+												$step_status['played_card']['strength'] = $strength;
+												$step_status['played_card']['card']['buffs'][] = 'support';
+											}
 										}
 									}
 									if(isset($fury_cards[$player][$row][$card_iter])){
@@ -392,12 +392,12 @@ class BattleFieldController extends BaseController{
 												}
 
 												if( (isset($step_status['played_card']['card'])) && (!empty($step_status['played_card']['card'])) ){
-													if(
-														($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])) &&
-														($step_status['round_status']['current_player'] != $users_data[$player]['login'])
-													){
-														$step_status['played_card']['strength'] = $strength;
-														$step_status['played_card']['card']['buffs'][] = 'support';
+													if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
+														$is_spy = self::checkIfSpy($card_data['id']);
+														if( ($step_status['round_status']['current_player'] != $users_data[$player]['login']) xor ($is_spy == 1) ){
+															$step_status['played_card']['strength'] = $strength;
+															$step_status['played_card']['card']['buffs'][] = 'support';
+														}
 													}
 												}
 
