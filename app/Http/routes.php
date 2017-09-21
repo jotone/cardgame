@@ -271,9 +271,13 @@ Route::group(['middleware' => 'admin'], function() {
 
 	//Статистика
 	Route::get('/admin/statistics',[
-		'as'=> 'admin-statistics',
-		'uses'=> 'Admin\AdminStatisticsController@index'
+		'as'	=> 'admin-statistics',
+		'uses'	=> 'Admin\AdminStatisticsController@index'
 	]);
+		Route::post('/admin/statistics/reset',[
+			'as'	=> 'admin-statistics-reset',
+			'uses'	=> 'Admin\AdminStatisticsController@resetSummary'
+		]);
 
 	//Настройки лиг
 	Route::get('/admin/leagues', [

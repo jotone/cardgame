@@ -5,6 +5,7 @@ use App\Battle;
 use App\BattleMembers;
 use App\Http\Controllers\Site\BattleFieldController;
 use App\League;
+use App\SummaryLeague;
 use App\User;
 use App\Classes\Socket\Base\BaseSocket;
 use App\Http\Controllers\Site\SiteGameController;
@@ -969,8 +970,8 @@ class GwentSocket extends BaseSocket
 				$battle->save();
 				$game_result = 'Игру выграл '.$this->users_data['opponent']['login'];
 				$winner = $this->users_data['opponent']['id'];
-				$to_self = self::saveGameResults($this->users_data['opponent']['id'], $battle, 'win');
-				$to_enemy = self::saveGameResults($this->users_data['user']['id'], $battle, 'loose');
+				$to_self = self::saveGameResults($this->users_data['opponent']['id'], $battle, 'win', 'leave');
+				$to_enemy = self::saveGameResults($this->users_data['user']['id'], $battle, 'loose', 'leave');
 
 				\DB::table('users')->where('id','=',$this->users_data['user']['id'])->update(['user_busy' => 0]);
 				\DB::table('users')->where('id','=',$this->users_data['opponent']['id'])->update(['user_busy' => 0]);
@@ -2188,7 +2189,7 @@ class GwentSocket extends BaseSocket
 	}
 	// /Service functions
 
-	protected static function saveGameResults($user_id, $battle, $game_result){
+	protected static function saveGameResults($user_id, $battle, $game_result, $type = 'fair'){
 		$user = \DB::table('users')
 			->select('id', 'login', 'premium_activated', 'premium_expire_date', 'user_gold', 'user_silver', 'user_rating')
 			->where('id', '=', $user_id)
@@ -2230,6 +2231,16 @@ class GwentSocket extends BaseSocket
 			'user_rating' => 0,
 			'gameResult' => $game_result
 		];
+
+		$user_deck = BattleMembers::select('user_deck_race')->where('user_id','=',$user_id)->first();
+		$deck = $user_deck->user_deck_race;
+		$summary = SummaryLeague::select('id',$deck)
+			->where('league','=',$league['slug'])
+			->first();
+
+		$statistic = unserialize($summary->$deck);
+		$statistic[$type]++;
+
 		switch($game_result){
 			case 'win':
 				$gold = $user->user_gold + $resources['gold_per_win'];
@@ -2239,6 +2250,7 @@ class GwentSocket extends BaseSocket
 				$result['gold'] = $resources['gold_per_win'];
 				$result['silver'] = $resources['silver_per_win'];
 				$result['user_rating'] = $league->rating_per_win;
+				$statistic['win']++;
 			break;
 			case 'loose':
 				$gold = $user->user_gold + $resources['gold_per_loose'];
@@ -2249,11 +2261,15 @@ class GwentSocket extends BaseSocket
 				$result['gold'] = $resources['gold_per_loose'];
 				$result['silver'] = $resources['silver_per_loose'];
 				$result['user_rating'] = abs($league->rating_per_loose);
+				$statistic['win']--;
 			break;
 			case 'draw':
 				$rating = $user_rating[$league['slug']]['user_rating'];
 			break;
 		}
+		SummaryLeague::where('id','=',$summary->id)->update([
+			$deck => serialize($statistic)
+		]);
 
 		$user_rating[$league['slug']] = [
 			'user_rating'	=> $rating,
@@ -2342,7 +2358,7 @@ class GwentSocket extends BaseSocket
 					$turn_expire = 0;
 				}
 
-				$turn_expire = time() + $timing_settings['step_time'];
+				//$turn_expire = time() + $timing_settings['step_time'];
 				/*$turn_expire = $turn_expire + $timing_settings['first_step_r'.$battle->round_count];
 				if($turn_expire > $timing_settings['max_step_time']){
 					$turn_expire = $timing_settings['max_step_time'];

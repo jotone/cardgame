@@ -30,4 +30,20 @@ class AdminStatisticsController extends BaseController
 			'list'=> $list
 		]);
 	}
+
+	public function resetSummary(){
+		$result = SummaryLeague::where('id','!=',0)->update([
+			'knight'=>'a:3:{s:3:"win";i:0;s:4:"fair";i:0;s:5:"leave";i:0;}',
+			'forest'=>'a:3:{s:3:"win";i:0;s:4:"fair";i:0;s:5:"leave";i:0;}',
+			'highlander'=>'a:3:{s:3:"win";i:0;s:4:"fair";i:0;s:5:"leave";i:0;}',
+			'cursed'=>'a:3:{s:3:"win";i:0;s:4:"fair";i:0;s:5:"leave";i:0;}',
+			'undead'=>'a:3:{s:3:"win";i:0;s:4:"fair";i:0;s:5:"leave";i:0;}',
+			'monsters'=>'a:3:{s:3:"win";i:0;s:4:"fair";i:0;s:5:"leave";i:0;}',
+		]);
+		if($result == false){
+			dd($result);
+		}else{
+			return redirect()->route('admin-statistics');
+		}
+	}
 }
