@@ -42,9 +42,9 @@
 
 /* buff anim */
 
-	.convert-battle-front .convert-cards.user .convert-card-box .convert-stuff.buff .field-for-sum, .convert-battle-front .convert-cards .convert-card-box .convert-stuff.buff .field-for-sum {color: #409e00;box-shadow: inset 0 0 5px 2px rgba(64, 158, 0, 0.72);}
+	.convert-battle-front .convert-cards.user .convert-card-box .convert-stuff.support-buff-wrap .field-for-sum, .convert-battle-front .convert-cards .convert-card-box .convert-stuff.support-buff-wrap .field-for-sum {color: #409e00;box-shadow: inset 0 0 5px 2px rgba(64, 158, 0, 0.72);}
 
-	.convert-battle-front .convert-cards .convert-card-box .convert-stuff.buff .cards-row-wrap .content-card-item:not([data-full-immune='1']) .label-power-card-wrap { color: #409e00;}
+	.convert-battle-front .convert-cards .convert-card-box .convert-stuff.support-buff-wrap .cards-row-wrap .content-card-item:not([data-full-immune='1']) .label-power-card-wrap { color: #409e00;}
 
 
 	/* inspiration buff */
@@ -137,7 +137,8 @@
 
 	/* buffed */
 		/*brotherhood*/
-		.brotherhood-buffed.buffed .card-load-info:before  { box-shadow: 0 0 11px 10px rgba(64, 158, 0, 0.70);}
+		.brotherhood-buffed.buffed .card-load-info:before{ box-shadow: 0 0 11px 10px rgba(64, 158, 0, 0.70);}
+		.brotherhood-buffed.buffed .label-power-card{color: #409e00;}
 
 	/* /buffed */
 
