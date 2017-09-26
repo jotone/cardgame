@@ -859,7 +859,7 @@ class BattleFieldController extends BaseController{
 
 								if(isset($fury_cards[$player][$row][$card_iter])){
 									$fury_cards[$player][$row][$card_iter]['strength'] = $fury_cards[$player][$row][$card_iter]['strModif'];
-									$fury_cards[$player][$row][$card_iter]['strModif'] = $strength;
+									$fury_cards[$player][$row][$card_iter]['strModif'] = $fury_cards[$player][$row][$card_iter]['strModif'] * $action_data['inspiration_multValue'];
 								}
 
 								$battle_field[$player][$row]['warrior'][$card_iter]['strength'] *= $action_data['inspiration_multValue'];
