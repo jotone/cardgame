@@ -40,20 +40,48 @@ class GwentSocket extends BaseSocket
 
 	public function onClose(ConnectionInterface $conn){
 		$battle = Battle::find($this->battle_id);
+		$battle->disconected_count++;
+		$battle->save();
 
-		if($battle->fight_status < 3){
-			if($battle->disconected_count <= 2){
-				$battle->disconected_count++;
-				$battle->save();
+		if( ($battle->fight_status < 3) && ($battle->disconected_count > 1) ){
+			$battle->fight_status = 3;
+			$battle->save();
+			$battle_info = BattleFieldController::battleInfo($battle, unserialize($battle->battle_field), $this->users_data, $this->magic_usage, $this->step_status);
+
+			//Подсчет результатов раунда по очкам
+			$total_score = self::calcStrByPlayers($battle_info['field_status']);
+			$user_score = $total_score[$this->users_data['user']['player']];
+			$opponent_score = $total_score[$this->users_data['opponent']['player']];
+
+			if($user_score > $opponent_score){
+				self::saveGameResults($this->users_data['p1']['id'], $battle, 'win');
+				self::saveGameResults($this->users_data['p2']['id'], $battle, 'loose');
 			}
 
-			if($battle->disconected_count == 2){
-				self::waitForRoundEnds($this, $conn);
+			if($user_score < $opponent_score){
+				self::saveGameResults($this->users_data['p2']['id'], $battle, 'win');
+				self::saveGameResults($this->users_data['p1']['id'], $battle, 'loose');
 			}
-		}else{
-			$this->clients->detach($conn);
-			echo 'Connection '.$conn->resourceId.' has disconnected'."\n";
+
+			if($user_score == $opponent_score){
+				if( ( ($this->users_data['user']['current_deck'] == 'undead') || ($this->users_data['opponent']['current_deck'] == 'undead') ) && ($this->users_data['user']['current_deck'] != $this->users_data['opponent']['current_deck']) ){
+					if($this->users_data['user']['current_deck'] == 'undead'){
+						self::saveGameResults($this->users_data['user']['id'], $battle, 'win');
+						self::saveGameResults($this->users_data['opponent']['id'], $battle, 'loose');
+					}else{
+						self::saveGameResults($this->users_data['opponent']['id'], $battle, 'win');
+						self::saveGameResults($this->users_data['user']['id'], $battle, 'loose');
+					}
+				}else{
+					self::saveGameResults($this->users_data['user']['id'], $battle, 'draw');
+					self::saveGameResults($this->users_data['opponent']['id'], $battle, 'draw');
+				}
+			}
+
+			\DB::table('users')->where('id','=',$this->users_data['user']['id'])->update(['user_busy' => 0]);
+			\DB::table('users')->where('id','=',$this->users_data['opponent']['id'])->update(['user_busy' => 0]);
 		}
+
 		$this->clients->detach($conn);//delete on finish
 		echo 'Connection '.$conn->resourceId.' has disconnected'."\n";//delete on finish
 	}
@@ -74,8 +102,8 @@ class GwentSocket extends BaseSocket
 	//Обработчик каждого сообщения
 	public function onMessage(ConnectionInterface $from, $msg){
 		$msg = json_decode($msg); // сообщение от пользователя arr[action, ident[battleId, UserId, Hash]]
-		/*var_dump(date('Y-m-d H:i:s'));
-		var_dump($msg);*/
+		var_dump(date('Y-m-d H:i:s'));
+		var_dump($msg);
 		if(!isset($this->battles[$msg->ident->battleId])){
 			$this->battles[$msg->ident->battleId] = new \SplObjectStorage;
 		}
@@ -198,9 +226,10 @@ class GwentSocket extends BaseSocket
 
 		switch($msg->action){
 			case 'userJoinedToRoom':
-				$users_count = \DB::table('tbl_battle_members')->where('battle_id','=',$msg->ident->battleId)->count();
-				$battle->disconected_count = 2 - $users_count;
-
+				if($battle->disconected_count > 0){
+					$battle->disconected_count--;
+					$battle->save();
+				}
 				$user_turn = ($battle->user_id_turn != 0)? $this->users_data[$battle->user_id_turn]['login']: '';
 
 				if($battle->fight_status <= 1){
@@ -2002,7 +2031,6 @@ class GwentSocket extends BaseSocket
 		$users_data['opponent'] = $gain_cards_data['array'];
 		$step_status = $gain_cards_data['step_status'];
 
-		
 		//Очищение поля битвы от карт
 		foreach($battle_field as $player => $rows){
 			if($player != 'mid'){
@@ -2284,154 +2312,5 @@ class GwentSocket extends BaseSocket
 		]);
 
 		return $result;
-	}
-
-	protected static function waitForRoundEnds($_this, $conn){
-		$battle = Battle::find($_this->battle_id);
-
-		$round_status = unserialize($battle->round_status);
-		if( (count($round_status['p1']) == 2) || (count($round_status['p2']) == 2) ){
-			//Конец игры; Подсчет результатов боя; Запись рейтингов
-			$battle->fight_status = 3;
-			$battle->save();
-
-			if(count($round_status['p1']) > count($round_status['p2'])){
-				self::saveGameResults($_this->users_data['p1']['id'], $battle, 'win');
-				self::saveGameResults($_this->users_data['p2']['id'], $battle, 'loose');
-			}
-
-			if(count($round_status['p1']) < count($round_status['p2'])){
-				self::saveGameResults($_this->users_data['p2']['id'], $battle, 'win');
-				self::saveGameResults($_this->users_data['p1']['id'], $battle, 'loose');
-			}
-
-			if(count($round_status['p1']) == count($round_status['p2'])){
-				if( ( ($_this->users_data['user']['current_deck'] == 'undead') || ($_this->users_data['opponent']['current_deck'] == 'undead') ) && ($_this->users_data['user']['current_deck'] != $_this->users_data['opponent']['current_deck']) ){
-					if($_this->users_data['user']['current_deck'] == 'undead'){
-						self::saveGameResults($_this->users_data['user']['id'], $battle, 'win');
-						self::saveGameResults($_this->users_data['opponent']['id'], $battle, 'loose');
-					}else{
-						self::saveGameResults($_this->users_data['opponent']['id'], $battle, 'win');
-						self::saveGameResults($_this->users_data['user']['id'], $battle, 'loose');
-					}
-				}else{
-					self::saveGameResults($_this->users_data['user']['id'], $battle, 'draw');
-					self::saveGameResults($_this->users_data['opponent']['id'], $battle, 'draw');
-				}
-			}
-			//Закрытие соккета
-			$_this->clients->detach($conn);
-		}else{
-			if(time() < $battle->turn_expire){
-				sleep(2);
-				if($battle->disconected_count == 2){
-					self::waitForRoundEnds($_this, $conn);
-				}
-			}else{
-				$timing_settings = SiteGameController::getTimingSettings();
-				$current_turn_member = \DB::table('tbl_battle_members')->select('turn_expire')
-					->where('battle_id','=',$_this->battle_id)
-					->where('user_id','=',$battle->user_id_turn)
-					->first();
-				if($current_turn_member != false){
-					\DB::table('tbl_battle_members')
-						->where('battle_id','=',$_this->battle_id)
-						->where('user_id','=',$battle->user_id_turn)
-						->update(['round_passed' => 1]);
-				}
-
-				if($_this->users_data['user']['id'] == $battle->first_turn_user_id){
-					$user_turn_id = $_this->users_data['opponent']['id'];
-				}else{
-					$user_turn_id = $_this->users_data['user']['id'];
-				}
-
-				$next_turn_member = \DB::table('tbl_battle_members')
-					->select('battle_id','user_id','turn_expire')
-					->where('battle_id','=',$_this->battle_id)
-					->where('user_id','=', $user_turn_id)
-					->count();
-
-				if($next_turn_member > 0){
-					$turn_expire = $current_turn_member->turn_expire;
-				}else{
-					$turn_expire = 0;
-				}
-
-				//$turn_expire = time() + $timing_settings['step_time'];
-				/*$turn_expire = $turn_expire + $timing_settings['first_step_r'.$battle->round_count];
-				if($turn_expire > $timing_settings['max_step_time']){
-					$turn_expire = $timing_settings['max_step_time'];
-				}*/
-
-				$battle->user_id_turn = $user_turn_id;
-				$battle->first_turn_user_id =$user_turn_id;
-				$battle->turn_expire = $turn_expire + time();
-				$battle->pass_count = $battle->pass_count +1;
-
-				if($battle->pass_count > 1) {
-					$battle_field = unserialize($battle->battle_field);
-
-					$temp = BattleFieldController::battleInfo($battle, $battle_field, $_this->users_data, $_this->magic_usage, $_this->step_status);
-					$battle_field = $temp['battle_field'];
-					//Подсчет результата раунда по очкам
-					$total_str = self::calcStrByPlayers($battle_field);
-					//Статус битвы (очки раундов)
-					$round_status = unserialize($battle->round_status);
-
-					//Результаты раунда отдельно по игрокам
-					$user_points = $total_str[$_this->users_data['user']['player']];
-					$opponent_points = $total_str[$_this->users_data['opponent']['player']];
-
-					$gain_cards_count = ['user' => 1, 'opponent' => 1];//Количество дополнительных карт
-					//Определение выигравшего
-					if($user_points > $opponent_points){
-						$round_status[$_this->users_data['user']['player']][] = 1;
-						if($_this->users_data['opponent']['current_deck'] == 'knight') $gain_cards_count['opponent'] = 2;
-					}
-					if($user_points < $opponent_points){
-						$round_status[$_this->users_data['opponent']['player']][] = 1;
-						if($_this->users_data['user']['current_deck'] == 'knight') $gain_cards_count['user'] = 2;
-					}
-					if($user_points == $opponent_points){
-						//Если колода пользователя - нечисть и противник не играет нечистью
-						if( ( ($_this->users_data['user']['current_deck'] == 'undead') || ($_this->users_data['opponent']['current_deck'] == 'undead') ) && ($_this->users_data['user']['current_deck'] != $_this->users_data['opponent']['current_deck']) ){
-							if($_this->users_data['user']['current_deck'] == 'undead'){
-								$round_status[$_this->users_data['user']['player']][] = 1;
-								if($_this->users_data['opponent']['current_deck'] == 'knight') $gain_cards_cout['opponent'] = 2;
-							}else{
-								$round_status[$_this->users_data['opponent']['player']][] = 1;
-								if($_this->users_data['user']['current_deck'] == 'knight') $gain_cards_count['user'] = 2;
-							}
-						}else{
-							$round_status[$_this->users_data['user']['player']][] = 1;
-							$round_status[$_this->users_data['opponent']['player']][] = 1;
-						}
-					}
-
-					$clear_result = self::clearBattleField($battle, $battle_field, $_this->users_data, $_this->magic_usage, $gain_cards_count, $_this->step_status);
-
-					$battle_field = $clear_result['battle_field'];
-					$_this->users_data	= $clear_result['users_data'];
-					$_this->step_status = $clear_result['step_status'];
-
-					$battle->battle_field	= serialize($battle_field);
-					$battle->magic_usage	= serialize($_this->magic_usage);
-					$battle->undead_cards	= serialize($clear_result['deadless_cards']);
-					$battle->pass_count		= 0;
-					$battle->round_status	= serialize($round_status);
-					$battle->round_count	= $battle->round_count +1;
-				}
-
-				$battle->save();
-				if($battle->disconected_count == 2){
-					self::waitForRoundEnds($_this, $conn);
-				}else{
-					$_this->clients->detach($conn);
-					$_this->clients->attach($conn); //Добавление клиента
-					echo 'New connection ('.$conn->resourceId.')'."\n\r";
-				}
-			}
-		}
 	}
 }

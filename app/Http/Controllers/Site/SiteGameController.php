@@ -48,7 +48,7 @@ class SiteGameController extends BaseController
 			]),
 			'undead_cards'		=> serialize(['p1'=>[], 'p2'=>[]]),
 			'magic_usage'		=> serialize(['p1'=>[], 'p2'=>[]]),
-			'disconected_count'	=> 0,
+			'disconected_count'	=> 2,
 			'pass_count'		=> 0
 		]);
 
