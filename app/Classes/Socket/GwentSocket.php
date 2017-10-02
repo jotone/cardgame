@@ -555,13 +555,13 @@ class GwentSocket extends BaseSocket
 							case 'call':
 							case 'heal':
 							case 'peep_card':
-							case 'regroup':
 								$add_time = false;
 							break;
 
 							case 'cure':
 							case 'killer':
 							case 'obscure':
+							case 'regroup':
 							case 'sorrow':
 								$view_cards_strength = true;
 							break;
