@@ -2342,23 +2342,17 @@ function setCardStrength(cards_strength){
 		for(var player in cards_strength){
 			for(var row in cards_strength[player]){
 				var actionRow = $('#'+player+'.convert-cards '+ intRowToField(row));
-//console.info("actionRow", actionRow)
+
 				for(var item in cards_strength[player][row]){
-					//console.info("setCardStrength++++++++++++++++++++++")
 
 					var value = cards_strength[player][row][item];
-					var card = $(actionRow.find('.cards-row-wrap .content-card-item')[parseInt(item)]);
+					var card = $(actionRow.find('.cards-row-wrap .content-card-item:not(.ready-to-die)')[parseInt(item)]);
 					var cardValue = card.find('.card-current-value');
-
-//console.info("value", value)
-//console.info("cardValue", cardValue)
-//console.info("card", card)
 
 					if (parseInt(cardValue) !== value){
 						cardValue.text(value);
 					}
 
-					//console.info("setCardStrength---------------------")
 				}
 			}
 		}
