@@ -1404,6 +1404,9 @@ console.info("action  ->", action)
 								var cardOverloadingImg = result.actions.regroup_img;// картинка карты перегрупирвка
 								var type = result.actions.type; //magic or card
 								detailCardPopupOnOverloading(cardOverloadingImg, card, type);
+								if(!$.isEmptyObject(result.actions.cards_strength)){
+									setCardStrength(result.actions.cards_strength);
+								}
 							break;
 
 							case 'obscure':
