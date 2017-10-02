@@ -1311,6 +1311,7 @@ function processActions(result){
 					},1000);
 				break;
 
+
 				case 'master':
 					// setTimeout(function(){
 					// 	setCardStrength(result.actions.cards_strength);
@@ -1332,6 +1333,7 @@ function processActions(result){
 						item = parseInt(item);
 						var action = result.actions.appear[player][row][item];
 
+console.info("action  ->", action)
 						switch(action){
 							case 'support'://Поддержка
 								var obj = {};
@@ -2334,23 +2336,36 @@ function animationBurningCardEndDeleting(card,action,cards_strength){
 
 var processingSetsCardStrength = true;
 function setCardStrength(cards_strength){
+
 	if(!$.isEmptyObject(cards_strength) && processingSetsCardStrength){
 		processingSetsCardStrength = false;
 		for(var player in cards_strength){
 			for(var row in cards_strength[player]){
 				var actionRow = $('#'+player+'.convert-cards '+ intRowToField(row));
+//console.info("actionRow", actionRow)
 				for(var item in cards_strength[player][row]){
+					//console.info("setCardStrength++++++++++++++++++++++")
+
 					var value = cards_strength[player][row][item];
 					var card = $(actionRow.find('.cards-row-wrap .content-card-item')[parseInt(item)]);
 					var cardValue = card.find('.card-current-value');
+
+//console.info("value", value)
+//console.info("cardValue", cardValue)
+//console.info("card", card)
+
 					if (parseInt(cardValue) !== value){
 						cardValue.text(value);
 					}
+
+					//console.info("setCardStrength---------------------")
 				}
 			}
 		}
 		processingSetsCardStrength = true;
 	}
+
+
 }
 
 function createInfoPopup(data){

@@ -400,7 +400,7 @@ class GwentSocket extends BaseSocket
 
 			case 'userMadeAction':
 				if($battle->fight_status == 2){
-					
+
 					//Данные о текущем пользователе
 					$battle_field = unserialize($battle->battle_field);//Данные о поле битвы
 					//Установка источника хода по умолчанию
@@ -421,7 +421,7 @@ class GwentSocket extends BaseSocket
 						$this->step_status['round_status']['current_player'] = $this->users_data['opponent']['login'];
 						$user_turn_id = $this->users_data['opponent']['id'];
 					}
-					
+
 
 					$self_drop = 0;
 					if($msg->magic != ''){
@@ -455,7 +455,7 @@ class GwentSocket extends BaseSocket
 							'user_magic'	=> serialize($this->users_data['user']['user_magic'])
 						]);
 					}
-					
+
 
 					if($msg->card != ''){
 						$current_card_id = Crypt::decrypt($msg->card);
@@ -1619,6 +1619,7 @@ class GwentSocket extends BaseSocket
 
 								$cards_can_be_obscured[] = [
 									'id'		=> $card['id'],
+									'caption'	=> $card_data['caption'],
 									'strength'	=> $card_data['strength'],
 									'row'		=> $row
 								];
@@ -1656,6 +1657,7 @@ class GwentSocket extends BaseSocket
 						if(Crypt::decrypt($cards_to_obscure[$i]['id']) == $card_data['id']){
 							$battle_field[$users_data['user']['player']][$cards_to_obscure[$i]['row']]['warrior'][] = [
 								'id'		=> $card_data['id'],
+								'caption'	=> $card_data['caption'],
 								'strength'	=> $card_data['strength'],
 								'login'		=> $users_data['user']['login']
 							];

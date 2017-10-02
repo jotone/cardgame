@@ -27,7 +27,7 @@ class BattleFieldController extends BaseController{
 		$actions_array_fear = [];//Массив действий "Страшный"
 		$actions_array_brotherhood = [];//Массив действий "Боевое братство"
 		$actions_array_inspiration = [];//Массив действий "Воодушевление"
-		
+
 		$field_status = [
 			'p1' => [
 				['buffs' => [],'debuffs'=>[],'special'=>[],'warrior'=>[]],
@@ -244,7 +244,7 @@ class BattleFieldController extends BaseController{
 			foreach($action_card['actions'] as $action_iter => $action_data){
 				if($action_data['caption'] == 'support'){
 					$groups = ((isset($action_data['support_actionToGroupOrAll'])) && ($action_data['support_actionToGroupOrAll'] != 0))? $action_data['support_actionToGroupOrAll'] : [];
-					
+
 					foreach($action_data['support_ActionRow'] as $row){
 						$field_status[$player][$row]['buffs'][] = 'support';
 						foreach($battle_field[$player][$row]['warrior'] as $card_iter => $card_data){
@@ -731,7 +731,7 @@ class BattleFieldController extends BaseController{
 										if(isset($step_status['added_cards'][$player][$rows]) && (!in_array('spy', $played_card_actions))){
 											foreach($step_status['added_cards'][$player][$rows] as $i => $added_card){
 												if(Crypt::decrypt($added_card['id']) == $battle_field[$player][$rows]['warrior'][$card_iter]['id']){
-													$step_status['added_cards'][$player][$rows][$i]['strength'] = $battle_field[$player][$rows]['warrior'][$card_iter]['strength'];
+													$step_status['added_cards'][$player][$rows][$i]['strength'] =$battle_field[$player][$rows]['warrior'][$card_iter]['strength'];
 												}
 											}
 										}
