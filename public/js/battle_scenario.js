@@ -1333,7 +1333,6 @@ function processActions(result){
 						item = parseInt(item);
 						var action = result.actions.appear[player][row][item];
 
-console.info("action  ->", action)
 						switch(action){
 							case 'support'://Поддержка
 								var obj = {};
