@@ -422,7 +422,6 @@ class GwentSocket extends BaseSocket
 						$user_turn_id = $this->users_data['opponent']['id'];
 					}
 
-
 					$self_drop = 0;
 					if($msg->magic != ''){
 						$disable_magic = false;
@@ -455,7 +454,6 @@ class GwentSocket extends BaseSocket
 							'user_magic'	=> serialize($this->users_data['user']['user_magic'])
 						]);
 					}
-
 
 					if($msg->card != ''){
 						$current_card_id = Crypt::decrypt($msg->card);
@@ -519,21 +517,26 @@ class GwentSocket extends BaseSocket
 						];
 
 						//Если был задействован МЭ "Марионетка"
-						if(
-							(isset($this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['id']))
-							&& ($this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['id'] == '19')
-							&& ($this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['allow'] == 1)
-						){
-							$this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['allow'] = '0';
-							$user_type = 'opponent';
+						if(isset($this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['id'])){
+							$magic_effect_data = BattleFieldController::getMagicDescription($this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['id']);
+							if(
+								($magic_effect_data['slug'] == 'marionetka') &&
+								($this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['allow'] == 1)
+							){
+								$this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['allow'] = '0';
+								$call_used = true;
+							}else{
+								$call_used = false;
+							}
 						}else{
-							$user_type = 'user';
+							$call_used = false;
 						}
+						$user_type = ($call_used)? 'opponent': 'user';
 
 						//Убираем карту из текущй колоды
 						$source = (isset($msg->source->p1))? $msg->source->p1: $msg->source->p2;
 						$this->users_data[$user_type][$source] = self::dropCardFromDeck($this->users_data[$user_type][$source], $current_card['id']);
-						if( ($source == 'deck') || ($source == 'discard') ){
+						if( ( ($source == 'deck') || ($source == 'discard') ) && ($call_used === false)){
 							$this->step_status['dropped_cards'][$this->users_data[$msg->ident->userId]['player']][$source][] = $this->step_status['played_card']['card']['caption'];
 						}
 						$current_actions = $current_card['actions'];
@@ -620,6 +623,8 @@ class GwentSocket extends BaseSocket
 					$battle->user_id_turn	= $user_turn_id;
 					$battle->turn_expire	= $this->users_data[$showTimerOfUser]['turn_expire'] + time();
 					$battle->save();
+
+
 
 					self::sendUserMadeAction($this->users_data, $this->step_status, $msg, $SplBattleObj, $from);
 				}
@@ -1023,13 +1028,13 @@ class GwentSocket extends BaseSocket
 			case 'dropCard':
 				if($msg->player != $this->users_data['user']['player']){
 					$position = -1;
-					foreach ($this->users_data[$msg->player][$msg->deck] as $card_iter => $card_data) {
+					foreach($this->users_data[$msg->player][$msg->deck] as $card_iter => $card_data){
 						if ($card_data == Crypt::decrypt($msg->card)) {
 							$position = $card_iter;
 							break;
 						}
 					}
-					if ($position >= 0) {
+					if($position >= 0){
 						$card = BattleFieldController::cardData($this->users_data[$msg->player][$msg->deck][$position]);
 						$this->step_status['dropped_cards'][$msg->player][$msg->deck][] = $card['caption'];
 
@@ -1037,7 +1042,7 @@ class GwentSocket extends BaseSocket
 						$this->users_data[$msg->player][$msg->deck] = array_values($this->users_data[$msg->player][$msg->deck]);
 
 						\DB::table('tbl_battle_members')->where('id', '=', $this->users_data[$msg->player]['battle_member_id'])->update([
-							'user_' . $msg->deck => serialize($this->users_data[$msg->player][$msg->deck])
+							'user_'.$msg->deck => serialize($this->users_data[$msg->player][$msg->deck])
 						]);
 						$result = $this->step_status;
 						$result['message'] = 'dropCard';
