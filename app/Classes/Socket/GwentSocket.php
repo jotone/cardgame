@@ -1619,7 +1619,7 @@ class GwentSocket extends BaseSocket
 
 								$cards_can_be_obscured[] = [
 									'id'		=> $card['id'],
-									'caption'	=> $card_data['caption'],
+									'caption'	=> $card['caption'],
 									'strength'	=> $card_data['strength'],
 									'row'		=> $row
 								];
@@ -1652,6 +1652,7 @@ class GwentSocket extends BaseSocket
 						}
 					}
 				}
+
 				for($i=0; $i<count($cards_to_obscure); $i++){
 					foreach($battle_field[$users_data['opponent']['player']][$cards_to_obscure[$i]['row']]['warrior'] as $j => $card_data){
 						if(Crypt::decrypt($cards_to_obscure[$i]['id']) == $card_data['id']){
