@@ -150,7 +150,7 @@ $errors = $errors->all();
 												{!! $fraction['description'] !!}
 												<br><br>
 												<strong>Особенность фракции:</strong>
-												{!! $fraction['short_description'] !!}
+												<b>{!! $fraction['short_description'] !!}</b>
 											</div>
 
 										</div>

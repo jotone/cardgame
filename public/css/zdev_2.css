@@ -119,8 +119,8 @@
 /* popup select cards */
 
 	div.troll-popup#selecthandCardsPopup { overflow: hidden; max-height: 98%; }
-	div.troll-popup#selecthandCardsPopup ul.cards-select-wrap { width: calc(100% + 100px); padding-right: 100px; max-height: calc(100vh - 365px); overflow-x: hidden; overflow-y: scroll; }
-	div.troll-popup#selecthandCardsPopup ul.cards-select-wrap li{margin-bottom: 30px;}
+	div.troll-popup#selecthandCardsPopup ul.cards-select-wrap { width: calc(100% + 100px); padding-right: 100px; max-height: calc(100vh - 378px); overflow-x: hidden; overflow-y: scroll; }
+	div.troll-popup#selecthandCardsPopup ul.cards-select-wrap li{margin-bottom: 50px;}
 	div.troll-popup#selecthandCardsPopup ul.cards-select-wrap:after { display: none; }
 
 /* /popup select cards */
@@ -1009,7 +1009,7 @@
 	color:#cc0204;
 	display:inline-block;
 	text-transform:uppercase;
-	font-size:14px;
+	font-size:18px;
 	font-family:'indisplay', sans-serif;
 	font-weight:700;
 	width:100px;
@@ -1209,7 +1209,9 @@
 .stash-about .oponent-discribe .naming-oponent .rasa, .stash-about .oponent-discribe .naming-user .rasa{
 	color:#ad8150;
 	font-weight:400;
-	font-size:15px; }
+	font-size:18px;
+	margin-top: -2px;
+}
 .stash-about .oponent-stats, .stash-about .user-stats{
 	float:right;
 	vertical-align:top;
@@ -2482,18 +2484,18 @@ html{ height:100%; }
 	display:block;
 	text-align:center;
 	text-transform:uppercase;
-	color:#f3b119;
+	color:#ffa700;
 	font-family:"Arial", sans-serif;
 	font-size:16px;
-	font-weight:500;
-	text-shadow:2.121px 2.121px 4px black, 0px 0px 2px black;
+	font-weight: 600;
+    text-shadow: 2.121px 2.121px 13px black, 0px 0px 6px black;
 	margin-top:10px;
 }
-.login-page .row-with-rase .conteiner .item-rise .hovered-block .button-troll{ margin:13px auto 0; }
+.login-page .row-with-rase .conteiner .item-rise .hovered-block .button-troll{ margin:13px auto 3px; }
 .login-page .row-with-rase .conteiner .item-rise .hovered-block{
 	position:absolute;
 	background-color:white;
-	width:500px;
+	width:550px;
 	background-image:url(../images/super-bg-main.jpg);
 	background-position:50px;
 	padding:10px 25px 10px;
@@ -2527,7 +2529,7 @@ html{ height:100%; }
 	border-bottom:1px solid #714026;
 	color:#714026;
 	font-weight:700;
-	font-size:18px;
+	font-size:21px;
 	padding-bottom:5px;
 	text-transform:uppercase;
 	font-family:'indisplay', sans-serif;
@@ -2535,12 +2537,13 @@ html{ height:100%; }
 .login-page .row-with-rase .conteiner .item-rise .hovered-block .contein .description .des-text{
 	padding-top:10px;
 	color:#714026;
-	font-size:16px;
+	font-size:18px;
 	font-weight:400;
 	font-family:'indisplay', sans-serif;
-	line-height:1; }
+	line-height:1.4; }
 .login-page .row-with-rase .conteiner .item-rise .hovered-block .contein .description .des-text p{
 	padding:0 10px; }
+.login-page .row-with-rase .conteiner .item-rise .hovered-block .contein .description .des-text b{font-weight: bold;}
 .login-page .row-with-rase .conteiner .item-rise .hovered-block .contein .button-easy{
 	background-image:url(../images/button-easy.jpg);
 	width:160px;
@@ -2968,7 +2971,7 @@ div.troll-popup{
 	backface-visibility: hidden;
 }
 div.troll-popup#buyingCardOrmagic{ z-index:2222; }
-div.troll-popup#successEvent{ z-index:2222; padding-bottom:30px; width:400px; }
+div.troll-popup#successEvent{ z-index:2222; padding-bottom:30px; width:450px; }
 div.troll-popup#selecthandCardsPopup{ width:1140px; }
 div.troll-popup.show{
 	-webkit-transform:translate(-50%, -50%) scale(1) translateZ(0);
@@ -3014,7 +3017,7 @@ input.book-style{
 .card-description-hidden h5{ }
 .card-description-hidden h6{ }
 .popup-content-wrap h5{
-	font-size:20px;
+	font-size:25px;
 	font-weight:700;
 	border-bottom:1px solid #714026;
 }
@@ -3040,9 +3043,9 @@ input.book-style{
 #buySomeEnergy .pop-row span,
 #buySomeEnergy .pop-row img{ vertical-align:top; }
 .change-card-start,
-.button-troll{ border:2px solid #714026; background-color:transparent; cursor:pointer; display:inline-block; padding:0 10px; height:33px; line-height:33px; border-radius:5px; margin:0 auto; position:relative; transition:all 300ms; }
+.button-troll{ border:2px solid #714026; background-color:transparent; cursor:pointer; display:inline-block; padding:0 10px; height:33px; line-height:31px; border-radius:5px; margin:0 auto; position:relative; transition:all 300ms; }
 .change-card-start b,
-.button-troll b{ display:inline-block; color:#714026; margin-top:0; text-shadow:none; font-weight:700; font-size:14px; transition:all 300ms; }
+.button-troll b{ display:inline-block; color:#714026; margin-top:0; text-shadow:none; font-weight:700; font-size:16px; transition:all 300ms; }
 .change-card-start:hover,
 .button-troll:hover{ background:#714026; }
 .change-card-start:hover b,
@@ -3123,10 +3126,11 @@ input.book-style{
 .input-type-number .increment.clicked:before, .input-type-number .inc.clicked:before{ top:3px; left:10px; }
 .input-type-number .decrement.clicked:before, .input-type-number .dec.clicked:before{ top:-2px; left:9px; }
 #choose-rase-block h5{ font-size:20px; text-transform:uppercase; }
-#choose-rase-block{ width:600px; }
+#choose-rase-block{ width:630px; }
 #choose-rase-block .button-troll:before,
 #choose-rase-block .button-troll:after{ display:none; }
-#choose-rase-block li{ display:inline-block; position:relative; }
+#choose-rase-block li{ display:inline-block; position:relative;width: 33.33%; }
+#choose-rase-block li a b {font-size: 18px;}
 #choose-rase-block ul{
 	display:-webkit-box;
 	display:-webkit-flex;
@@ -3293,9 +3297,9 @@ input.book-style{
 	border-radius:50%; z-index:0;
 }
 div.troll-popup#card-info.mdesc{ height:auto; text-align:center;width: 500px; }
-div.troll-popup#card-info.mdesc .magic-title{color:#714026;font-size:30px;font-weight:500;margin-bottom: 10px; }
+div.troll-popup#card-info.mdesc .magic-title{color:#714026;font-size:33px;font-weight:500;margin-bottom: 10px; }
 div.troll-popup#card-info.mdesc li{ list-style-type:none; }
-div.troll-popup#card-info.mdesc .magic-description{ display:block; color:#714026;font-size:16px;font-weight:500;padding-top: 15px;}
+div.troll-popup#card-info.mdesc .magic-description{ display:block; color:#714026;font-size:21px;font-weight:500;padding-top: 15px;}
 div.troll-popup#card-info{ padding:20px;width: auto; z-index:1010;height: auto; }
 #card-info .content-card-item-main{ background-size:100%;background-position:50% top; width:100%;height:100%;  }
 #card-info .market-card-item-buy,
@@ -3475,8 +3479,8 @@ align-items: center;justify-content: center;max-height: 90vh;}
 /*ranking page--------------------------------------------------------*/
 .ranking-page .content-card-wrap-main{ background-image:url(../images/ranking-bg.jpg); color:#fff; padding:24px 0 0 35px; }
 .ranking-page-title{ color:#fdcc85; font-size:21px; font-weight:400; text-transform:uppercase; }
-.ranking-page-buttons-league{ position:relative; padding:30px 0 10px; }
-.ranking-page-buttons-league li{ cursor:pointer; display:inline-block; font-weight:700; margin:0 70px 10px 0; }
+.ranking-page-buttons-league{ position:relative; padding:17px 0 10px; }
+.ranking-page-buttons-league li{ font-size: 21px;cursor:pointer; display:inline-block; font-weight:700; margin:0 70px 10px 0; }
 .ranking-page-buttons-league li.active{ color:#ff8300; }
 .ranking-page-buttons-league ul{ width:calc(100% - 255px);
 	display:-webkit-box;
@@ -3794,6 +3798,10 @@ align-items: center;justify-content: center;max-height: 90vh;}
 	margin:1.625em 0; }
 .card-description-hidden hr{
 	margin-bottom:1.625em; }
+
+/* pop-pups fonts style */
+.troll-popup .opponent-fraction{padding-top: 12px;font-size: 30px;}
+.troll-popup .opponent-description{font-size: 22px;}
 
 
 /* card start step styles*/

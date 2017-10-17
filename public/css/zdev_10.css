@@ -509,7 +509,7 @@
 .effect-market-wrap {
 	padding: 25px 0px 0px 10px;
 	text-align: center;
-	font-size: 14px;
+
 	color: #fff6d7; }
 	.effect-market-wrap .button-buy {
 		display: none; }
@@ -534,6 +534,8 @@
 				-webkit-border-radius: 5px;
 				-moz-border-radius: 5px;
 				border-radius: 5px; }
+		.effect-market-wrap table thead{font-size: 15px;}
+		.effect-market-wrap table tbody{font-size: 18px;}
 		.effect-market-wrap table tr td {
 			vertical-align: middle;
 			border-width: 0 1px 1px 0;
@@ -548,7 +550,8 @@
 				width: 12%; }
 			.effect-market-wrap table tr td.effect-descript {
 				text-align: left;
-				padding-left: 2%;
+				padding-left: 1%;
+				padding-right: 1%;
 				width: 20%; }
 			.effect-market-wrap table tr td.energy-effect {
 				color: #74f4ff;
@@ -584,7 +587,7 @@
 			.effect-market-wrap table th table {
 				padding-bottom: 10px; }
 				.effect-market-wrap table th table th {
-					padding: 10px 0; }
+					padding: 7px 0; }
 					.effect-market-wrap table th table th:last-child {
 						border-width: 0 0 0 0; }
 				.effect-market-wrap table th table tr th:last-child {
@@ -1636,7 +1639,7 @@
 		z-index: 9990;
 }
 .market-buy-popup .popup-content-wrap h5, .hand-select-popup .popup-content-wrap h5{
-	font-size: 16px;
+	font-size: 19px;
 	font-weight: 700;
 }
 .market-buy-popup .popup-content-wrap, .hand-select-popup .popup-content-wrap{
