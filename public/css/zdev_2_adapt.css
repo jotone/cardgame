@@ -9,14 +9,14 @@
 
 @media screen and (max-width: 1440px) {
 	/*zooming*/
-	.wrap-play{zoom: 0.85;}
+	.wrap-play,.afterloader .buttons-block-play{zoom: 0.85;}
 	.global-wrapper{zoom: 0.78;}
 }
 
 @media screen and (max-width: 1366px) {
 	/*zooming*/
 	.global-wrapper{zoom: 0.64;}
-	.wrap-play{zoom: 0.70;}
+	.wrap-play,.afterloader .buttons-block-play{zoom: 0.70;}
 
 	.mbox .header-box .rating .convert-resurses .resurses {
 		padding-bottom: 5px; }
@@ -32,6 +32,6 @@
 @media screen and (max-width: 1280px) {
 	/*zooming*/
 	.global-wrapper{zoom: 0.65;}
-	.wrap-play{zoom: 0.67;}
+	.wrap-play,.afterloader .buttons-block-play{zoom: 0.67;}
 
 }

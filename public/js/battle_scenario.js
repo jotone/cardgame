@@ -1591,6 +1591,9 @@ function startBattle(){
 			break;
 
 			case 'roundEnds':
+
+				closeAllTrollPopup();
+
 				var win_status = [0, 0];
 				for (var login in result.round_status.status.score) {
 					if (login == $('.user-describer').attr('id')) {
@@ -1707,8 +1710,10 @@ function startBattle(){
 				if( (result.round_status.status.length > 0) || (!$.isEmptyObject(result.round_status.status)) ){
 
 					if(result.round_status.current_player == $('.user-describer').attr('id')){
+						closeAllTrollPopup();
 						resultPopupShow('Противник пасует.'+"<br>"+'Теперь до конца раунда ходите только Вы.');
 					} else {
+						closeAllTrollPopup();
 						resultPopupShow('Вы пасуете.'+"<br>"+'Теперь до конца раунда ходит только противник.');
 					}
 

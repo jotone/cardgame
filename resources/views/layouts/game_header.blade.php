@@ -194,6 +194,11 @@ $user = Auth::user();
 		<input name="_token" type="hidden" value="{{ csrf_token() }}">
 	</div>
 	<div class="afterloader">
+		<div class="buttons-block-play">
+			<a class="button-push stopLoadingEndReturn">
+				<div class="button-giveup"><p>ВЕРНУТЬСЯ</p></div>
+			</a>
+		</div>
 		<img src="{{ URL::asset('images/379.gif') }}" alt="">
 	</div>
 	<div class="tyman"></div>
