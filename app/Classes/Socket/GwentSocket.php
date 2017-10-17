@@ -15,44 +15,65 @@ use Illuminate\Support\Facades\Crypt;
 
 class GwentSocket extends BaseSocket
 {
-	protected $clients;//Соединения клиентов
-	protected $battles;
-	protected $battle_id;
-	protected $users_data;
-	protected $magic_usage;
-	public $step_status;
+	protected $clients;		//Соединения клиентов
+	protected $battles;		//Текущие активные игры в соккете
+	protected $battle_id;	//ID текущей битвы
+	protected $users_data;	//Данные пользователей
+	protected $magic_usage;	//Использование Маг Эффектов в битве
+	public $step_status;	//Данные текущего хода
 
+	/**
+	 * GwentSocket constructor.
+	 */
 	public function __construct(){
 		$this->clients = new \SplObjectStorage;
 	}
 
 	//Socket actions
+	/**
+	 * Socket error handler
+	 * @param ConnectionInterface $conn данные соккет-соединения
+	 * @param \Exception $e
+	 */
 	public function onError(ConnectionInterface $conn, \Exception $e){
 		echo 'An error has occured: '.$e->getMessage()."\n";
 		$conn -> close();
 	}
 
+	/**
+	 * Socket connetion open
+	 * @param ConnectionInterface $conn данные соккет-соединения
+	 */
 	public function onOpen(ConnectionInterface $conn){
-		//Пользователь присоединяется к сессии
-		$this->clients->attach($conn); //Добавление клиента
+		//User conects to session
+		$this->clients->attach($conn); //[RU]Добавление клиента  [EN]Client add
 		echo 'New connection ('.$conn->resourceId.')'."\n\r";
 	}
 
+	/**
+	 * Socket connection close
+	 * @param ConnectionInterface $conn
+	 */
 	public function onClose(ConnectionInterface $conn){
+		//Looking for current battle
 		$battle = Battle::find($this->battle_id);
+		//Increase disconnected users counter
 		$battle->disconected_count++;
 		$battle->save();
 
+		//Battle isn't finished but users had leave
 		if( ($battle->fight_status < 3) && ($battle->disconected_count > 1) ){
+			//Set marker of battle status to "Fight ends"
 			$battle->fight_status = 3;
 			$battle->save();
+			//Calculate cards strength and their abilities
 			$battle_info = BattleFieldController::battleInfo($battle, unserialize($battle->battle_field), $this->users_data, $this->magic_usage, $this->step_status);
 
-			//Подсчет результатов раунда по очкам
+			//Calculate round result
 			$total_score = self::calcStrByPlayers($battle_info['field_status']);
 			$user_score = $total_score[$this->users_data['user']['player']];
 			$opponent_score = $total_score[$this->users_data['opponent']['player']];
-
+			//The definition of the winner and calculation of the battle results
 			if($user_score > $opponent_score){
 				self::saveGameResults($this->users_data['p1']['id'], $battle, 'win');
 				self::saveGameResults($this->users_data['p2']['id'], $battle, 'loose');
@@ -77,7 +98,7 @@ class GwentSocket extends BaseSocket
 					self::saveGameResults($this->users_data['opponent']['id'], $battle, 'draw');
 				}
 			}
-
+			//Set the busy marker to FALSE
 			\DB::table('users')->where('id','=',$this->users_data['user']['id'])->update(['user_busy' => 0]);
 			\DB::table('users')->where('id','=',$this->users_data['opponent']['id'])->update(['user_busy' => 0]);
 		}
@@ -86,6 +107,12 @@ class GwentSocket extends BaseSocket
 		echo 'Connection '.$conn->resourceId.' has disconnected'."\n";//delete on finish
 	}
 
+	/**
+	 * Send messages to all users
+	 * @param ConnectionInterface $from
+	 * @param $result
+	 * @param $battles
+	 */
 	protected static function sendMessageToOthers($from, $result, $battles){
 		foreach($battles as $client){
 			if($client->resourceId != $from->resourceId){
@@ -94,64 +121,82 @@ class GwentSocket extends BaseSocket
 		}
 	}
 
+	/**
+	 * Send message to self
+	 * @param ConnectionInterface $from
+	 * @param $message
+	 */
 	protected static function sendMessageToSelf($from, $message){
 		$from->send(json_encode($message));
 	}
 	//Socket actions end
 
-	//Обработчик каждого сообщения
+	/**
+	 * Users actions handler
+	 * @param ConnectionInterface $from
+	 * @param json string $msg [action, ident[battleId, UserId, Hash]]
+	 */
 	public function onMessage(ConnectionInterface $from, $msg){
-		$msg = json_decode($msg); // сообщение от пользователя arr[action, ident[battleId, UserId, Hash]]
+		$msg = json_decode($msg);
 		var_dump(date('Y-m-d H:i:s'));
 		var_dump($msg);
 		if(!isset($this->battles[$msg->ident->battleId])){
 			$this->battles[$msg->ident->battleId] = new \SplObjectStorage;
 		}
 
+		//Timing settings
 		$timing_settings = SiteGameController::getTimingSettings();
 
+		//If user isn't connected to socket
 		if(!$this->battles[$msg->ident->battleId]->contains($from)){
 			$this->battles[$msg->ident->battleId]->attach($from);
 		}
+		//Current Battle object
 		$SplBattleObj = $this->battles;
 
-		$battle = Battle::find($msg->ident->battleId); //Даные битвы
+		//Looking for current battle in the DB
+		$battle = Battle::find($msg->ident->battleId);
 		$this->battle_id = $msg->ident->battleId;
 
-		$battle_members = BattleMembers::where('battle_id', '=', $msg->ident->battleId)->get(); //Данные о участвующих в битве
+		//Data on those participating in the battle
+		$battle_members = BattleMembers::where('battle_id', '=', $msg->ident->battleId)->get();
 
+		//Set the busy marker to TRUE
 		\DB::table('users')->where('id', '=', $msg->ident->userId)->update([
 			'updated_at'	=> date('Y-m-d H:i:s'),
 			'user_online'	=> '1'
 		]);
 
-		//Создание массивов пользовательских данных
+		//Creating user data arrays
 		foreach($battle_members as $key => $value){
+			//Search the current player in the DB
 			$user = User::find($value->user_id);
+			//Arrangement of players' tags
 			$user_identificator = ($value->user_id == $battle->creator_id)? 'p1' : 'p2';
+			//Creation of card shirts
 			$card_background = \DB::table('tbl_fraction')->select('card_img')->where('slug','=',$user->user_current_deck)->first();
+			//Users data arrays fill
 			if($value->user_id == $msg->ident->userId){
 				$this->users_data['user'] = [
 					'id'			=> $value->user_id,
 					'login'			=> $user->login,
-					'player'		=> $user_identificator,					//Идентификатор поля пользователя
-					'magic_effects'	=> unserialize($value->magic_effects),	//Список активных маг. эффектов
-					'energy'		=> $user->user_energy,					//Колличество энергии пользователя
-					'deck'			=> unserialize($value->user_deck),		//Колода пользователя
-					'hand'			=> unserialize($value->user_hand),		//Рука пользователя
-					'discard'		=> unserialize($value->user_discard),	//Отбой пользователя
-					'current_deck'	=> $user->user_current_deck,			//Название фракции текущей колоды пользоватля
-					'card_source'	=> $value->card_source,					//Источник карт (рука/колода/отбой) текущего хода
-					'player_source'	=> $value->player_source,				//Источник карт игрока (свои/противника) текущего хода
-					'cards_to_play'	=> unserialize($value->card_to_play),	//Массив определенных условиями действия карт при отыгрыше из колоды или отбое
-					'round_passed'	=> $value->round_passed,				//Маркер паса
-					'addition_data'	=> $value->addition_data,
-					'battle_member_id'=> $value->id,						//ID текущей битвы
-					'turn_expire'	=> $value->turn_expire,
-					'time_shift'	=> $value->time_shift,
-					'pseudonim'		=> 'user',
-					'user_magic'	=> unserialize($user->user_magic),
-					'card_images'	=> [
+					'player'		=> $user_identificator,					//Players' tag
+					'magic_effects'	=> unserialize($value->magic_effects),	//List of active magic effects
+					'energy'		=> $user->user_energy,					//User's energy quantity
+					'deck'			=> unserialize($value->user_deck),		//Uses's deck
+					'hand'			=> unserialize($value->user_hand),		//User's cards "in hand"
+					'discard'		=> unserialize($value->user_discard),	//User's discard
+					'current_deck'	=> $user->user_current_deck,			//fraction caption
+					'card_source'	=> $value->card_source,					//Source of card playing deck(hand/deck/discard)
+					'player_source'	=> $value->player_source,				//Source of player deck(user/opponent)
+					'cards_to_play'	=> unserialize($value->card_to_play),	//Cards array that nedd to play on current turn
+					'round_passed'	=> $value->round_passed,				//Pass marker
+					'addition_data'	=> $value->addition_data,				//Popup activation marker
+					'battle_member_id'=> $value->id,						//ID of current battle
+					'turn_expire'	=> $value->turn_expire,					//Turn expire timestamp
+					'pseudonim'		=> 'user',								//Player pseudonym
+					'user_magic'	=> unserialize($user->user_magic),		//Array of used magic effects
+					'card_images'	=> [									//Сard shirts
 						'back'			=> $card_background->card_img,
 						'flag'			=> BattleFieldController::getFractionFlag($user->user_current_deck)
 					]
@@ -176,8 +221,7 @@ class GwentSocket extends BaseSocket
 					'addition_data'	=> $value->addition_data,
 					'battle_member_id'=> $value->id,
 					'turn_expire'	=> $value->turn_expire,
-					'time_shift'	=> $value->time_shift,
-					'pseudonim'		=> 'opponent',
+					'pseudonim'		=> 'opponent',							//Opponent pseudonym
 					'user_magic'	=> unserialize($user->user_magic),
 					'card_images'	=> [
 						'back'			=> $card_background->card_img,
@@ -190,56 +234,65 @@ class GwentSocket extends BaseSocket
 		}
 
 		$this->step_status = [
-			'added_cards'	=> [],
-			'dropped_cards'	=> [],
+			'added_cards'	=> [],			//Array of added cards
+			'dropped_cards'	=> [],			//Array od dropped cards
 			'played_card'	=> [
-				'card'			=> [],
-				'move_to'		=> [
-						'player'	=> '',
-						'row'		=> '',
-						'user'		=> ''
+				'card'			=> [],		//Card data
+				'move_to'		=> [		//Card position
+						'player'	=> '',		//(user/opponent)
+						'row'		=> '',		//Field row
+						'user'		=> ''		//User login
 					],
-				'self_drop'		=> 0,
-				'strength'		=> ''
+				'self_drop'		=> 0,		//Card must be deleted to this turn
+				'strength'		=> ''		//Card strength value
 			],
-			'played_magic'	=> [],
-			'actions'		=> [
-				'appear'		=> [],
-				'disappear'		=> [],
-				'cards'			=> []
+			'played_magic'	=> [],			//Magic that used on this turn
+			'actions'		=> [			//List of actions
+				'appear'		=> [],		//Actions that need to appear
+				'disappear'		=> [],		//Action that need to disappear
+				'cards'			=> []		//List of modified cards
 			],
-			'counts'		=> [],
+			'counts'		=> [],			//User decks counters
 			'round_status'	=> [
-				'round'			=> 0,
-				'current_player'=> '',
-				'card_source'	=> [],
-				'activate_popup'=> '',
-				'cards_to_play'	=> [],
-				'status'		=> [],
+				'round'			=> 0,		//Number of current round
+				'current_player'=> '',		//Next turn user's login
+				'card_source'	=> [],		//Source of card playing deck[played=>[deck]]
+				'activate_popup'=> '',		//Activate popup on current turn
+				'cards_to_play'	=> [],		//List of cards that need to play
+				'status'		=> [],		//pass and round ends statuses
 			],
-			'magic_usage'	=> [],
-			'users_energy'	=> [],
-			'timing'		=> '',
-			'images'		=> []
+			'magic_usage'	=> [],			//Current turn magic usage
+			'users_energy'	=> [],			//Users energy counters
+			'timing'		=> '',			//End of next turn timestamp
+			'images'		=> []			//Cards shirt images
 		];
-		$this->magic_usage = unserialize($battle->magic_usage);//Данные о использовании магии
+		$this->magic_usage = unserialize($battle->magic_usage);//magic usage array
 
 		switch($msg->action){
+			//User joined to battle
 			case 'userJoinedToRoom':
+				//If there is other disconnected players in socket connection
 				if($battle->disconected_count > 0){
 					$battle->disconected_count--;
 					$battle->save();
 				}
+				//Get user login of current turn
 				$user_turn = ($battle->user_id_turn != 0)? $this->users_data[$battle->user_id_turn]['login']: '';
 
+				//If the battle doesn't start
 				if($battle->fight_status <= 1){
+					//if there are two players connected
 					if(2 == count($battle_members)){
+						//If battle stage is card choose/change
 						if(0 == $battle->fight_status){
+							//Set card change timestamp
 							$battle->turn_expire = $timing_settings['card_change'] + time();
-							$battle->fight_status = 1; // Подключилось нужное количество пользователей
+							//Set the battle is started
+							$battle->fight_status = 1;
 							$battle->save();
 						}
 
+						//Set which player should play
 						$this->step_status['round_status']['current_player'] = $user_turn;
 						$this->step_status['timing'] = $timing_settings['card_change'];
 
@@ -248,22 +301,30 @@ class GwentSocket extends BaseSocket
 						$result['joined_user'] = $this->users_data['user']['login'];
 						$result['battleInfo'] = $msg->ident->battleId;
 
-						self::sendMessageToSelf($from, $result); //Отправляем результат отправителю
+						self::sendMessageToSelf($from, $result); //Send data to self
 						self::sendMessageToOthers($from, $result, $this->battles[$msg->ident->battleId]);
 					}
 				}
 
+				//if battle continues(user reloaded page)
 				if(2 == $battle->fight_status){
 					$battle->save();
+					//There was activated card action to choose cards
 					$player_source = (empty($this->users_data['user']['player_source']))
 						? $this->users_data['user']['player']
 						: $this->users_data['user']['player_source'];
 
+					//Get decks counters
 					$this->step_status['counts'] = self::getDecksCounts($this->users_data);
+					//Get current round number
 					$this->step_status['round_status']['round'] = $battle->round_count;
+					//Get current user turn
 					$this->step_status['round_status']['current_player'] = $user_turn;
+					//Get current user card source
 					$this->step_status['round_status']['card_source'] = [$player_source => $this->users_data['user']['card_source']];
+					//Get current popup activation
 					$this->step_status['round_status']['activate_popup'] = $this->users_data['user']['addition_data'];
+					//Get cards that need to play
 					$cards_to_play = [];
 					if(!empty($this->users_data['user']['cards_to_play'])){
 						foreach($this->users_data['user']['cards_to_play'] as $card_data){
@@ -271,17 +332,19 @@ class GwentSocket extends BaseSocket
 						}
 					}
 					$this->step_status['round_status']['cards_to_play'] = $cards_to_play;
+					//Get users energy counters
 					$this->step_status['users_energy'] = [
 						$this->users_data['user']['login']	=> $this->users_data['user']['energy'],
 						$this->users_data['opponent']['login']=> $this->users_data['opponent']['energy']
 					];
-
+					//Get turn timestamps
 					$this->step_status['timing'] = $timing_settings['card_change'];
+					//Get cards shirts
 					$this->step_status['images'] = [
 						$this->users_data['user']['login'] => $this->users_data['user']['card_images'],
 						$this->users_data['opponent']['login'] => $this->users_data['opponent']['card_images'],
 					];
-
+					//Send message to self
 					$result = $this->step_status;
 					$result['message'] = 'allUsersAreReady';
 					$result['battleInfo'] = $msg->ident->battleId;
@@ -290,18 +353,23 @@ class GwentSocket extends BaseSocket
 				}
 			break;
 
+			//All users are ready
 			case 'userReady':
+				//if battle stage is card choose/change
 				if(1 == $battle->fight_status){
-					$ready_players_count = 0;//Количество игроков за столом готовых к игре
+					//Ready users quantity
+					$ready_players_count = 0;
 					foreach($battle_members as $key => $value){
 						if(0 != $value->user_ready){
 							$ready_players_count++;
 						}
 					}
 
+					//If there are two ready users or user was connected as second player
 					if(2 == $ready_players_count){
 						$cursed_players = [];
-						$player = 'p1';
+						$player = 'p1';//Default $player value
+						//if there are player with fraction "Cursed"
 						if($this->users_data['p1']['current_deck'] == 'cursed'){
 							$cursed_players[] = $this->users_data['user']['player'];
 							$player = 'p1';
@@ -311,32 +379,42 @@ class GwentSocket extends BaseSocket
 							$player = 'p2';
 						}
 
+						//if user doesn't makes turn
 						if($battle->user_id_turn < 1){
+							//If there is ONE player with fraction "Cursed"
 							if((1 == count($cursed_players)) && ($msg->ident->userId == $this->users_data[$player]['id'])){
+								//If there was turn step
 								if(isset($msg->turn)){
+									//Switch to "Cursed" player
 									$players_turn = (($this->users_data['user']['login'] == $msg->turn) || ($msg->turn == ''))
 										? $this->users_data['user']['id']
 										: $this->users_data['opponent']['id'];
 								}else{
+									//Set random player to current turn
 									$rand = mt_rand(0, 1);
 									$players_turn = ($rand == 0)? $this->users_data['p1']['id']: $this->users_data['p2']['id'];
 								}
 							}else{
+								//Set random player to current turn
 								$rand = mt_rand(0, 1);
 								$players_turn = ($rand == 0)? $this->users_data['p1']['id']: $this->users_data['p2']['id'];
 							}
+							//Save battle turn settings
 							$battle->user_id_turn = $players_turn;
 							$battle->first_turn_user_id = $players_turn;
 							$battle->save();
 						}
 
+						//Get timing settings
 						$user_timing = \DB::table('tbl_battle_members')->select('turn_expire')->where('user_id','=',$battle->user_id_turn)->first();
 						$battle->turn_expire = $user_timing->turn_expire + time();
 
+						//Get current player card source
 						$player_source = (empty($this->users_data['opponent']['player_source']))
 							? $this->users_data['opponent']['player']
 							: $this->users_data['opponent']['player_source'];
 
+						//This turn step status fill (look to LINE 317)
 						$this->step_status['counts'] = self::getDecksCounts($this->users_data);
 						$this->step_status['round_status']['round']			= $battle->round_count;
 						$this->step_status['round_status']['current_player']= $this->users_data[$battle->user_id_turn]['login'];
@@ -357,9 +435,11 @@ class GwentSocket extends BaseSocket
 						$result['message'] = 'allUsersAreReady';
 						$result['battleInfo'] = $msg->ident->battleId;
 
+						//if battle stage is card case/change
 						if($battle->fight_status <= 1){
 							self::sendMessageToOthers($from, $result, $this->battles[$msg->ident->battleId]);
 						}
+						//Set the battle starts
 						$battle->fight_status = 2;
 						$battle->save();
 
@@ -371,7 +451,7 @@ class GwentSocket extends BaseSocket
 						$result['round_status']['cards_to_play'] = $this->users_data['user']['cards_to_play'];
 
 						self::sendMessageToSelf($from, $result);
-					}else{
+					}else{//If there is ONE ready player (look for LINE 370)
 						$cursed_players = [];
 						$player = 'p1';
 						if($this->users_data['p1']['current_deck'] == 'cursed'){
@@ -398,22 +478,24 @@ class GwentSocket extends BaseSocket
 				}
 			break;
 
+			//User made card or magic effect action
 			case 'userMadeAction':
 				if($battle->fight_status == 2){
-
-					//Данные о текущем пользователе
-					$battle_field = unserialize($battle->battle_field);//Данные о поле битвы
-					//Установка источника хода по умолчанию
-					$this->users_data['user']['cards_to_play'] = [];
-					$this->users_data['user']['player_source'] = $this->users_data['user']['player'];
-					$this->users_data['user']['card_source'] = 'hand';
+					$battle_field = unserialize($battle->battle_field);//Battle field data
+					//Set cards source by defaults
+					$this->users_data['user']['cards_to_play'] = [];//Current user cards need to play
+					$this->users_data['user']['player_source'] = $this->users_data['user']['player'];//Source of deck player
+					$this->users_data['user']['card_source'] = 'hand';//Source of card deck
 
 					$this->step_status['round_status']['cards_to_play'] = [];
 					$this->step_status['round_status']['card_source'] = [$this->users_data['user']['player'] => 'hand'];
-					$this->step_status['round_status']['activate_popup'] = '';
-					$this->step_status['round_status']['round'] = $battle->round_count;
+					$this->step_status['round_status']['activate_popup'] = '';//No need the popup activation
+					$this->step_status['round_status']['round'] = $battle->round_count;//Current round number
 
-					//Ход следующего игрока
+					$self_drop = 0;//Card self drop marker
+
+					//Next user turn step
+					//If opponent had passed
 					if($this->users_data['opponent']['round_passed'] == 1){
 						$this->step_status['round_status']['current_player'] = $this->users_data['user']['login'];
 						$user_turn_id = $this->users_data['user']['id'];
@@ -422,21 +504,31 @@ class GwentSocket extends BaseSocket
 						$user_turn_id = $this->users_data['opponent']['id'];
 					}
 
-					$self_drop = 0;
+					//If there was used magic effect
 					if($msg->magic != ''){
-						$disable_magic = false;
+						$disable_magic = false;//Enable the magic effect usage status by defaults
 						$magic_id = Crypt::decrypt($msg->magic);
-						$magic = BattleFieldController::magicData($magic_id);
+						$magic = BattleFieldController::magicData($magic_id);//Get current magic effect data
+						/**
+						 * Condition:
+						 * magic wasn't used && user has sufficient amount of energy points to use magic effect
+						 */
 						if(($this->users_data['user']['user_magic'][$magic_id]['used_times'] > 0) && ($this->users_data['user']['energy'] >= $magic['energy_cost'])){
+							//magic effect counter decrement
 							$this->users_data['user']['user_magic'][$magic_id]['used_times'] = $this->users_data['user']['user_magic'][$magic_id]['used_times'] - 1;
+							//decrease energy points
 							$this->users_data['user']['energy'] = $this->users_data['user']['energy'] - $magic['energy_cost'];
 
+							//If magic was not used by this player in this round
 							if(!isset($this->magic_usage[$this->users_data['user']['player']][$battle->round_count])){
+								//Set the magic usage hor current player and round
 								$this->magic_usage[$this->users_data['user']['player']][$battle->round_count] = [
 									'id'	=> Crypt::decrypt($msg->magic),
 									'allow'	=> '1'
 								];
+								//Create actions array
 								$current_actions = $magic['actions'];
+								//Step status magic
 								$this->step_status['played_magic'][$this->users_data['user']['player']] = $magic;
 							}else{
 								$disable_magic = true;
@@ -449,20 +541,27 @@ class GwentSocket extends BaseSocket
 							$current_actions = [];
 						}
 
+						//Save magic usage and user energy data
 						\DB::table('users')->where('id', '=', $this->users_data['user']['id'])->update([
 							'user_energy'	=> $this->users_data['user']['energy'],
 							'user_magic'	=> serialize($this->users_data['user']['user_magic'])
 						]);
 					}
 
+					//If there was card played
 					if($msg->card != ''){
+						//Get decrypted card id
 						$current_card_id = Crypt::decrypt($msg->card);
+						//Get card data
 						$current_card = BattleFieldController::cardData($current_card_id);
+						//The row in which the card was placed
 						$current_card_row = (isset($msg->BFData->row))? self::strRowToInt($msg->BFData->row): 3;
-
+						//The field in which the card was placed
 						$current_card_field = (isset($msg->BFData->field))? $msg->BFData->field: 'mid';
 
+						//If card has "special" status
 						if($current_card['fraction'] == 'special'){
+							//If card placed if middle row
 							if($current_card_row == 3){
 								$battle_field['mid'][] = [
 									'id'		=> $current_card_id,
@@ -470,7 +569,7 @@ class GwentSocket extends BaseSocket
 									'login'		=> $this->users_data['user']['login']
 								];
 							}else{
-								//Если логика карт предусматривает сразу уходить в отбой
+								//Looking for card "self-drop" option
 								foreach($current_card['actions'] as $i => $action){
 									switch($action['caption']){
 										case 'cure':
@@ -479,15 +578,23 @@ class GwentSocket extends BaseSocket
 										case 'sorrow':
 										case 'call':
 										case 'killer':
+											//Add card to user discard
 											$this->users_data['user']['discard'][] = $current_card_id;
+											//Set step status -> card was added to user's discard
 											$this->step_status['added_cards'][$this->users_data['user']['player']]['discard'][] = $current_card;
+											//Set self-drop marker to TRUE
 											$self_drop = 1;
 										break;
+										//If there is no "self-drop" option
 										default:
-											if(!empty($battle_field[$current_card_field][$current_card_row]['special'])){//Еcли в ряду уже есть спец карта
+											//If there is "special" card in this row
+											if(!empty($battle_field[$current_card_field][$current_card_row]['special'])){
+												//Add card to user discard
 												$this->users_data[$current_card_field]['discard'][] = $battle_field[$current_card_field][$current_card_row]['special']['id'];
+												//Set step status -> card was added to user's discard
 												$this->step_status['added_cards'][$this->users_data['user']['player']]['discard'][] = BattleFieldController::cardData($battle_field[$current_card_field][$current_card_row]['special']['id']);
 											}
+											//Set this card to battle field
 											$battle_field[$current_card_field][$current_card_row]['special'] = [
 												'id'		=> $current_card_id,
 												'caption'	=> $current_card['caption'],
@@ -497,6 +604,7 @@ class GwentSocket extends BaseSocket
 								}
 							}
 						}else{
+							//Set card to battle field
 							$battle_field[$current_card_field][$current_card_row]['warrior'][] = [
 								'id'		=> $current_card_id,
 								'caption'	=> $current_card['caption'],
@@ -505,55 +613,75 @@ class GwentSocket extends BaseSocket
 							];
 						}
 
+						//Fill step status played cacd array
 						$this->step_status['played_card'] = [
-							'card'		=> $current_card,
+							'card'		=> $current_card,		//Card data
 							'move_to'	=> [
-								'player'	=> $current_card_field,
-								'row'		=> $current_card_row,
-								'user'		=> $this->users_data['user']['login']
+								'player'	=> $current_card_field,		//Field that card moves in
+								'row'		=> $current_card_row,		//Row that card moves in
+								'user'		=> $this->users_data['user']['login']	//Login of card owner
 							],
-							'self_drop'	=> $self_drop,
-							'strength'	=> $current_card['strength']
+							'self_drop'	=> $self_drop,			//Self-drop marker
+							'strength'	=> $current_card['strength']	//Card strength value
 						];
 
-						//Если был задействован МЭ "Марионетка"
+						//If there was used magic effect "marionette"(@"marionetka")
 						if(isset($this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['id'])){
+							//Get magic effect data
 							$magic_effect_data = BattleFieldController::getMagicDescription($this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['id']);
 							if(
-								($magic_effect_data['slug'] == 'marionetka') &&
-								($this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['allow'] == 1)
+								($magic_effect_data['slug'] == 'marionetka') && //If it is ME "marionette"
+								($this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['allow'] == 1)//If ME is allowed to use
 							){
 								$this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['allow'] = '0';
-								$call_used = true;
+								$call_used = true;//Marionette effect usage marker set to TRUE
 							}else{
-								$call_used = false;
+								$call_used = false;//Marionette effect usage marker set to FALSE
 							}
 						}else{
 							$call_used = false;
 						}
+						//If there was used magic effect "marionette"(@"marionetka") THEN switch to opponent player marker
 						$user_type = ($call_used)? 'opponent': 'user';
 
-						//Убираем карту из текущй колоды
+						//Get card source player
 						$source = (isset($msg->source->p1))? $msg->source->p1: $msg->source->p2;
+						//Drop card from source deck
 						$this->users_data[$user_type][$source] = self::dropCardFromDeck($this->users_data[$user_type][$source], $current_card['id']);
+						//Add card to step status dropped cards array
 						if( ( ($source == 'deck') || ($source == 'discard') ) && ($call_used === false)){
 							$this->step_status['dropped_cards'][$this->users_data[$msg->ident->userId]['player']][$source][] = $this->step_status['played_card']['card']['caption'];
 						}
+						//Get card actions
 						$current_actions = $current_card['actions'];
 					}
 
-					//Применение действий
-					$add_time = true;
+					//Actions apply
+					$add_time = true;//add additional time to user marker
 					$view_cards_strength = false;
+					//Actions process
 					foreach($current_actions as $action_iter => $action){
-						$action_result = self::actionProcessing($action, $battle_field, $this->users_data, $this->step_status, $user_turn_id, $msg, $this->magic_usage, $battle);
-						$this->step_status	= $action_result['step_status'];
-						$this->users_data	= $action_result['users_data'];
-						$battle_field		= $action_result['battle_field'];
-						$user_turn_id		= $action_result['user_turn_id'];
+						//Get action processing result
+						/**
+						 * [
+						 * $action - current action data
+						 * $battle_field - battle field data
+						 * $this->users_data - users data array
+						 * $this->step_status
+						 * $user_turn_id - ID of current turn step user
+						 * $msg - socket message obj
+						 * $this->magic_usage
+						 * ]
+						 */
+						$action_result = self::actionProcessing($action, $battle_field, $this->users_data, $this->step_status, $user_turn_id, $msg, $this->magic_usage);
+						$this->step_status	= $action_result['step_status'];	//changed $this->step_status
+						$this->users_data	= $action_result['users_data'];		//changed $this->users_data
+						$battle_field		= $action_result['battle_field'];	//changed battle field data
+						$user_turn_id		= $action_result['user_turn_id'];	//changed ID of current turn step user
 
-						$this->magic_usage	= $action_result['magic_usage'];
+						$this->magic_usage	= $action_result['magic_usage'];	//changed magic usage array
 
+						//List of actions which are not influenced by time change and card view strength
 						switch($action['caption']){
 							case 'call':
 							case 'heal':
@@ -571,20 +699,25 @@ class GwentSocket extends BaseSocket
 						}
 					}
 
-					//Сортировка колод
+					//Decks sorting
 					$this->users_data = self::sortDecksByStrength($this->users_data);
 
+					//Recalculates strength values of battle field
 					$battle_info = BattleFieldController::battleInfo($battle, $battle_field, $this->users_data, $this->magic_usage, $this->step_status);
 
 					$this->step_status = $battle_info['step_status'];
 					$battle_field = $battle_info['battle_field'];
+					//Count of passed players
 					$round_passed_summ = $this->users_data['user']['round_passed'] + $this->users_data['opponent']['round_passed'];
 
+					//Card should view it's strength
 					if($view_cards_strength){
 						$this->step_status['actions']['cards_strength'] = $battle_info['cards_strength'];
 					}
 
+					//if there are no passed users
 					if($round_passed_summ < 1){
+						//If there was action without popup-activation ability
 						if($add_time === true){
 							$turn_expire = $timing_settings['step_time'];
 							$showTimerOfUser = 'opponent';
@@ -592,13 +725,16 @@ class GwentSocket extends BaseSocket
 							$turn_expire = $msg->timing;
 							$showTimerOfUser = 'user';
 						}
+					//If there is ONLY ONE passed used
 					}else{
 						$turn_expire = $timing_settings['step_time'];
 						$showTimerOfUser = $this->users_data[$msg->ident->userId]['pseudonim'];
 					}
 
-					$this->step_status['timing'] = $turn_expire;//$this->users_data[$showTimerOfUser]['turn_expire'];
+					//Set timing timestamp
+					$this->step_status['timing'] = $turn_expire;
 
+					//Save battle data
 					\DB::table('tbl_battle_members')->where('id', '=', $this->users_data['user']['battle_member_id'])->update([
 						'user_deck'		=> serialize($this->users_data['user']['deck']),
 						'user_hand'		=> serialize($this->users_data['user']['hand']),
@@ -610,6 +746,7 @@ class GwentSocket extends BaseSocket
 						'addition_data'	=> $this->step_status['round_status']['activate_popup'],
 						'turn_expire'	=> $turn_expire
 					]);
+					//Save data of each user
 					\DB::table('tbl_battle_members')->where('id', '=', $this->users_data['opponent']['battle_member_id'])->update([
 						'user_deck'	=> serialize($this->users_data['opponent']['deck']),
 						'user_hand'	=> serialize($this->users_data['opponent']['hand']),
@@ -617,15 +754,13 @@ class GwentSocket extends BaseSocket
 					]);
 
 					$this->step_status['magic_usage'] = $this->magic_usage;
-					//Сохраняем поле битвы
+					//Save battle field data
 					$battle->battle_field	= serialize($battle_field);
 					$battle->magic_usage	= serialize($this->magic_usage);
 					$battle->user_id_turn	= $user_turn_id;
 					$battle->turn_expire	= $this->users_data[$showTimerOfUser]['turn_expire'] + time();
 					$battle->save();
-
-
-
+					//Send current turn step data
 					self::sendUserMadeAction($this->users_data, $this->step_status, $msg, $SplBattleObj, $from);
 				}
 			break;
@@ -1272,7 +1407,7 @@ class GwentSocket extends BaseSocket
 		return $deck;
 	}
 
-	protected static function actionProcessing($action, $battle_field, $users_data, $step_status, $user_turn_id, $msg, $magic_usage, $battle){
+	protected static function actionProcessing($action, $battle_field, $users_data, $step_status, $user_turn_id, $msg, $magic_usage){
 		switch($action['caption']){
 			case 'block_magic'://БЛОКИРОВКА МАГИИ
 				$magic_usage[$users_data['opponent']['player']][0] = ['id' => Crypt::decrypt($msg->magic), 'allow'=>'0'];
