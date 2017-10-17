@@ -175,9 +175,9 @@ function calculate(obj){
 
 //View player's deck
 function viewPlayerDeck(){
-	$('ul.deck-cards-list').jScrollPane();
-	var api = $('ul.deck-cards-list').data('jsp');
-	var throttleTimeout;
+	//$('ul.deck-cards-list').jScrollPane();
+	//var api = $('ul.deck-cards-list').data('jsp');
+	var throttleTimeout,api;
 	$(window).bind('resize', function(){
 		if (!throttleTimeout) {
 			throttleTimeout = setTimeout(function(){
@@ -186,14 +186,27 @@ function viewPlayerDeck(){
 			}, 50);
 		}
 	});
+
+	function bindJSPane(){
+		setTimeout(function(){
+			var cardList = $('.troll-popup.show ul.deck-cards-list');
+			cardList.jScrollPane();
+			api = cardList.data('jsp');
+		},100);
+	}
+
+
 	$(document).on('click', '#card-give-more-user li[data-field=deck] .card-my-init.cards-take-more', function(){
 		openTrollPopup($('#allies-deck'));
+		bindJSPane();
 	});
 	$(document).on('click', '#card-give-more-user li[data-field=discard] .card-my-init.cards-take-more', function(){
 		openTrollPopup($('#allies-discard'));
+		bindJSPane();
 	});
 	$(document).on('click', '#card-give-more-oponent li[data-field=discard] .card-init', function(){
 		openTrollPopup($('#enemy-discard'));
+		bindJSPane();
 	});
 }
 // /View player's deck

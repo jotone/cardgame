@@ -118,8 +118,9 @@
 
 /* popup select cards */
 
-	div.troll-popup#selecthandCardsPopup { overflow: hidden; max-height: 100%; }
-	div.troll-popup#selecthandCardsPopup ul.cards-select-wrap { width: calc(100% + 100px); padding-right: 100px; max-height: calc(100vh - 325px); overflow-x: hidden; overflow-y: scroll; }
+	div.troll-popup#selecthandCardsPopup { overflow: hidden; max-height: 98%; }
+	div.troll-popup#selecthandCardsPopup ul.cards-select-wrap { width: calc(100% + 100px); padding-right: 100px; max-height: calc(100vh - 365px); overflow-x: hidden; overflow-y: scroll; }
+	div.troll-popup#selecthandCardsPopup ul.cards-select-wrap li{margin-bottom: 30px;}
 	div.troll-popup#selecthandCardsPopup ul.cards-select-wrap:after { display: none; }
 
 /* /popup select cards */
@@ -923,6 +924,7 @@
 #sortableUserCards li.active,
 #sortableUserCards li:hover{
 	z-index:125 !important;
+	height: 150px;
 }
 #sortableUserCards li.active .content-card-item-main,
 #sortableUserCards li:hover .content-card-item-main{
