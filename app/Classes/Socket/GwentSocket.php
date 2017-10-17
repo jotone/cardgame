@@ -517,18 +517,21 @@ class GwentSocket extends BaseSocket
 						];
 
 						//Если был задействован МЭ "Марионетка"
-						if(
-							(isset($this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['id']))
-							&& ($this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['id'] == '6')
-							&& ($this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['allow'] == 1)
-						){
-							$this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['allow'] = '0';
-							$user_type = 'opponent';
-							$call_used = true;
+						if(isset($this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['id'])){
+							$magic_effect_data = BattleFieldController::getMagicDescription($this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['id']);
+							if(
+								($magic_effect_data['slug'] == 'marionetka') &&
+								($this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['allow'] == 1)
+							){
+								$this->magic_usage[$this->users_data['user']['player']][$battle->round_count]['allow'] = '0';
+								$call_used = true;
+							}else{
+								$call_used = false;
+							}
 						}else{
-							$user_type = 'user';
 							$call_used = false;
 						}
+						$user_type = ($call_used)? 'opponent': 'user';
 
 						//Убираем карту из текущй колоды
 						$source = (isset($msg->source->p1))? $msg->source->p1: $msg->source->p2;

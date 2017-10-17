@@ -1521,12 +1521,13 @@ class BattleFieldController extends BaseController{
 
 	public static function getMagicDescription($id){
 		$magic = \DB::table('tbl_magic_effect')
-			->select('id','title','img_url','description')
+			->select('id','title','slug','img_url','description')
 			->find($id);
 
 		return [
 			'id'		=> Crypt::encrypt($magic->id),
 			'title'		=> $magic->title,
+			'slug'		=> $magic->slug,
 			'text'		=> $magic->description,
 			'img_url'	=> $magic->img_url,
 		];
