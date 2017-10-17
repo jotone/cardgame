@@ -175,11 +175,9 @@ function calculate(obj){
 
 //View player's deck
 function viewPlayerDeck(){
-	//$('ul.deck-cards-list').jScrollPane();
-	//var api = $('ul.deck-cards-list').data('jsp');
 	var throttleTimeout,api;
 	$(window).bind('resize', function(){
-		if (!throttleTimeout) {
+		if (!throttleTimeout && typeof api !== 'undefined') {
 			throttleTimeout = setTimeout(function(){
 				api.reinitialise();
 				throttleTimeout = null;
@@ -1320,7 +1318,11 @@ function processActions(result){
 			switch(result.actions.appear){
 				case 'cure':
 					setTimeout(function(){
+						// При исцелении вставить обновленные значения карт на доску
 						setCardStrength(result.actions.cards_strength);
+						setTimeout(function(){
+							recalculateBattleStrength();//пересчет сил на поле боя
+						},400);
 					},1000);
 				break;
 
