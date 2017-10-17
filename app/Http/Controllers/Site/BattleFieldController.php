@@ -70,7 +70,7 @@ class BattleFieldController extends BaseController{
 											$step_status['actions']['appear'][$field][$inner_row][] = $action['caption'];
 										}
 									}
-									break;
+								break;
 
 								case 'terrify':
 									if($action['fear_actionTeamate'] == 1){
@@ -82,13 +82,12 @@ class BattleFieldController extends BaseController{
 											$players = ($field == 'p1')? ['p2']: ['p1'];
 										}
 									}
-									var_dump($players);
 									foreach($players as $player){
 										foreach($action['fear_ActionRow'] as $inner_row){
 											$step_status['actions']['appear'][$player][$inner_row][] = $action['caption'];
 										}
 									}
-									break;
+								break;
 							}
 						}
 					}
@@ -852,8 +851,13 @@ class BattleFieldController extends BaseController{
 											'card'		=> $card_data['caption'],
 											'strength'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'],
 											'strModif'	=> $battle_field[$player][$row]['warrior'][$card_iter]['strength'] * $action_data['inspiration_multValue'],
-											'operation'	=> 'x'.$action_data['inspiration_multValue']
+											'operation'	=> (isset($step_status['actions']['cards'][$player][$row][$card_iter]['operation']))
+												? $step_status['actions']['cards'][$player][$row][$card_iter]['operation']
+												: ''
 										];
+										if(in_array('inspiration', $played_card_actions)){
+											$step_status['actions']['cards'][$player][$row][$card_iter]['operation'] = 'x'.$action_data['inspiration_multValue'];
+										}
 									}
 
 									if( (empty($step_status['played_magic'])) && ($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])) ){
@@ -914,8 +918,13 @@ class BattleFieldController extends BaseController{
 															'card'		=> $card_data['caption'],
 															'strength'	=> $card_data['strength'],
 															'strModif'	=> $card_data['strength'] * $action['inspiration_multValue'],
-															'operation'	=> 'x'.$action['inspiration_multValue']
+															'operation'	=> (isset($step_status['actions']['cards'][$player][$row][$card_iter]['operation']))
+																? $step_status['actions']['cards'][$player][$row][$card_iter]['operation']
+																: ''
 														];
+														if(in_array('inspiration', $played_card_actions)){
+															$step_status['actions']['cards'][$player][$row][$card_iter]['operation'] = 'x'.$action_data['inspiration_multValue'];
+														}
 													}
 
 													if(isset($step_status['played_card']['card']['id']) && !empty($step_status['played_card']['card']['id'])){
