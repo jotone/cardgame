@@ -1742,26 +1742,33 @@ class GwentSocket extends BaseSocket
 
 				$cards_to_destroy = [];//cards that can be destroyed array
 				foreach($players as $player){
+					//killer_ActionRow -> rows where killer action should be used
 					foreach($action['killer_ActionRow'] as $row){
 						foreach($battle_field[$player][$row]['warrior'] as $card_iter => $card_data){
+							//Get summary row strength
 							if(isset($rows_strength[$player][$row])){
 								$rows_strength[$player][$row] += $card_data['strength'];
 							}else{
 								$rows_strength[$player][$row] = $card_data['strength'];
 							}
+							//if killing process applying to the group
 							if(!empty($groups)){
+								//Get card data
 								$card = BattleFieldController::getCardNaturalSetting($card_data['id']);
 								foreach($card['group'] as $group_id){
+									//if card belongs to killing group
 									if(in_array($group_id, $groups)){
-
+										//if card strength is less then limit of card maximal strength
 										if($card_data['strength'] < $strength_limit_to_kill){
 											if($max_strength < $card_data['strength']){
-												$max_strength = $card_data['strength'];// максимальная сила карты
+												$max_strength = $card_data['strength'];//maximal card strength
 											}
 											if($min_strength > $card_data['strength']){
-												$min_strength = $card_data['strength'];// минимальная сила карты
+												$min_strength = $card_data['strength'];//minimal card strength
 											}
+											//Fill set of cards strength for random choise
 											$card_strength_set[] = $card_data['strength'];
+											//cards-can-be-destroyed array fill
 											$cards_to_destroy[$player][$row][$card_iter] = [
 												'id'		=> $card_data['id'],
 												'strength'	=> $card_data['strength']
@@ -1770,17 +1777,22 @@ class GwentSocket extends BaseSocket
 									}
 								}
 							}else{
+								//Get card data
 								$card = BattleFieldController::getCardNaturalSetting($card_data['id']);
+								//Check if card has immune
 								$allow_by_immune = BattleFieldController::checkForSimpleImmune($action['killer_ignoreKillImmunity'], $card['actions']);
+								//if killer action has permission to kill card
 								if($allow_by_immune){
-
 									if($card_data['strength'] < $strength_limit_to_kill){
 										if($max_strength < $card_data['strength']){
-											$max_strength = $card_data['strength'];// максимальная сила карты
+											$max_strength = $card_data['strength'];//maximal card strength
 										}
 										if($min_strength > $card_data['strength']){
-											$min_strength = $card_data['strength'];// минимальная сила карты
+											$min_strength = $card_data['strength'];//minimal card strength
 										}
+										//Fill set of cards strength for random choise
+										$card_strength_set[] = $card_data['strength'];
+										//cards-can-be-destroyed array fill
 										$cards_to_destroy[$player][$row][$card_iter] = [
 											'id'		=> $card_data['id'],
 											'strength'	=> $card_data['strength']
@@ -1793,47 +1805,52 @@ class GwentSocket extends BaseSocket
 				}
 
 				switch($action['killer_killedQuality_Selector']){
-					case '0':	$card_strength_to_kill = $min_strength; break;//Самую слабую
-					case '1':	$card_strength_to_kill = $max_strength; break;//Самую сильную
-					case '2':	//Самую Случайную
+					case '0':	$card_strength_to_kill = $min_strength; break;//Kill most weak card
+					case '1':	$card_strength_to_kill = $max_strength; break;//Kill card with maximal strength
+					case '2':	//Kill random card
 						$random = mt_rand(0, count($card_strength_set)-1);
 						$card_strength_to_kill = $card_strength_set[$random];
 					break;
 				}
 
-				$card_to_kill = [];
+				$card_to_kill = [];//Cards that can be killed
 				foreach($cards_to_destroy as $player => $rows){
 					foreach($rows as $row => $cards){
 						foreach($cards as $card_iter => $card_data){
 							$allow_to_kill_by_force_amount = true;
+							//killer_recomendedTeamateForceAmount_OnOff - kill by summary row strength value
+							//0 - disallow; 1- allow
 							if($action['killer_recomendedTeamateForceAmount_OnOff'] > 0){
 								$row_summ = 0;
+								//Calculate sum of row strength value
 								foreach($action['killer_recomendedTeamateForceAmount_ActionRow'] as $row_to_calculate){
 									if(isset($rows_strength[$player][$row_to_calculate])){
 										$row_summ += $rows_strength[$player][$row_to_calculate];
 									}
 								}
+								//killer_recomendedTeamateForceAmount_Selector - row strength sum quantificator
 								switch($action['killer_recomendedTeamateForceAmount_Selector']){
-									case '0':	//Больше указаного значения
+									case '0':	//Row sum is greater than used value
 										$allow_to_kill_by_force_amount = ($action['killer_recomendedTeamateForceAmount_OnOff'] <= $row_summ) ? true : false; break;
-									case '1':	//Меньше указанного значения
+									case '1':	//Row sum is less than used value
 										$allow_to_kill_by_force_amount = ($action['killer_recomendedTeamateForceAmount_OnOff'] >= $row_summ) ? true : false; break;
-									case '2':	//Равно указанному значению
+									case '2':	//Row sum is equal to used value
 										$allow_to_kill_by_force_amount = ($action['killer_recomendedTeamateForceAmount_OnOff'] == $row_summ) ? true : false; break;
 								}
 							}
+							//killer_killedQuality_Selector - case strength type of card to kill
 							switch($action['killer_killedQuality_Selector']){
-								case '0':
+								case '0': //Most weak
 									if(($card_data['strength'] <= $card_strength_to_kill) && ($allow_to_kill_by_force_amount) ){
 										$card_to_kill[$player][$row][$card_iter] = $card_data;
 									}
 								break;
-								case '1':
+								case '1': //Most strongest
 									if(($card_data['strength'] >= $card_strength_to_kill) && ($allow_to_kill_by_force_amount) ){
 										$card_to_kill[$player][$row][$card_iter] = $card_data;
 									}
 								break;
-								case '2':
+								case '2': //Is equeal to strength value
 									if(($card_data['strength'] == $card_strength_to_kill) && ($allow_to_kill_by_force_amount) ){
 										$card_to_kill[$player][$row][$card_iter] = $card_data;
 									}
@@ -1843,8 +1860,10 @@ class GwentSocket extends BaseSocket
 					}
 				}
 
+				//Kill one or more cards: 0- one card; 1- all cards that fall under conditions
 				if($action['killer_killAllOrSingle'] == 0){
 					$temp = [];
+					//Looking for first card that fall under conditions
 					foreach($card_to_kill as $player => $row_data){
 						foreach($row_data as $row => $cards_to_kill){
 							foreach($cards_to_kill as $card_iter => $card){
@@ -1856,13 +1875,15 @@ class GwentSocket extends BaseSocket
 					$card_to_kill = $temp;
 				}
 
+				//Killing process
 				foreach($card_to_kill as $player => $row_data){
 					foreach($row_data as $row => $cards_to_kill){
 						foreach($cards_to_kill as $card_iter => $card_to_kill){
+							//Move card to discard
 							$users_data[$player]['discard'][] = $card_to_kill['id'];
-
+							//Get card data
 							$card = BattleFieldController::cardData($card_to_kill['id']);
-
+							//Animation of action
 							$step_status['actions']['appear'][$player][$row][$card_iter] = 'killer';
 
 							$step_status['added_cards'][$player]['discard'][] = $card;
@@ -1872,6 +1893,7 @@ class GwentSocket extends BaseSocket
 					}
 				}
 
+				//Compare old battle field buffs with modified
 				$new_field_buffs = BattleFieldController::getBattleBuffs($battle_field);
 				foreach($field_buffs as $field => $rows){
 					if(!isset($new_field_buffs[$field])){
@@ -1888,12 +1910,18 @@ class GwentSocket extends BaseSocket
 				}
 			break;
 
+			//Action add to battle field other cards
 			case 'master'://ПОВЕЛИТЕЛЬ
 				$cards_can_be_added = [];
+				//master_cardSource - destination deck (deck|hand|discard)
 				foreach($action['master_cardSource'] as $destination){
+					//looking for card groups
 					foreach($users_data['user'][$destination] as $card_data){
+						//Get card data
 						$card = BattleFieldController::cardData($card_data);
+						//If card has some group
 						if(!empty($card['group'])){
+							//if card group intersects to action group
 							if(!empty(array_intersect($action['master_group'], $card['group']))){
 								if($card['strength'] <= $action['master_maxCardsStrenght']){
 									$cards_can_be_added[] = [
@@ -1906,6 +1934,7 @@ class GwentSocket extends BaseSocket
 						}
 					}
 				}
+				//master_summonByModificator - summon by strength modificator: 0- weakest; 1- strongest; 2 -random
 				switch($action['master_summonByModificator']){
 					case '0': usort($cards_can_be_added, function($a, $b){return ($a['strength'] - $b['strength']);}); break;
 					case '1': usort($cards_can_be_added, function($a, $b){return ($b['strength'] - $a['strength']);});break;
@@ -1916,6 +1945,7 @@ class GwentSocket extends BaseSocket
 					break;
 				}
 
+				//array of cards sources
 				$cards_to_add = ['hand'=> [], 'deck'=>[], 'discard'=>[]];
 				$n = (count($cards_can_be_added) < $action['master_maxCardsSummon'])? count($cards_can_be_added): $action['master_maxCardsSummon'];
 				for($i=0; $i<$n; $i++){
@@ -1924,11 +1954,14 @@ class GwentSocket extends BaseSocket
 
 				if($n > 0){
 					$cards_count = 0;
+					//add summon cards to battle field
 					foreach($cards_to_add as $destination => $cards){
 						if(!empty($cards)){
 							foreach($users_data['user'][$destination] as $card_to_summon_iter => $card_to_summon){
 								$card = BattleFieldController::cardData($card_to_summon);
+								//if card can be added to battle field
 								if(in_array($card_to_summon, $cards)){
+									//if there are more than one card action row
 									if(count($card['allowed_rows']) > 1){
 										$rand = mt_rand(0, count($card['allowed_rows'])-1);
 										$action_row = $card['allowed_rows'][$rand];
@@ -1948,6 +1981,7 @@ class GwentSocket extends BaseSocket
 									unset($users_data['user'][$destination][$card_to_summon_iter]);
 									$cards_count++;
 								}
+								//if card limit is settled
 								if($cards_count >= $action['master_maxCardsSummon']){
 									$users_data['user'][$destination] = array_values($users_data['user'][$destination]);
 									break 2;
@@ -1959,26 +1993,34 @@ class GwentSocket extends BaseSocket
 				}
 			break;
 
+			//Action steals card(s) from opponent battle field
 			case 'obscure'://ОДУРМАНИВАНИЕ
+				//Current battle field buffs
 				$field_buffs = BattleFieldController::getBattleBuffs($battle_field);
 				$cards_can_be_obscured = [];
 				$min_strength = 999;
 				$max_strength = 0;
 
+				//obscure_ActionRow - row that available to steal
 				foreach($action['obscure_ActionRow'] as $row_iter => $row){
 					foreach($battle_field[$users_data['opponent']['player']][$row]['warrior'] as $card_data){
 						$card = BattleFieldController::cardData($card_data['id']);
+						//obscure_maxCardStrength - maximal strength of card that can be stolen
 						if($card_data['strength'] <= $action['obscure_maxCardStrength']){
+							//if card can be stolen with immunity ignore
 							$allow_obscure = BattleFieldController::checkForSimpleImmune($action['obscure_ignoreImmunity'], $card['actions']);
-
+							//allow to steal
 							if($allow_obscure){
+								//get max strength
 								$max_strength = ($card_data['strength'] > $max_strength)
 									? $card_data['strength']
 									: $max_strength;
+								//get min strength
 								$min_strength = ($card_data['strength'] < $min_strength)
 									? $card_data['strength']
 									: $min_strength;
 
+								//cards can be stolen array
 								$cards_can_be_obscured[] = [
 									'id'		=> $card['id'],
 									'caption'	=> $card['caption'],
@@ -1992,11 +2034,12 @@ class GwentSocket extends BaseSocket
 
 				if($min_strength < 1) $min_strength = 1;
 
+				//Process steal by cards strength modificator
 				if(!empty($cards_can_be_obscured)){
 					switch($action['obscure_strenghtOfCard']){
-						case '0': $card_strength_to_obscure = $min_strength; break;//Самую слабую
-						case '1': $card_strength_to_obscure = $max_strength; break;//Самую сильную
-						case '2':
+						case '0': $card_strength_to_obscure = $min_strength; break;//Weakest
+						case '1': $card_strength_to_obscure = $max_strength; break;//Strongest
+						case '2': //Random
 							$random = mt_rand(0, count($cards_can_be_obscured)-1);
 							$card_strength_to_obscure = $cards_can_be_obscured[$random]['strength'];
 						break;
@@ -2004,6 +2047,8 @@ class GwentSocket extends BaseSocket
 				}
 
 				$cards_to_obscure = [];
+				//Get stolen cards
+				//obscure_quantityOfCardToObscure - quantity of stolen cards
 				if(!empty($cards_can_be_obscured)){
 					for($i=0; $i < $action['obscure_quantityOfCardToObscure']; $i++){
 						for($j=0; $j<count($cards_can_be_obscured); $j++){
@@ -2015,19 +2060,26 @@ class GwentSocket extends BaseSocket
 					}
 				}
 
+				//Apply card steal
 				for($i=0; $i<count($cards_to_obscure); $i++){
 					foreach($battle_field[$users_data['opponent']['player']][$cards_to_obscure[$i]['row']]['warrior'] as $j => $card_data){
+						//steal card ID match
 						if(Crypt::decrypt($cards_to_obscure[$i]['id']) == $card_data['id']){
+							//Add stolen card to uses barrle field
 							$battle_field[$users_data['user']['player']][$cards_to_obscure[$i]['row']]['warrior'][] = [
 								'id'		=> $card_data['id'],
 								'caption'	=> $card_data['caption'],
 								'strength'	=> $card_data['strength'],
 								'login'		=> $users_data['user']['login']
 							];
+							//Get card data
 							$card_obscured = BattleFieldController::cardData($card_data['id']);
+							//Animations of add/drop card
 							$step_status['added_cards'][$users_data['user']['player']][$cards_to_obscure[$i]['row']][] = $card_obscured;
 							$step_status['dropped_cards'][$users_data['opponent']['player']][$cards_to_obscure[$i]['row']][$j] = $card_obscured['caption'];
+							//Action animation
 							$step_status['actions']['appear'][$users_data['opponent']['player']][$cards_to_obscure[$i]['row']][$j] = 'obscure';
+							//Drop stolen card form opponent battle fields
 							unset($battle_field[$users_data['opponent']['player']][$cards_to_obscure[$i]['row']]['warrior'][$j]);
 							$battle_field[$users_data['opponent']['player']][$cards_to_obscure[$i]['row']]['warrior'] = array_values($battle_field[$users_data['opponent']['player']][$cards_to_obscure[$i]['row']]['warrior']);
 							break;
@@ -2035,6 +2087,7 @@ class GwentSocket extends BaseSocket
 					}
 				}
 
+				//Compare old battle field buff with modified
 				$new_field_buffs = BattleFieldController::getBattleBuffs($battle_field);
 				foreach($field_buffs as $field => $rows){
 					if(!isset($new_field_buffs[$field])){
@@ -2051,10 +2104,16 @@ class GwentSocket extends BaseSocket
 				}
 			break;
 
+			//Peep opponent hand cards
 			case 'peep_card'://ПРОСМОТР КАРТ ПРОТИВНИКА
 				$temp_hand = $users_data['opponent']['hand'];
-				$n = (count($users_data['opponent']['hand']) < $action['overview_cardCount'])? count($users_data['opponent']['hand']): $action['overview_cardCount'];
+				//Peep card quantity
+				$n = (count($users_data['opponent']['hand']) < $action['overview_cardCount'])
+					? count($users_data['opponent']['hand'])
+					: $action['overview_cardCount'];
+				//Fill peep cards array
 				while(count($users_data['user']['cards_to_play']) < $n){
+					//Get random card
 					$rand = mt_rand(0, count($temp_hand)-1);
 					$temp_card = $temp_hand[$rand];
 					$users_data['user']['cards_to_play'][] = $temp_card;
@@ -2068,21 +2127,26 @@ class GwentSocket extends BaseSocket
 				}
 			break;
 
+			//Return card to hand from battle field
 			case 'regroup'://ПЕРЕГРУППИРОВКА
+				//Get battle field cards to regroup
 				foreach($battle_field[$users_data['user']['player']] as $row => $row_data){
 					foreach($row_data['warrior'] as $card_data){
+						//Get card data
 						$card = BattleFieldController::cardData($card_data['id']);
 						$allow_to_regroup = true;
+						//Check if regroup can take cards with full immunity
 						if($action['regroup_ignoreImmunity'] == 0){
 							$allow_to_regroup = BattleFieldController::checkForFullImmune($action['regroup_ignoreImmunity'], $card['actions']);
 						}
 						if($allow_to_regroup){
+							//Regroup cards array fill
 							$users_data['user']['cards_to_play'][] = $card_data['id'];
 							$step_status['round_status']['cards_to_play'][] = $card;
 						}
 					}
 				}
-				//card activates after user action
+				//cards popup activates after user action
 				if(count($users_data['user']['cards_to_play']) > 0){
 					$user_turn_id	= $users_data['user']['id'];
 					$step_status['round_status']['current_player'] = $users_data['user']['login'];
