@@ -765,7 +765,9 @@ class GwentSocket extends BaseSocket
 				}
 			break;
 
+			//User Pass
 			case 'userPassed':
+				//get battlefield data
 				$battle_field = unserialize($battle->battle_field);
 
 				$enemy = ($msg->user == 'p1')? 'p2': 'p1';
@@ -1957,8 +1959,14 @@ class GwentSocket extends BaseSocket
 			break;
 
 			case 'brotherhood':
-				if(!empty($step_status['played_card']['card'])){
-					$step_status['actions']['appear'][$step_status['played_card']['move_to']['player']][$step_status['played_card']['move_to']['row']][] = $action['caption'];
+				if(!empty($step_status['played_card']['card']['id'])){
+					$brotherhood_field = $step_status['played_card']['move_to']['player'];
+					$brotherhood_row = $step_status['played_card']['move_to']['row'];
+					foreach($battle_field[$brotherhood_field][$brotherhood_row]['warrior'] as $card_iter => $card_data){
+						if($card_data['id'] == Crypt::decrypt($step_status['played_card']['card']['id'])){
+							$step_status['actions']['appear'][$brotherhood_field][$brotherhood_row][$card_iter] = $action['caption'];
+						}
+					}
 				}
 			break;
 

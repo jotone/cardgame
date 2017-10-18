@@ -1452,13 +1452,13 @@ class BattleFieldController extends BaseController{
 								}
 							}
 						}else{
-							foreach($cards as $card){
+							foreach($cards as $card_iter => $card){
 								$card = self::getCardNaturalSetting($card['id']);
 								foreach($card['actions'] as $action){
 									switch($action['caption']){
 										case 'brotherhood':
 										case 'inspiration':
-											$field_status[$field][$row][] = $action['caption'];
+											$field_status[$field][$row][$card_iter] = $action['caption'];
 										break;
 										case 'support':
 											foreach($action['support_ActionRow'] as $action_row){
