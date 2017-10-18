@@ -2221,7 +2221,7 @@ function animateCardStrengthPulsing(card,effectName,effectType,strength,strength
 	setTimeout(function(){
 		var currentValue = card.find('.card-current-value');
 		//currentValue.text(strength);//на всякий - вставляем обычное значение карты
-		card.addClass('pulsed');//пульсация - начало
+
 
 		var buffDebuffHolder = card.find('.buff-debuff-value');
 		var newValue = null;
@@ -2248,14 +2248,18 @@ function animateCardStrengthPulsing(card,effectName,effectType,strength,strength
 			break;
 		}
 
-		buffDebuffHolder.attr('data-math-simb', operationType );//вст + или - или х2 х3 ...
-		buffDebuffHolder.text(newValue);
-		currentValue.text(strengthMod);
+		if (newValue !== 0 && newValue !== null) {
+			card.addClass('pulsed');//пульсация - начало
+
+			buffDebuffHolder.attr('data-math-simb', operationType );//вст + или - или х2 х3 ...
+			buffDebuffHolder.text(newValue);
+			currentValue.text(strengthMod);
+		}
 
 		setTimeout(function(){
 			card.removeClass('pulsed');//пульсация - конец
 			recalculateBattleStrength();//пересчет сил на поле боя
-		},2000);
+		},2020);
 	},500)
 }
 
