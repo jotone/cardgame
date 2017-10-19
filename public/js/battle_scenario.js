@@ -1513,6 +1513,9 @@ function startBattle(){
 		alert('Socket error');
 	};
 	conn.onmessage = function(e){
+		if($('.afterloader a.stopLoadingEndReturn').length > 0){
+			$('.afterloader a.stopLoadingEndReturn').remove();
+		}
 		var result = JSON.parse(e.data);
 
 		console.group(result.message);
