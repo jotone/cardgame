@@ -1,660 +1,663 @@
 $(document).ready(function(){
-    function array_unique( inputArr ) {
-        var result = [];
-        $.each(inputArr, function(i, el){
-            if($.inArray(el, result) === -1) result.push(el);
-        });
+	function array_unique( inputArr ) {
+		var result = [];
+		$.each(inputArr, function(i, el){
+			if($.inArray(el, result) === -1) result.push(el);
+		});
 
-        return result;
-    }
+		return result;
+	}
 
-    function showActionData(){
-        $('#tableMagicActionList thead tr td:eq(2) div').hide();
-        $('#tableMagicActionList tbody tr').hide();
-        var slug = $('#tableMagicActionList select[name=magic_actions_select] option:selected').attr('data-title');
-        $('#tableMagicActionList thead tr td:eq(2) div[data-action-type='+slug+']').show();
-        $('#tableMagicActionList tbody tr[data-action-type='+slug+']').show();
-    }
-    
-    function getAllGroups(){
-        $.get(
-            '/admin/cards/get_card_groups',
-            function(data){
-                data = JSON.parse(data);
-                var selectorOptions = '';
-                for(var i=0; i<data.length; i++){
-                    selectorOptions += '<option value="' + data[i]['id'] + '">' + data[i]['title'] + '</option>';
-                }
-                $('#tableMagicActionList #groupOfCards').empty().append(selectorOptions);
-                
-            }
-        );
-    }
-    
-    function getAllCards(){
-        $.get(
-            '/admin/get_cards_selector',
-            function(data){
-                data = data.substr(27);
-                data = data.substr(0, data.length-9);
-                $('body select#singleCardSelector').empty().append(data);
-            }
-        );
-    }
+	function showActionData(){
+		$('#tableMagicActionList thead tr td:eq(2) div').hide();
+		$('#tableMagicActionList tbody tr').hide();
+		var slug = $('#tableMagicActionList select[name=magic_actions_select] option:selected').attr('data-title');
+		$('#tableMagicActionList thead tr td:eq(2) div[data-action-type='+slug+']').show();
+		$('#tableMagicActionList tbody tr[data-action-type='+slug+']').show();
+	}
 
-    function viewHiddenGroupSelectors(object){
-        object.parents('td').children('.container-wrap:gt(0)').addClass('disactive');
-        object.parents('td').children('.container-wrap[data-selector='+object.attr('data-selector')+'_type'+object.val()+']').removeClass('disactive');
-    }
-    
-    function checkCardType(){
-        switch($('select[name=cardType]').val()){
-            case 'neutrall':
-                $('#cardCanNotBeSavedByRace').show();
-                $('#cardInRace').hide();
-                break;
-            case 'race':
-                $('#cardCanNotBeSavedByRace').hide();
-                $('#cardInRace').show();
-                break;
-            default:
-                $('#cardCanNotBeSavedByRace').hide();
-                $('#cardInRace').hide();
-                break;
-        }
-    }
-    
-    checkCardType();
-    
-    viewHiddenGroupSelectors($('#tableMagicActionList .container-wrap input[name=brotherhood_actionToGroupOrSame]:checked'));
-    viewHiddenGroupSelectors($('#tableMagicActionList .container-wrap input[name=support_actionToGroupOrAll]:checked'));
-    viewHiddenGroupSelectors($('#tableMagicActionList .container-wrap input[name=fear_actionToGroupOrAll]:checked'));
-    viewHiddenGroupSelectors($('#tableMagicActionList .container-wrap input[name=killer_recomendedTeamateForceAmount_OnOff]:checked'));
-    viewHiddenGroupSelectors($('#tableMagicActionList .container-wrap input[name=killer_killAllOrSingle]:checked'));
-    
-    showActionData();
-    getAllGroups();
-    getAllCards();
-    /*getAllMagic();*/
-    
-    //Изменение действия
-    $('#tableMagicActionList select[name=magic_actions_select]').change(function(){
-        showActionData();
-    });
-    
-    //Добавление карты в группу
-    $('input[name=addCardToGroup]').click(function(){
-        var groupId = $(this).parent().parent().find('select[name=addCardToGroup]').val();
-        var groupTitle = $(this).parent().parent().find('select[name=addCardToGroup]').children('option:selected').text();
-        $(this).parent().parent().children('#cardCurrentGroups').append('<tr><td><a class="drop" href="#"></a></td><td>' + groupTitle + '</td><td style="display: none;">' + groupId + '</td></tr>');
-    });
-    //добавить группу в действие
-    $('#tableMagicActionList input[name=addGroup]').click(function(){
-        var groupId = $(this).parent().children('#groupOfCards').val();
-        var groupTitle = $(this).parent().children('#groupOfCards').children('option:selected').text();
-        $(this).parent().children('.edition').append('<tr><td><a class="drop" href="#"></a></td><td>' + groupTitle + '</td><td style="display: none;">' + groupId + '</td></tr>');
-    });
-    //добавить карту в действие
-    $('#tableMagicActionList input[name=addCard]').click(function(){
-        var cardId = $(this).parent().children('#singleCardSelector').val();
-        var cardTitle = $(this).parent().children('#singleCardSelector').find('option:selected').text();
-        $(this).parent().children('.edition').append('<tr><td><a class="drop" href="#"></a></td><td>' + cardTitle + '</td><td style="display: none;">' + cardId + '</td></tr>');
-    });
-    //добавить магию в действие
-    $('#tableMagicActionList input[name=addAbility]').click(function(){
-        var cardId = $(this).parent().children('#group_of_abilities').val();
-        var cardTitle = $(this).parent().children('#group_of_abilities').find('option:selected').text();
-        $(this).parent().children('.edition').append('<tr><td><a class="drop" href="#"></a></td><td>' + cardTitle + '</td><td style="display: none;">' + cardId + '</td></tr>');
-    });
-    
-    //Убрать елемент из таблицы edition
-    $(document).on('click','a.drop',function(e){
-        e.preventDefault();
-        $(this).parent().parent().remove();
-    });
-    
-    $('#tableMagicActionList').on('change', 'input[name=brotherhood_actionToGroupOrSame], select[name=healer_typeOfCard], input[name=support_actionToGroupOrAll], select[name=summon_typeOfCard], input[name=fear_actionToGroupOrAll], input[name=killer_recomendedTeamateForceAmount_OnOff], input[name=killer_killAllOrSingle]', function(){
-        viewHiddenGroupSelectors($(this));
-    });
-    
-    //Описание - Тип Карты
-    $('select[name=cardType]').change(function (){
-        checkCardType();
-    });
+	function getAllGroups(){
+		$.get(
+			'/admin/cards/get_card_groups',
+			function(data){
+				data = JSON.parse(data);
+				var selectorOptions = '';
+				for(var i=0; i<data.length; i++){
+					selectorOptions += '<option value="' + data[i]['id'] + '">' + data[i]['title'] + '</option>';
+				}
+				$('#tableMagicActionList #groupOfCards').empty().append(selectorOptions);
 
-    //Фикс json-массива: убираем из строки последние два символа -> ", "
-    function fixString(row){
-        row = row.substr(0, row.length -2);
-        return row;
-    }
+			}
+		);
+	}
 
-    //Функция создания целевых групп действия
-    function checkGroupTable(object){
+	function getAllCards(){
+		$.get(
+			'/admin/get_cards_selector',
+			function(data){
+				data = data.substr(27);
+				data = data.substr(0, data.length-9);
+				$('body select#singleCardSelector').empty().append(data);
+			}
+		);
+	}
 
-        //создание json массива
-        var realActionRow = '[';
-        //создание строки описания
-        var displayActionRow = '';
+	function viewHiddenGroupSelectors(object){
+		object.parents('td').children('.container-wrap:gt(0)').addClass('disactive');
+		object.parents('td').children('.container-wrap[data-selector='+object.attr('data-selector')+'_type'+object.val()+']').removeClass('disactive');
+	}
 
-        var checked = 0; //если ничего не выбрано
-        //выборка из таблицы добавленых групп (1е поле - удалить, 2е - название группы, 3я - hidden-> id групп)
-        object.parent().children('table.edition').children('tbody').children('tr').each(function(){
-            realActionRow += '"' + $(this).children('td:eq(2)').text() + '", ';
-            displayActionRow += $(this).children('td:eq(1)').text() + ', ';
-            checked = 1;
-        });
+	function checkCardType(){
+		switch($('select[name=cardType]').val()){
+			case 'neutrall':
+				$('#cardCanNotBeSavedByRace').show();
+				$('#cardInRace').hide();
+				break;
+			case 'race':
+				$('#cardCanNotBeSavedByRace').hide();
+				$('#cardInRace').show();
+				break;
+			default:
+				$('#cardCanNotBeSavedByRace').hide();
+				$('#cardInRace').hide();
+				break;
+		}
+	}
 
-        if(1 == checked){
-            realActionRow = fixString(realActionRow);
-            displayActionRow = fixString(displayActionRow);
-        }
-        realActionRow += ']';
-        realActionRow = array_unique(JSON.parse(realActionRow));
-        realActionRow = '[' + realActionRow + ']';
-        displayActionRow += ';<br>';
+	checkCardType();
 
-        return [realActionRow, displayActionRow];
-    }
+	viewHiddenGroupSelectors($('#tableMagicActionList .container-wrap input[name=brotherhood_actionToGroupOrSame]:checked'));
+	viewHiddenGroupSelectors($('#tableMagicActionList .container-wrap input[name=support_actionToGroupOrAll]:checked'));
+	viewHiddenGroupSelectors($('#tableMagicActionList .container-wrap input[name=fear_actionToGroupOrAll]:checked'));
+	viewHiddenGroupSelectors($('#tableMagicActionList .container-wrap input[name=killer_recomendedTeamateForceAmount_OnOff]:checked'));
+	viewHiddenGroupSelectors($('#tableMagicActionList .container-wrap input[name=killer_killAllOrSingle]:checked'));
 
-    //Функция создания целевых рас/рядов действия
-    function setCheckboxesToJson(object){
-        var realActionRow = '[';
-        var displayActionRow = '';
+	showActionData();
+	getAllGroups();
+	getAllCards();
+	/*getAllMagic();*/
 
-        var checked = 0; //если ничего не выбрано
-        object.each(function(){
-            realActionRow += '"' + $(this).val() + '", ';
-            displayActionRow += $(this).parent().text() + ', ';
-            checked = 1;
-        });
+	//Изменение действия
+	$('#tableMagicActionList select[name=magic_actions_select]').change(function(){
+		showActionData();
+	});
 
-        if(1 == checked) {
-            realActionRow = fixString(realActionRow);
-            displayActionRow = fixString(displayActionRow);
-        }
-        realActionRow += ']';
-        displayActionRow+= ';<br>';
+	//Добавление карты в группу
+	$('input[name=addCardToGroup]').click(function(){
+		var groupId = $(this).parent().parent().find('select[name=addCardToGroup]').val();
+		var groupTitle = $(this).parent().parent().find('select[name=addCardToGroup]').children('option:selected').text();
+		$(this).parent().parent().children('#cardCurrentGroups').append('<tr><td><a class="drop" href="#"></a></td><td>' + groupTitle + '</td><td style="display: none;">' + groupId + '</td></tr>');
+	});
+	//добавить группу в действие
+	$('#tableMagicActionList input[name=addGroup]').click(function(){
+		var groupId = $(this).parent().children('#groupOfCards').val();
+		var groupTitle = $(this).parent().children('#groupOfCards').children('option:selected').text();
+		$(this).parent().children('.edition').append('<tr><td><a class="drop" href="#"></a></td><td>' + groupTitle + '</td><td style="display: none;">' + groupId + '</td></tr>');
+	});
+	//добавить карту в действие
+	$('#tableMagicActionList input[name=addCard]').click(function(){
+		var cardId = $(this).parent().children('#singleCardSelector').val();
+		var cardTitle = $(this).parent().children('#singleCardSelector').find('option:selected').text();
+		$(this).parent().children('.edition').append('<tr><td><a class="drop" href="#"></a></td><td>' + cardTitle + '</td><td style="display: none;">' + cardId + '</td></tr>');
+	});
+	//добавить магию в действие
+	$('#tableMagicActionList input[name=addAbility]').click(function(){
+		var cardId = $(this).parent().children('#group_of_abilities').val();
+		var cardTitle = $(this).parent().children('#group_of_abilities').find('option:selected').text();
+		$(this).parent().children('.edition').append('<tr><td><a class="drop" href="#"></a></td><td>' + cardTitle + '</td><td style="display: none;">' + cardId + '</td></tr>');
+	});
 
-        return [realActionRow, displayActionRow];
-    }
-    
-    
-    
-    //Добавление Действия
-    $('input[name=addMoreMagicActions]').click(function(){
-        //Узнаем мип действия карты
-        var actionType = $('select[name=magic_actions_select] option:selected').attr('data-title');
-        var _this = $(this);
-        //отображение описания действия для пользователя
-        displayActionRow= '<ins>' + $('select[name=magic_actions_select] option:selected').text() + '</ins>: <br>';
-        //описания действия для заноса в БД
-        realActionRow   = '{"action": "' + $('select[name=magic_actions_select]').val() + '"';
-        switch(actionType){
-            //Тип действия - "Бессмертный"
-            case 'bessmertnyj':
-                //Выбор дествия возврата карты на поле, или в руку
-                realActionRow += ', "deadless_backToDeck":"' + $('input[name=deadless_backToDeck]:checked').val() + '"}';
-                displayActionRow += ' - Возвращается: ' + $('input[name=deadless_backToDeck]:checked').parent('label').text() + ';<br>';
-            break;
-            //Тип действия - "Боевое Братство"
-            case 'boevoe_bratstvo':
-                //Выбор действия на группу или на одинаковые карты
-                if (0 == $('input[name=brotherhood_actionToGroupOrSame]:checked').val()) {
+	//Убрать елемент из таблицы edition
+	$(document).on('click','a.drop',function(e){
+		e.preventDefault();
+		$(this).parent().parent().remove();
+	});
 
-                    //если выбор пал на одинаковые,- в БД пишем 0
-                    realActionRow += ', "brotherhood_actionToGroupOrSame": "0"';
-                    displayActionRow += ' - Дейстует на одинаковые; <br>';
+	$('#tableMagicActionList').on('change', 'input[name=brotherhood_actionToGroupOrSame], select[name=healer_typeOfCard], input[name=support_actionToGroupOrAll], select[name=summon_typeOfCard], input[name=fear_actionToGroupOrAll], input[name=killer_recomendedTeamateForceAmount_OnOff], input[name=killer_killAllOrSingle]', function(){
+		viewHiddenGroupSelectors($(this));
+	});
 
-                } else {
-                    //если выбор пал на группу,- пишем в БД id групп
+	//Описание - Тип Карты
+	$('select[name=cardType]').change(function (){
+		checkCardType();
+	});
 
-                    //создание целевых групп действия array[0 - json-массив, 1- строка описания]
-                    var temp = checkGroupTable($('select[name=brotherhood_grop]'));
-                    realActionRow += ', "brotherhood_actionToGroupOrSame": ' + temp[0];
-                    displayActionRow += ' - Действует на группу: ' + temp[1];
-                }
+	//Фикс json-массива: убираем из строки последние два символа -> ", "
+	function fixString(row){
+		row = row.substr(0, row.length -2);
+		return row;
+	}
 
-                //Значение умножения силы
-                realActionRow += ', "brotherhood_strenghtMult": "' + $('input[name=brotherhood_strenghtMult]').val() + '"}';
-                displayActionRow += ' - Умножает силу в ' + $('input[name=brotherhood_strenghtMult]').val() + ' раз;<br>';
-            break;
-            //Воодушевление
-            case 'voodushevlenie':
-                //Выбор рядов действия
+	//Функция создания целевых групп действия
+	function checkGroupTable(object){
 
-                //создание целевых рядов действия array[0 - json-массив, 1- строка описания]
-                var temp = setCheckboxesToJson($('.container-wrap input[name=inspiration_ActionRow]:checked'));
-                realActionRow += ', "inspiration_ActionRow": ' + temp[0];
-                displayActionRow += ' - Дальность: ' + temp[1];
+		//создание json массива
+		var realActionRow = '[';
+		//создание строки описания
+		var displayActionRow = '';
 
-                //Значение силы
-                realActionRow += ', "inspiration_multValue": "' + $('input[name=inspiration_multValue]').val() + '"';
-                displayActionRow += ' - Умножает силу в: ' + $('input[name=inspiration_multValue]').val() + ' раза;<br>';
-                //Игнорирует иммунитет
-                realActionRow += ', "inspiration_ignoreImmunity": "' + $('input[name=inspiration_ignoreImmunity]:checked').val() + '"}';
-                displayActionRow += ' - Игнорирует полный иммунитет: ' + $('input[name=inspiration_ignoreImmunity]:checked').parent().text() + ';<br>';
-            break;
-            //Иммунитет
-            case 'immunitet':
-                //Выбор типа иммунитета: 0-простой/1-полный
-                realActionRow += ', "immumity_type": "' + $('input[name=immumity_type]:checked').val() + '"}';
-                displayActionRow += ' - Тип иммунитета: ' + $('input[name=immumity_type]:checked').parent().text();
-            break;
-            //Лекарь
-            case 'lekar':
-                realActionRow += ', "healer_typeOfCard": "' + $('select[name=healer_typeOfCard]').val() + '"';
-                displayActionRow += ' - Тип карты: ' + $('select[name=healer_typeOfCard] option:selected').text() + '<br>';
-                
-                switch($('select[name=healer_typeOfCard]').val()){
-                    case '0':
-                        var temp = checkGroupTable($('select[name=healer_type_singleCard]'));
-                        realActionRow += ', "healer_type_singleCard": ' + temp[0];
-                        displayActionRow += ' - Карты: ' +temp[1];
-                    break;
-                    case '1':
-                        var temp = setCheckboxesToJson($('.container-wrap input[name=healer_type_actionRow]:checked'));
-                        realActionRow += ', "healer_type_actionRow": ' + temp[0];
-                        displayActionRow += ' - Карта относится к ряду: ' + temp[1];
-                    break;
-                    case '2':
-                        realActionRow += ', "healer_type_cardType": "' + $('input[name=healer_type_cardType]:checked').val()+'"';
-                        displayActionRow += $('input[name=healer_type_cardType]:checked').parent().text() + '<br>';
-                    break;
-                    case '3':
-                        var temp = checkGroupTable($('select[name=healer_type_group]'));
-                        realActionRow += ', "healer_type_group": ' + temp[0];
-                        displayActionRow += ' - Группы: ' +temp[1];
-                    break;
-                }
-                //Выбор карты
-                realActionRow += ', "healer_cardChoise": "' + $('input[name=healer_cardChoise]:checked').val()+'"';
-                displayActionRow += ' - Способ выбора: '+$('input[name=healer_cardChoise]:checked').parent().text() + '<br>';
-                //Играть карту из колоды
-                realActionRow += ', "healer_deckChoise": "' + $('input[name=healer_deckChoise]:checked').val()+'"';
-                displayActionRow += ' - Играть карту из колоды: '+$('input[name=healer_deckChoise]:checked').parent().text() + '<br>';
-                //Игнорирует полный иммунитет
-                realActionRow += ', "healer_ignoreImmunity": "' + $('input[name=healer_ignoreImmunity]:checked').val()+'"}';
-                displayActionRow += ' - Игнорирует полный иммунитет: '+$('input[name=healer_ignoreImmunity]:checked').parent().text() + '<br>';
-            break;
-            //Неистовство
-            case 'neistovstvo':
-                //Условие "Противник относится к Расе"
+		var checked = 0; //если ничего не выбрано
+		//выборка из таблицы добавленых групп (1е поле - удалить, 2е - название группы, 3я - hidden-> id групп)
+		object.parent().children('table.edition').children('tbody').children('tr').each(function(){
+			realActionRow += '"' + $(this).children('td:eq(2)').text() + '", ';
+			displayActionRow += $(this).children('td:eq(1)').text() + ', ';
+			checked = 1;
+		});
 
-                //создание целевых рас array[0 - json-массив, 1- строка описания]
-                var temp = setCheckboxesToJson($('td .container-wrap input[name=fury_enemyRace]:checked'));
-                realActionRow += ', "fury_enemyRace": ' + temp[0];
-                displayActionRow += ' - Карты противника имеют расу - ' + temp[1];
-                
-                //Условие "У противника есть определенная группа карт"
-                temp = checkGroupTable($('select[name=fury_group]'));
+		if(1 == checked){
+			realActionRow = fixString(realActionRow);
+			displayActionRow = fixString(displayActionRow);
+		}
+		realActionRow += ']';
+		realActionRow = array_unique(JSON.parse(realActionRow));
+		realActionRow = '[' + realActionRow + ']';
+		displayActionRow += ';<br>';
 
-                realActionRow += ', "fury_group": ' + temp[0];
-                displayActionRow += ' - Противник имеет карту из группы: ' + temp[1];
+		return [realActionRow, displayActionRow];
+	}
 
-                //Условие "Противник имеет определенное количество воинов в ряду"
-                realActionRow += ', "fury_enemyWarriorsCount" : "' + $('input[name=fury_enemyWarriorsCount]').val() + '"';
-                displayActionRow += ' - Противник имеет воинов в количестве: ' + $('input[name=fury_enemyWarriorsCount]').val() + ' в ряду: ';
+	//Функция создания целевых рас/рядов действия
+	function setCheckboxesToJson(object){
+		var realActionRow = '[';
+		var displayActionRow = '';
 
-                //создание целевых рядов array[0 - json-массив, 1- строка описания]
-                temp = setCheckboxesToJson($('td .container-wrap input[name=fury_ActionRow]:checked'));
-                realActionRow += ', "fury_ActionRow": ' + temp[0];
-                displayActionRow += temp[1];
+		var checked = 0; //если ничего не выбрано
+		object.each(function(){
+			realActionRow += '"' + $(this).val() + '", ';
+			displayActionRow += $(this).parent().text() + ', ';
+			checked = 1;
+		});
 
-                //Количество очков силы
-                realActionRow += ', "fury_strenghtVal": "' + $('input[name=fury_strenghtVal]').val() + '"';
-                displayActionRow += ' - Повышает силу на ' + $('input[name=fury_strenghtVal]').val() + ' единиц<br>';
+		if(1 == checked) {
+			realActionRow = fixString(realActionRow);
+			displayActionRow = fixString(displayActionRow);
+		}
+		realActionRow += ']';
+		displayActionRow+= ';<br>';
 
-                //Противник использовал способность
-                realActionRow += ', "fury_abilityCastEnemy": ' +  $('input[name=fury_abilityCastEnemy]:checked').val();
-                displayActionRow += ' - Противник использовал способность: ' + $('input[name=fury_abilityCastEnemy]:checked').parent().text();
-
-                realActionRow += '}';
-            break;
-            //Одурманивание
-            case 'odurmanivanie':
-                //Условие Действует на ряд
-
-                //создание целевых рядов array[0 - json-массив, 1- строка описания]
-                var temp = setCheckboxesToJson($('td .container-wrap input[name=obscure_ActionRow]:checked'));
-                realActionRow += ', "obscure_ActionRow": ' + temp[0];
-                displayActionRow += " - Действует на ряд: " + temp[1];
-
-                //Условие "Максимальная сила карты которую можно перетянуть"
-                realActionRow += ', "obscure_maxCardStrength": "' + $('input[name=obscure_maxCardStrength]').val() + '"';
-                displayActionRow += ' - Максимальная сила карты которую можно перетянуть: ' + $('input[name=obscure_maxCardStrength]').val() + ';<br>';
-
-                //Условие степени силы перетягиваемой карты
-                realActionRow += ', "obscure_strenghtOfCard": "' + $('select[name=obscure_strenghtOfCard]').val() + '"';
-                displayActionRow += ' - Сила перетягиваемой карты: ' + $('select[name=obscure_strenghtOfCard] option:selected').text() + ';<br>';
-
-                //Количество перетягиваемых карт
-                realActionRow += ', "obscure_quantityOfCardToObscure": "' + $('input[name=obscure_quantityOfCardToObscure]').val() + '"';
-                displayActionRow += ' - Количество перетягиваемых карт: ' + $('input[name=obscure_quantityOfCardToObscure]').val() + ';<br>';
-
-                //Игнорирует полный иммунитет
-                realActionRow += ', "obscure_ignoreImmunity": "' + $('input[name=obscure_ignoreImmunity]:checked').val()+'"}';
-                displayActionRow += ' - Игнорирует полный иммунитет: '+$('input[name=obscure_ignoreImmunity]:checked').parent().text() + '<br>';
-            break;
-            //перегрупировка
-            case 'peregruppirovka':
-                realActionRow += ', "regroup_ignoreImmunity": "' + $('input[name=regroup_ignoreImmunity]:checked').val()+'"}';
-                displayActionRow += ' - Игнорирует полный иммунитет: '+$('input[name=regroup_ignoreImmunity]:checked').parent().text() + '<br>';
-            break;
-            //Печаль
-            case 'pechal':
-                //Условие "Действует на ряд"
-                //создание целевых рядов array[0 - json-массив, 1- строка описания]
-                var temp = setCheckboxesToJson($('td .container-wrap input[name=sorrow_ActionRow]:checked'));
-                realActionRow += ', "sorrow_ActionRow": ' + temp[0];
-                displayActionRow += " - Действует на ряд: " + temp[1];
-                realActionRow += ', "sorrow_actionTeamate": "' + $('input[name=sorrow_actionTeamate]:checked').val()+'"}';
-                displayActionRow += ' - Действует на своих: '+$('input[name=sorrow_actionTeamate]:checked').parent().text() + '<br>';
-            break;
-            //Повелитель
-            case 'povelitel':
-                //Условие "Группа карт, которые будут призываться"
-                var temp = checkGroupTable($('select[name=master_group]'));
-                realActionRow += ', "master_group": ' + temp[0];
-                displayActionRow += ' - Группа карт, которые будут призываться: ' + temp[1];
-
-                //Условие "Откуда брать карты"
-                temp = setCheckboxesToJson($('.container-wrap input[name=master_cardSource]:checked'));
-                realActionRow += ', "master_cardSource": ' + temp[0];
-                displayActionRow += ' - Карты берутся из: ' + temp[1];
-
-                //Условие "Призывать карту по модификатору силы"
-                realActionRow += ', "master_summonByModificator": "' + $('select[name=master_summonByModificator]').val() + '"';
-                displayActionRow += ' - Призывать карту: ' + $('select[name=master_summonByModificator] option:selected').text() + ';<br>';
-
-                //Условие "Максимальное количество карт, которое призывается"
-                realActionRow += ', "master_maxCardsSummon": "' + $('input[name=master_maxCardsSummon]').val() + '"';
-                displayActionRow += ' - Макс. количество карт, которое призывается: ' + $('input[name=master_maxCardsSummon]').val() + ';<br>';
-
-                //Условие "Максимальное значение силы карт, которые призываются"
-                realActionRow += ', "master_maxCardsStrenght": "' + $('input[name=master_maxCardsStrenght]').val() + '"';
-                displayActionRow += ' - Макс. значение силы карт, которые призываются: ' + $('input[name=master_maxCardsStrenght]').val() + ';<br>';
-
-                realActionRow += '}';
-            break;
-            //Поддержка
-            case 'podderzhka':
-                //Умение "Повысить силу"
-                //создание целевых рядов array[0 - json-массив, 1- строка описания]
-                var temp = setCheckboxesToJson($('.container-wrap input[name=support_ActionRow]:checked'));
-                realActionRow += ', "support_ActionRow": ' + temp[0];
-                displayActionRow += ' - Повысить силу в ряду: ' + temp[1];
-
-                if (0 == $('input[name=support_actionToGroupOrAll]:checked').val()) {
-                    //если выбор пал на всех,- в БД пишем 0
-                    realActionRow += ', "support_actionToGroupOrAll": "0"';
-                    displayActionRow += ' - Дейстует на всех; <br>';
-                } else {
-                    //если выбор пал на группу,- пишем в БД id групп
-                    var temp = checkGroupTable($('select[name=support_group]'));
-                    realActionRow += ', "support_actionToGroupOrAll": ' + temp[0];
-                    displayActionRow += ' - Действует на группу: ' + temp[1];
-                }
-
-                //Условие "Повышение силы действует на себя"
-                realActionRow += ', "support_selfCast": "' + $('input[name=support_selfCast]:checked').val() + '"';
-                displayActionRow += ' - Повышение силы действует на себя: ' + $('input[name=support_selfCast]:checked').parent('label').text() + ';<br>';
-
-                //Значение "Значение повышения силы"
-                realActionRow += ', "support_strenghtValue": "' + $('input[name=support_strenghtValue]').val() + '"';
-                displayActionRow += ' - Значение повышения силы на: ' + $('input[name=support_strenghtValue]').val() + ' единиц;<br>';
-
-                //Условие "Игнорировать полный иммунитет"
-                realActionRow += ', "support_ignoreImmunity": "' + $('input[name=support_ignoreImmunity]:checked').val() + '"}';
-                displayActionRow += ' - Игнорировать полный иммунитет: ' + $('input[name=support_ignoreImmunity]:checked').parent('label').text() + ';<br>';
-            break;
-            //Подсмотреть карты
-            case 'podsmotret_karty':
-                realActionRow += ', "overview_cardCount": "' + $('input[name=overview_cardCount]').val()+'"}';
-                displayActionRow += ' - Количество карт: ' +$('input[name=overview_cardCount]').val()+';<br>';
-            break;
-            //Призыв
-            case 'prizyv':
-                realActionRow += ', "summon_typeOfCard": "' + $('select[name=summon_typeOfCard]').val() + '"';
-                displayActionRow += ' - Тип карты: ' + $('select[name=summon_typeOfCard] option:selected').text() + '<br>';
-                
-                switch($('select[name=summon_typeOfCard]').val()){
-                    case '0':
-                        var temp = checkGroupTable($('select[name=summon_type_singleCard]'));
-                        realActionRow += ', "summon_type_singleCard": ' + temp[0];
-                        displayActionRow += ' - Карты: ' +temp[1];
-                    break;
-                    case '1':
-                        var temp = setCheckboxesToJson($('.container-wrap input[name=summon_type_actionRow]:checked'));
-                        realActionRow += ', "summon_type_actionRow": ' + temp[0];
-                        displayActionRow += ' - Карта относится к ряду: ' + temp[1];
-                    break;
-                    case '2':
-                        realActionRow += ', "summon_type_cardType": "' + $('input[name=summon_type_cardType]:checked').val()+'"';
-                        displayActionRow += $('input[name=summon_type_cardType]:checked').parent().text() + '<br>';
-                    break;
-                    case '3':
-                        var temp = checkGroupTable($('select[name=summon_type_group]'));
-                        realActionRow += ', "summon_type_group": ' + temp[0];
-                        displayActionRow += ' - Группы: ' +temp[1];
-                    break;
-                }
-                //Выбор карты
-                realActionRow += ', "summon_cardChoise": "' + $('input[name=summon_cardChoise]:checked').val()+'"';
-                displayActionRow += ' - Способ выбора: '+$('input[name=summon_cardChoise]:checked').parent().text() + '<br>';
-                //Играть карту из колоды
-                realActionRow += ', "summon_deckChoise": "' + $('input[name=summon_deckChoise]:checked').val()+'"';
-                displayActionRow += ' - Играть карту из колоды: '+$('input[name=summon_deckChoise]:checked').parent().text() + '<br>';
-                //Игнорирует полный иммунитет
-                realActionRow += ', "summon_ignoreImmunity": "' + $('input[name=summon_ignoreImmunity]:checked').val()+'"}';
-                displayActionRow += ' - Игнорирует полный иммунитет: '+$('input[name=summon_ignoreImmunity]:checked').parent().text() + '<br>';
-            break;
-            //Сброс карт и поднятие из колоды
-            case 'sbros_kart_i_podnyatie_iz_kolody':
-                //Сколько карт сбросить
-                realActionRow += ', "dropAndPick_dropCount": "'+ $('input[name=dropAndPick_dropCount]').val() + '"';
-                displayActionRow += ' - Сколько карт сбросить: '+ $('input[name=dropAndPick_dropCount]').val()+'<br>';
-                //Сколько взять с колоды
-                realActionRow += ', "dropAndPick_pickCount": "'+ $('input[name=dropAndPick_pickCount]').val() + '"';
-                displayActionRow += ' - Сколько карт поднять: '+ $('input[name=dropAndPick_pickCount]').val()+'<br>';
-                //Выбор карты
-                realActionRow += ', "dropAndPick_cardChoise": "'+ $('input[name=dropAndPick_cardChoise]:checked').val() + '"';
-                displayActionRow += ' - Способ выбора карты: '+$('input[name=dropAndPick_cardChoise]:checked').parent().text() + '<br>';
-                //Игнорирует полный иммунитет
-                realActionRow += ', "dropAndPick_ignoreImmunity": "' + $('input[name=dropAndPick_ignoreImmunity]:checked').val()+'"}';
-                displayActionRow += ' - Игнорирует полный иммунитет: '+$('input[name=dropAndPick_ignoreImmunity]:checked').parent().text() + '<br>';
-            break;
-            //Сброс карт противника в отбой
-            case 'sbros_kart_protivnika_v_otboj':
-                //Количество карт
-                realActionRow += ', "enemyDropHand_cardCount": "'+ $('input[name=enemyDropHand_cardCount]').val() + '"}';
-                displayActionRow += ' - Количество карт: '+ $('input[name=enemyDropHand_cardCount]').val()+'<br>';
-            break;
-            //Страшный
-            case 'strashnyj':
-                //Раса на которую действует страх
-                //создание целевых рас array[0 - json-массив, 1- строка описания]
-                var temp = setCheckboxesToJson($('td .container-wrap input[name=fear_enemyRace]:checked'));
-                realActionRow += ', "fear_enemyRace": ' + temp[0];
-                displayActionRow += ' - Не действует на расу: ' + temp[1];
-
-                if (0 == $('input[name=fear_actionToGroupOrAll]:checked').val()) {
-                    //Действует на всех
-                    realActionRow += ', "fear_actionToGroupOrAll": "0"';
-                    displayActionRow += ' - Дейстует на всех; <br>';
-
-                } else {
-                    //если выбор пал на группу,- пишем в БД id групп
-                    var temp = checkGroupTable($('select[name=fear_group]'));
-                    realActionRow += ', "fear_actionToGroupOrAll": ' + temp[0];
-                    displayActionRow += ' - Действует на группу: ' + temp[1];
-                }
-
-                //Ряд действия
-                //создание целевых рядов действия array[0 - json-массив, 1- строка описания]
-                var temp = setCheckboxesToJson($('.container-wrap input[name=fear_ActionRow]:checked'));
-                realActionRow += ', "fear_ActionRow": ' + temp[0];
-                displayActionRow += ' - Ряд действия: ' + temp[1];
-
-                //Условие "Действует на своих"
-                realActionRow += ', "fear_actionTeamate": "' + $('input[name=fear_actionTeamate]:checked').val() + '"';
-                displayActionRow += ' - Действует на своих: ' + $('input[name=fear_actionTeamate]:checked').parent('label').text() + ';<br>';
-
-                //Значение понижения силы
-                realActionRow += ', "fear_strenghtValue": "' + $('input[name=fear_strenghtValue]').val() + '"';
-                displayActionRow += ' - Значение понижения силы: ' + $('input[name=fear_strenghtValue]').val() + ';<br>';
-
-                //Игнорирует иммунитет
-                realActionRow += ', "fear_ignoreImmunity": "' + $('input[name=fear_ignoreImmunity]:checked').val()+'"}';
-                displayActionRow += ' - Игнорирует иммунитет: '+$('input[name=fear_ignoreImmunity]:checked').parent().text() + '<br>';
-            break;
-            //Убийца
-            case 'ubijtsa':
-                //Ряд действия
-                //создание целевых рядов действия array[0 - json-массив, 1- строка описания]
-                var temp = setCheckboxesToJson($('.container-wrap input[name=killer_ActionRow]:checked'));
-                realActionRow += ', "killer_ActionRow": ' + temp[0];
-                displayActionRow += ' - Ряд действия: ' + temp[1];
-                //Условие "Действует на своих"
-                realActionRow += ', "killer_atackTeamate": "' + $('input[name=killer_atackTeamate]:checked').val() + '"';
-                displayActionRow += ' - Действует на своих: ' + $('input[name=killer_atackTeamate]:checked').parent().text() + ';<br>';
-                //Условие "Выбрать для убийства карту"
-                realActionRow += ', "killer_killedQuality_Selector": "' + $('select[name=killer_killedQuality_Selector]').val() + '"';
-                displayActionRow += ' - Выбрать для убийства карту: ' + $('select[name=killer_killedQuality_Selector] option:selected').text()+'<br>';
-                //Условие "Нужное для совершения убийства количество силы карт воинов в ряду"
-                if (0 == $('input[name=killer_recomendedTeamateForceAmount_OnOff]:checked').val()) {
-                    realActionRow += ', "killer_recomendedTeamateForceAmount_OnOff": "0"';
-                }else{
-                    realActionRow += ', "killer_recomendedTeamateForceAmount_OnOff": "' + $('input[name=killer_recomendedTeamateForceAmount]').val() + '"';
-                    displayActionRow += ' - Количество силы необходимое для совершения убийства воинов: ' + $('input[name=killer_recomendedTeamateForceAmount]').val();
-                    
-                    var temp = setCheckboxesToJson($('.container-wrap input[name=killer_recomendedTeamateForceAmount_ActionRow]:checked'));
-                    realActionRow += ', "killer_recomendedTeamateForceAmount_ActionRow": ' + temp[0];
-                    displayActionRow += ' -> Ряд подсчета: ' + temp[1];
-                    
-                    realActionRow += ', "killer_recomendedTeamateForceAmount_Selector": "' + $('select[name=killer_recomendedTeamateForceAmount_Selector]').val() + '"';
-                    displayActionRow += '(' + $('select[name=killer_recomendedTeamateForceAmount_Selector] option:selected').text() + ')<br>';
-                }
-                //Условие "Порог силы воинов противника для совершения убийства"
-                realActionRow += ', "killer_enemyStrenghtLimitToKill": "' + $('input[name=killer_enemyStrenghtLimitToKill]').val() + '"';
-                displayActionRow += ' - Порог силы воинов противника для совершения убийства: ' + $('input[name=killer_enemyStrenghtLimitToKill]').val() + ';<br>';
-                realActionRow += ', "killer_killAllOrSingle": "'+$('input[name=killer_killAllOrSingle]:checked').val()+'"';
-                displayActionRow += ' - На кого действует карта: '+$('input[name=killer_killAllOrSingle]:checked').parent().text()+ ';<br>';
-               
-                var temp = checkGroupTable($('select[name=killer_group]'));
-                realActionRow += ', "killer_group": ' + temp[0];
-                displayActionRow += ' - Действует на группу: ' + temp[1];
-                
-                //Условие "Игнорирует иммунитет"
-                realActionRow += ', "killer_ignoreKillImmunity": "' + $('input[name=killer_ignoreKillImmunity]:checked').val() + '"}';
-                displayActionRow += ' - Игнорирует иммунитет: ' + $('input[name=killer_ignoreKillImmunity]:checked').parent().text() + ';<br>';
-            break;
-            //Шпион
-            case 'shpion':
-                //Поле игрока
-                realActionRow += ', "spy_fieldChoise": "'+$('input[name=spy_fieldChoise]:checked').val()+'"';
-                displayActionRow += ' - Поле игрока: '+$('input[name=spy_fieldChoise]:checked').parent().text()+ ';<br>';
-                //Плучить из колоды n карт
-                realActionRow += ', "spy_getCardsCount": "' + $('input[name=spy_getCardsCount]').val() + '"';
-                displayActionRow += ' - Плучить из колоды ' + $('input[name=spy_getCardsCount]').val() + ' карт';
-
-                realActionRow += '}';
-            break;
-            //Остальные действия
-            default: realActionRow += '}';
-        }
-        
-        console.log(realActionRow);
-        console.log(displayActionRow);
-        
-        actionsPreviewTable(_this, displayActionRow, realActionRow);
-    });
-    
-    //Добавление действия в Карту
-    function actionsPreviewTable(object, display, actions){
-        object.parent().parent().children('#magicCurrentActions').append('<tr><td><a class="drop" href="#"></a></td><td>' + display + '</td><td style="display: none;">' + actions + '</td></tr>');
-        $('#cardCurrentActions tr td').on('click', 'a.drop', function(e){
-            e.preventDefault();
-            $(this).parent().parent().remove();
-        });
-    }
+		return [realActionRow, displayActionRow];
+	}
 
 
-    /*
-     * Волшебство
-     */
-    //Добавление
-    $('input[name=magicAdd]').click(function(){
-        var token = $('input[name=_token]').val();
 
-        var magic_actions = []; //Действия волшебства
-        $('#magicCurrentActions tr').each(function(){
-            magic_actions.push( $(this).children('td:eq(2)').text() );
-        });
+	//Добавление Действия
+	$('input[name=addMoreMagicActions]').click(function(){
+		//Узнаем мип действия карты
+		var actionType = $('select[name=magic_actions_select] option:selected').attr('data-title');
+		var _this = $(this);
+		//отображение описания действия для пользователя
+		displayActionRow= '<ins>' + $('select[name=magic_actions_select] option:selected').text() + '</ins>: <br>';
+		//описания действия для заноса в БД
+		realActionRow   = '{"action": "' + $('select[name=magic_actions_select]').val() + '"';
+		switch(actionType){
+			//Тип действия - "Бессмертный"
+			case 'bessmertnyj':
+				//Выбор дествия возврата карты на поле, или в руку
+				realActionRow += ', "deadless_backToDeck":"' + $('input[name=deadless_backToDeck]:checked').val() + '"}';
+				displayActionRow += ' - Возвращается: ' + $('input[name=deadless_backToDeck]:checked').parent('label').text() + ';<br>';
+			break;
+			//Тип действия - "Боевое Братство"
+			case 'boevoe_bratstvo':
+				//Выбор действия на группу или на одинаковые карты
+				if (0 == $('input[name=brotherhood_actionToGroupOrSame]:checked').val()) {
 
-        var magic_descr = tinyMCE.get('magic_descr').getContent();
+					//если выбор пал на одинаковые,- в БД пишем 0
+					realActionRow += ', "brotherhood_actionToGroupOrSame": "0"';
+					displayActionRow += ' - Дейстует на одинаковые; <br>';
 
-        //Имитация отправки данных через форму
-        var formData = new FormData();
-        //Наполнение формы
-        formData.append( 'token', token );
-        formData.append( 'title', $('input[name=magic_title]').val().trim());
-        formData.append( 'description', magic_descr );
-        formData.append( 'img_url', $('input[name=magicAddImg]').prop('files')[0] );
-        formData.append( 'race', $('#racesToUse input[name=magic_race_to_use]:checked').val());
-        formData.append( 'magic_actions', '[' + magic_actions + ']');                     // Json-массив "Действий карты"
-        formData.append( 'min_league', $('select[name=min_league]').val());
-        formData.append( 'energyCost', $('input[name=energy_cost]').val());
-        formData.append( 'price_gold', $('input[name=price_gold]').val());
-        formData.append( 'price_silver', $('input[name=price_silver]').val());
-        formData.append( 'usage_count', $('input[name=usage_count]').val());
+				} else {
+					//если выбор пал на группу,- пишем в БД id групп
 
-        $.ajax({
-            url:        '/admin/magic/add',
-            headers:    {'X-CSRF-TOKEN': token},
-            type:       'POST',
-            processData:false,
-            contentType:false,
-            data:       formData,
-            success:    function(data){
-                if(data == 'success') location = '/admin/magic';
-            }
-        });
-    });
-    //Изменение
-    $('input[name=magicEdit]').click(function(){
-        var token = $('input[name=_token]').val();
+					//создание целевых групп действия array[0 - json-массив, 1- строка описания]
+					var temp = checkGroupTable($('select[name=brotherhood_grop]'));
+					realActionRow += ', "brotherhood_actionToGroupOrSame": ' + temp[0];
+					displayActionRow += ' - Действует на группу: ' + temp[1];
+				}
 
-         var magic_actions = []; //Действия волшебства
-         $('#magicCurrentActions tr').each(function(){
-             magic_actions.push( $(this).children('td:eq(2)').text() );
-         });
-        //Имитация отправки данных через форму
-        var formData = new FormData();
-        //Наполнение формы
-        formData.append( 'token', token );
-        formData.append( '_method', 'PUT' );
-        formData.append( 'id', $('input[name=effect_id]').val() );
-        formData.append( 'title', $('input[name=magic_title]').val().trim());
-        formData.append( 'description', $('textarea[name=magic_descr]').val().trim());
-        formData.append( 'img_url', $('input[name=magicAddImg]').prop('files')[0] );
-        formData.append( 'race', $('#racesToUse input[name=magic_race_to_use]:checked').val());
-        formData.append( 'magic_actions', '[' + magic_actions + ']');                     // Json-массив "Действий карты"
-        formData.append( 'min_league', $('select[name=min_league]').val());
-        formData.append( 'energyCost', $('input[name=energy_cost]').val());
-        formData.append( 'price_gold', $('input[name=price_gold]').val());
-        formData.append( 'price_silver', $('input[name=price_silver]').val());
-        formData.append( 'usage_count', $('input[name=usage_count]').val());
+				//Значение умножения силы
+				realActionRow += ', "brotherhood_strenghtMult": "' + $('input[name=brotherhood_strenghtMult]').val() + '"}';
+				displayActionRow += ' - Умножает силу в ' + $('input[name=brotherhood_strenghtMult]').val() + ' раз;<br>';
+			break;
+			//Воодушевление
+			case 'voodushevlenie':
+				//Выбор рядов действия
 
-        $.ajax({
-            url:        '/admin/magic/edit',
-            headers:    {'X-CSRF-TOKEN': token},
-            type:       'POST',
-            processData:false,
-            contentType:false,
-            data:       formData,
-            success:    function(data){
-                if(data == 'success') location = '/admin/magic';
-            }
-        });
-    });
+				//создание целевых рядов действия array[0 - json-массив, 1- строка описания]
+				var temp = setCheckboxesToJson($('.container-wrap input[name=inspiration_ActionRow]:checked'));
+				realActionRow += ', "inspiration_ActionRow": ' + temp[0];
+				displayActionRow += ' - Дальность: ' + temp[1];
+
+				//Значение силы
+				realActionRow += ', "inspiration_multValue": "' + $('input[name=inspiration_multValue]').val() + '"';
+				displayActionRow += ' - Умножает силу в: ' + $('input[name=inspiration_multValue]').val() + ' раза;<br>';
+				//Игнорирует иммунитет
+				realActionRow += ', "inspiration_ignoreImmunity": "' + $('input[name=inspiration_ignoreImmunity]:checked').val() + '"}';
+				displayActionRow += ' - Игнорирует полный иммунитет: ' + $('input[name=inspiration_ignoreImmunity]:checked').parent().text() + ';<br>';
+			break;
+			//Иммунитет
+			case 'immunitet':
+				//Выбор типа иммунитета: 0-простой/1-полный
+				realActionRow += ', "immumity_type": "' + $('input[name=immumity_type]:checked').val() + '"}';
+				displayActionRow += ' - Тип иммунитета: ' + $('input[name=immumity_type]:checked').parent().text();
+			break;
+			//Лекарь
+			case 'lekar':
+				realActionRow += ', "healer_typeOfCard": "' + $('select[name=healer_typeOfCard]').val() + '"';
+				displayActionRow += ' - Тип карты: ' + $('select[name=healer_typeOfCard] option:selected').text() + '<br>';
+
+				switch($('select[name=healer_typeOfCard]').val()){
+					case '0':
+						var temp = checkGroupTable($('select[name=healer_type_singleCard]'));
+						realActionRow += ', "healer_type_singleCard": ' + temp[0];
+						displayActionRow += ' - Карты: ' +temp[1];
+					break;
+					case '1':
+						var temp = setCheckboxesToJson($('.container-wrap input[name=healer_type_actionRow]:checked'));
+						realActionRow += ', "healer_type_actionRow": ' + temp[0];
+						displayActionRow += ' - Карта относится к ряду: ' + temp[1];
+					break;
+					case '2':
+						realActionRow += ', "healer_type_cardType": "' + $('input[name=healer_type_cardType]:checked').val()+'"';
+						displayActionRow += $('input[name=healer_type_cardType]:checked').parent().text() + '<br>';
+					break;
+					case '3':
+						var temp = checkGroupTable($('select[name=healer_type_group]'));
+						realActionRow += ', "healer_type_group": ' + temp[0];
+						displayActionRow += ' - Группы: ' +temp[1];
+					break;
+				}
+				//Выбор карты
+				realActionRow += ', "healer_cardChoise": "' + $('input[name=healer_cardChoise]:checked').val()+'"';
+				displayActionRow += ' - Способ выбора: '+$('input[name=healer_cardChoise]:checked').parent().text() + '<br>';
+				//Играть карту из колоды
+				realActionRow += ', "healer_deckChoise": "' + $('input[name=healer_deckChoise]:checked').val()+'"';
+				displayActionRow += ' - Играть карту из колоды: '+$('input[name=healer_deckChoise]:checked').parent().text() + '<br>';
+				//Игнорирует полный иммунитет
+				realActionRow += ', "healer_ignoreImmunity": "' + $('input[name=healer_ignoreImmunity]:checked').val()+'"}';
+				displayActionRow += ' - Игнорирует полный иммунитет: '+$('input[name=healer_ignoreImmunity]:checked').parent().text() + '<br>';
+			break;
+			//Неистовство
+			case 'neistovstvo':
+				//Условие "Противник относится к Расе"
+
+				//создание целевых рас array[0 - json-массив, 1- строка описания]
+				var temp = setCheckboxesToJson($('td .container-wrap input[name=fury_enemyRace]:checked'));
+				realActionRow += ', "fury_enemyRace": ' + temp[0];
+				displayActionRow += ' - Карты противника имеют расу - ' + temp[1];
+
+				//Условие "У противника есть определенная группа карт"
+				temp = checkGroupTable($('select[name=fury_group]'));
+
+				realActionRow += ', "fury_group": ' + temp[0];
+				displayActionRow += ' - Противник имеет карту из группы: ' + temp[1];
+
+				//Условие "Противник имеет определенное количество воинов в ряду"
+				realActionRow += ', "fury_enemyWarriorsCount" : "' + $('input[name=fury_enemyWarriorsCount]').val() + '"';
+				displayActionRow += ' - Противник имеет воинов в количестве: ' + $('input[name=fury_enemyWarriorsCount]').val() + ' в ряду: ';
+
+				//создание целевых рядов array[0 - json-массив, 1- строка описания]
+				temp = setCheckboxesToJson($('td .container-wrap input[name=fury_ActionRow]:checked'));
+				realActionRow += ', "fury_ActionRow": ' + temp[0];
+				displayActionRow += temp[1];
+
+				//Количество очков силы
+				realActionRow += ', "fury_strenghtVal": "' + $('input[name=fury_strenghtVal]').val() + '"';
+				displayActionRow += ' - Повышает силу на ' + $('input[name=fury_strenghtVal]').val() + ' единиц<br>';
+
+				//Противник использовал способность
+				realActionRow += ', "fury_abilityCastEnemy": ' +  $('input[name=fury_abilityCastEnemy]:checked').val();
+				displayActionRow += ' - Противник использовал способность: ' + $('input[name=fury_abilityCastEnemy]:checked').parent().text();
+
+				realActionRow += '}';
+			break;
+			//Одурманивание
+			case 'odurmanivanie':
+				//Условие Действует на ряд
+
+				//создание целевых рядов array[0 - json-массив, 1- строка описания]
+				var temp = setCheckboxesToJson($('td .container-wrap input[name=obscure_ActionRow]:checked'));
+				realActionRow += ', "obscure_ActionRow": ' + temp[0];
+				displayActionRow += " - Действует на ряд: " + temp[1];
+
+				//Условие "Максимальная сила карты которую можно перетянуть"
+				realActionRow += ', "obscure_maxCardStrength": "' + $('input[name=obscure_maxCardStrength]').val() + '"';
+				displayActionRow += ' - Максимальная сила карты которую можно перетянуть: ' + $('input[name=obscure_maxCardStrength]').val() + ';<br>';
+
+				//Условие степени силы перетягиваемой карты
+				realActionRow += ', "obscure_strenghtOfCard": "' + $('select[name=obscure_strenghtOfCard]').val() + '"';
+				displayActionRow += ' - Сила перетягиваемой карты: ' + $('select[name=obscure_strenghtOfCard] option:selected').text() + ';<br>';
+
+				//Количество перетягиваемых карт
+				realActionRow += ', "obscure_quantityOfCardToObscure": "' + $('input[name=obscure_quantityOfCardToObscure]').val() + '"';
+				displayActionRow += ' - Количество перетягиваемых карт: ' + $('input[name=obscure_quantityOfCardToObscure]').val() + ';<br>';
+
+				//Игнорирует полный иммунитет
+				realActionRow += ', "obscure_ignoreImmunity": "' + $('input[name=obscure_ignoreImmunity]:checked').val()+'"}';
+				displayActionRow += ' - Игнорирует полный иммунитет: '+$('input[name=obscure_ignoreImmunity]:checked').parent().text() + '<br>';
+			break;
+			//перегрупировка
+			case 'peregruppirovka':
+				realActionRow += ', "regroup_ignoreImmunity": "' + $('input[name=regroup_ignoreImmunity]:checked').val()+'"}';
+				displayActionRow += ' - Игнорирует полный иммунитет: '+$('input[name=regroup_ignoreImmunity]:checked').parent().text() + '<br>';
+			break;
+			//Печаль
+			case 'pechal':
+				//Условие "Действует на ряд"
+				//создание целевых рядов array[0 - json-массив, 1- строка описания]
+				var temp = setCheckboxesToJson($('td .container-wrap input[name=sorrow_ActionRow]:checked'));
+				realActionRow += ', "sorrow_ActionRow": ' + temp[0];
+				displayActionRow += " - Действует на ряд: " + temp[1];
+				realActionRow += ', "sorrow_actionTeamate": "' + $('input[name=sorrow_actionTeamate]:checked').val()+'"}';
+				displayActionRow += ' - Действует на своих: '+$('input[name=sorrow_actionTeamate]:checked').parent().text() + '<br>';
+			break;
+			//Повелитель
+			case 'povelitel':
+				//Условие "Группа карт, которые будут призываться"
+				var temp = checkGroupTable($('select[name=master_group]'));
+				realActionRow += ', "master_group": ' + temp[0];
+				displayActionRow += ' - Группа карт, которые будут призываться: ' + temp[1];
+
+				//Условие "Откуда брать карты"
+				temp = setCheckboxesToJson($('.container-wrap input[name=master_cardSource]:checked'));
+				realActionRow += ', "master_cardSource": ' + temp[0];
+				displayActionRow += ' - Карты берутся из: ' + temp[1];
+
+				//Условие "Призывать карту по модификатору силы"
+				realActionRow += ', "master_summonByModificator": "' + $('select[name=master_summonByModificator]').val() + '"';
+				displayActionRow += ' - Призывать карту: ' + $('select[name=master_summonByModificator] option:selected').text() + ';<br>';
+
+				//Условие "Максимальное количество карт, которое призывается"
+				realActionRow += ', "master_maxCardsSummon": "' + $('input[name=master_maxCardsSummon]').val() + '"';
+				displayActionRow += ' - Макс. количество карт, которое призывается: ' + $('input[name=master_maxCardsSummon]').val() + ';<br>';
+
+				//Условие "Максимальное значение силы карт, которые призываются"
+				realActionRow += ', "master_maxCardsStrenght": "' + $('input[name=master_maxCardsStrenght]').val() + '"';
+				displayActionRow += ' - Макс. значение силы карт, которые призываются: ' + $('input[name=master_maxCardsStrenght]').val() + ';<br>';
+
+				realActionRow += '}';
+			break;
+			//Поддержка
+			case 'podderzhka':
+				//Умение "Повысить силу"
+				//создание целевых рядов array[0 - json-массив, 1- строка описания]
+				var temp = setCheckboxesToJson($('.container-wrap input[name=support_ActionRow]:checked'));
+				realActionRow += ', "support_ActionRow": ' + temp[0];
+				displayActionRow += ' - Повысить силу в ряду: ' + temp[1];
+
+				if (0 == $('input[name=support_actionToGroupOrAll]:checked').val()) {
+					//если выбор пал на всех,- в БД пишем 0
+					realActionRow += ', "support_actionToGroupOrAll": "0"';
+					displayActionRow += ' - Дейстует на всех; <br>';
+				} else {
+					//если выбор пал на группу,- пишем в БД id групп
+					var temp = checkGroupTable($('select[name=support_group]'));
+					realActionRow += ', "support_actionToGroupOrAll": ' + temp[0];
+					displayActionRow += ' - Действует на группу: ' + temp[1];
+				}
+
+				//Условие "Повышение силы действует на себя"
+				realActionRow += ', "support_selfCast": "' + $('input[name=support_selfCast]:checked').val() + '"';
+				displayActionRow += ' - Повышение силы действует на себя: ' + $('input[name=support_selfCast]:checked').parent('label').text() + ';<br>';
+
+				//Значение "Значение повышения силы"
+				realActionRow += ', "support_strenghtValue": "' + $('input[name=support_strenghtValue]').val() + '"';
+				displayActionRow += ' - Значение повышения силы на: ' + $('input[name=support_strenghtValue]').val() + ' единиц;<br>';
+
+				//Условие "Игнорировать полный иммунитет"
+				realActionRow += ', "support_ignoreImmunity": "' + $('input[name=support_ignoreImmunity]:checked').val() + '"}';
+				displayActionRow += ' - Игнорировать полный иммунитет: ' + $('input[name=support_ignoreImmunity]:checked').parent('label').text() + ';<br>';
+			break;
+			//Подсмотреть карты
+			case 'podsmotret_karty':
+				realActionRow += ', "overview_cardCount": "' + $('input[name=overview_cardCount]').val()+'"}';
+				displayActionRow += ' - Количество карт: ' +$('input[name=overview_cardCount]').val()+';<br>';
+			break;
+			//Призыв
+			case 'prizyv':
+				realActionRow += ', "summon_typeOfCard": "' + $('select[name=summon_typeOfCard]').val() + '"';
+				displayActionRow += ' - Тип карты: ' + $('select[name=summon_typeOfCard] option:selected').text() + '<br>';
+
+				switch($('select[name=summon_typeOfCard]').val()){
+					case '0':
+						var temp = checkGroupTable($('select[name=summon_type_singleCard]'));
+						realActionRow += ', "summon_type_singleCard": ' + temp[0];
+						displayActionRow += ' - Карты: ' +temp[1];
+					break;
+					case '1':
+						var temp = setCheckboxesToJson($('.container-wrap input[name=summon_type_actionRow]:checked'));
+						realActionRow += ', "summon_type_actionRow": ' + temp[0];
+						displayActionRow += ' - Карта относится к ряду: ' + temp[1];
+					break;
+					case '2':
+						realActionRow += ', "summon_type_cardType": "' + $('input[name=summon_type_cardType]:checked').val()+'"';
+						displayActionRow += $('input[name=summon_type_cardType]:checked').parent().text() + '<br>';
+					break;
+					case '3':
+						var temp = checkGroupTable($('select[name=summon_type_group]'));
+						realActionRow += ', "summon_type_group": ' + temp[0];
+						displayActionRow += ' - Группы: ' +temp[1];
+					break;
+				}
+				//Выбор карты
+				realActionRow += ', "summon_cardChoise": "' + $('input[name=summon_cardChoise]:checked').val()+'"';
+				displayActionRow += ' - Способ выбора: '+$('input[name=summon_cardChoise]:checked').parent().text() + '<br>';
+				//Играть карту из колоды
+				realActionRow += ', "summon_deckChoise": "' + $('input[name=summon_deckChoise]:checked').val()+'"';
+				displayActionRow += ' - Играть карту из колоды: '+$('input[name=summon_deckChoise]:checked').parent().text() + '<br>';
+				//Игнорирует полный иммунитет
+				realActionRow += ', "summon_ignoreImmunity": "' + $('input[name=summon_ignoreImmunity]:checked').val()+'"}';
+				displayActionRow += ' - Игнорирует полный иммунитет: '+$('input[name=summon_ignoreImmunity]:checked').parent().text() + '<br>';
+			break;
+			//Сброс карт и поднятие из колоды
+			case 'sbros_kart_i_podnyatie_iz_kolody':
+				//Сколько карт сбросить
+				realActionRow += ', "dropAndPick_dropCount": "'+ $('input[name=dropAndPick_dropCount]').val() + '"';
+				displayActionRow += ' - Сколько карт сбросить: '+ $('input[name=dropAndPick_dropCount]').val()+'<br>';
+				//Сколько взять с колоды
+				realActionRow += ', "dropAndPick_pickCount": "'+ $('input[name=dropAndPick_pickCount]').val() + '"';
+				displayActionRow += ' - Сколько карт поднять: '+ $('input[name=dropAndPick_pickCount]').val()+'<br>';
+				//Выбор карты
+				realActionRow += ', "dropAndPick_cardChoise": "'+ $('input[name=dropAndPick_cardChoise]:checked').val() + '"';
+				displayActionRow += ' - Способ выбора карты: '+$('input[name=dropAndPick_cardChoise]:checked').parent().text() + '<br>';
+				//Игнорирует полный иммунитет
+				realActionRow += ', "dropAndPick_ignoreImmunity": "' + $('input[name=dropAndPick_ignoreImmunity]:checked').val()+'"}';
+				displayActionRow += ' - Игнорирует полный иммунитет: '+$('input[name=dropAndPick_ignoreImmunity]:checked').parent().text() + '<br>';
+			break;
+			//Сброс карт противника в отбой
+			case 'sbros_kart_protivnika_v_otboj':
+				//Количество карт
+				realActionRow += ', "enemyDropHand_cardCount": "'+ $('input[name=enemyDropHand_cardCount]').val() + '"}';
+				displayActionRow += ' - Количество карт: '+ $('input[name=enemyDropHand_cardCount]').val()+'<br>';
+			break;
+			//Страшный
+			case 'strashnyj':
+				//Раса на которую действует страх
+				//создание целевых рас array[0 - json-массив, 1- строка описания]
+				var temp = setCheckboxesToJson($('td .container-wrap input[name=fear_enemyRace]:checked'));
+				realActionRow += ', "fear_enemyRace": ' + temp[0];
+				displayActionRow += ' - Не действует на расу: ' + temp[1];
+
+				if (0 == $('input[name=fear_actionToGroupOrAll]:checked').val()) {
+					//Действует на всех
+					realActionRow += ', "fear_actionToGroupOrAll": "0"';
+					displayActionRow += ' - Дейстует на всех; <br>';
+
+				} else {
+					//если выбор пал на группу,- пишем в БД id групп
+					var temp = checkGroupTable($('select[name=fear_group]'));
+					realActionRow += ', "fear_actionToGroupOrAll": ' + temp[0];
+					displayActionRow += ' - Действует на группу: ' + temp[1];
+				}
+
+				//Ряд действия
+				//создание целевых рядов действия array[0 - json-массив, 1- строка описания]
+				var temp = setCheckboxesToJson($('.container-wrap input[name=fear_ActionRow]:checked'));
+				realActionRow += ', "fear_ActionRow": ' + temp[0];
+				displayActionRow += ' - Ряд действия: ' + temp[1];
+
+				//Условие "Действует на своих"
+				realActionRow += ', "fear_actionTeamate": "' + $('input[name=fear_actionTeamate]:checked').val() + '"';
+				displayActionRow += ' - Действует на своих: ' + $('input[name=fear_actionTeamate]:checked').parent('label').text() + ';<br>';
+
+				//Значение понижения силы
+				realActionRow += ', "fear_strenghtValue": "' + $('input[name=fear_strenghtValue]').val() + '"';
+				displayActionRow += ' - Значение понижения силы: ' + $('input[name=fear_strenghtValue]').val() + ';<br>';
+
+				//Игнорирует иммунитет
+				realActionRow += ', "fear_ignoreImmunity": "' + $('input[name=fear_ignoreImmunity]:checked').val()+'"}';
+				displayActionRow += ' - Игнорирует иммунитет: '+$('input[name=fear_ignoreImmunity]:checked').parent().text() + '<br>';
+			break;
+			//Убийца
+			case 'ubijtsa':
+				//Ряд действия
+				//создание целевых рядов действия array[0 - json-массив, 1- строка описания]
+				var temp = setCheckboxesToJson($('.container-wrap input[name=killer_ActionRow]:checked'));
+				realActionRow += ', "killer_ActionRow": ' + temp[0];
+				displayActionRow += ' - Ряд действия: ' + temp[1];
+				//Условие "Действует на своих"
+				realActionRow += ', "killer_atackTeamate": "' + $('input[name=killer_atackTeamate]:checked').val() + '"';
+				displayActionRow += ' - Действует на своих: ' + $('input[name=killer_atackTeamate]:checked').parent().text() + ';<br>';
+				//Условие "Выбрать для убийства карту"
+				realActionRow += ', "killer_killedQuality_Selector": "' + $('select[name=killer_killedQuality_Selector]').val() + '"';
+				displayActionRow += ' - Выбрать для убийства карту: ' + $('select[name=killer_killedQuality_Selector] option:selected').text()+'<br>';
+				//Условие "Нужное для совершения убийства количество силы карт воинов в ряду"
+				if (0 == $('input[name=killer_recomendedTeamateForceAmount_OnOff]:checked').val()) {
+					realActionRow += ', "killer_recomendedTeamateForceAmount_OnOff": "0"';
+				}else{
+					realActionRow += ', "killer_recomendedTeamateForceAmount_OnOff": "' + $('input[name=killer_recomendedTeamateForceAmount]').val() + '"';
+					displayActionRow += ' - Количество силы необходимое для совершения убийства воинов: ' + $('input[name=killer_recomendedTeamateForceAmount]').val();
+
+					var temp = setCheckboxesToJson($('.container-wrap input[name=killer_recomendedTeamateForceAmount_ActionRow]:checked'));
+					realActionRow += ', "killer_recomendedTeamateForceAmount_ActionRow": ' + temp[0];
+					displayActionRow += ' -> Ряд подсчета: ' + temp[1];
+
+					realActionRow += ', "killer_recomendedTeamateForceAmount_Selector": "' + $('select[name=killer_recomendedTeamateForceAmount_Selector]').val() + '"';
+					displayActionRow += '(' + $('select[name=killer_recomendedTeamateForceAmount_Selector] option:selected').text() + ')<br>';
+				}
+				//Условие "Порог силы воинов противника для совершения убийства"
+				realActionRow += ', "killer_enemyStrenghtLimitToKill": "' + $('input[name=killer_enemyStrenghtLimitToKill]').val() + '"';
+				displayActionRow += ' - Порог силы воинов противника для совершения убийства: ' + $('input[name=killer_enemyStrenghtLimitToKill]').val() + ';<br>';
+				realActionRow += ', "killer_killAllOrSingle": "'+$('input[name=killer_killAllOrSingle]:checked').val()+'"';
+				displayActionRow += ' - На кого действует карта: '+$('input[name=killer_killAllOrSingle]:checked').parent().text()+ ';<br>';
+
+				var temp = checkGroupTable($('select[name=killer_group]'));
+				realActionRow += ', "killer_group": ' + temp[0];
+				displayActionRow += ' - Действует на группу: ' + temp[1];
+
+				//Условие "Игнорирует иммунитет"
+				realActionRow += ', "killer_ignoreKillImmunity": "' + $('input[name=killer_ignoreKillImmunity]:checked').val() + '"}';
+				displayActionRow += ' - Игнорирует иммунитет: ' + $('input[name=killer_ignoreKillImmunity]:checked').parent().text() + ';<br>';
+			break;
+			//Шпион
+			case 'shpion':
+				//Поле игрока
+				realActionRow += ', "spy_fieldChoise": "'+$('input[name=spy_fieldChoise]:checked').val()+'"';
+				displayActionRow += ' - Поле игрока: '+$('input[name=spy_fieldChoise]:checked').parent().text()+ ';<br>';
+				//Плучить из колоды n карт
+				realActionRow += ', "spy_getCardsCount": "' + $('input[name=spy_getCardsCount]').val() + '"';
+				displayActionRow += ' - Плучить из колоды ' + $('input[name=spy_getCardsCount]').val() + ' карт';
+
+				realActionRow += '}';
+			break;
+			//Остальные действия
+			default: realActionRow += '}';
+		}
+
+		console.log(realActionRow);
+		console.log(displayActionRow);
+
+		actionsPreviewTable(_this, displayActionRow, realActionRow);
+	});
+
+	//Добавление действия в Карту
+	function actionsPreviewTable(object, display, actions){
+		object.parent().parent().children('#magicCurrentActions').append('<tr><td><a class="drop" href="#"></a></td><td>' + display + '</td><td style="display: none;">' + actions + '</td></tr>');
+		$('#cardCurrentActions tr td').on('click', 'a.drop', function(e){
+			e.preventDefault();
+			$(this).parent().parent().remove();
+		});
+	}
+
+
+	/*
+	 * Волшебство
+	 */
+	//Добавление
+	$('input[name=magicAdd]').click(function(){
+	    alert('a');
+		var token = $('input[name=_token]').val();
+
+		var magic_actions = []; //Действия волшебства
+		$('#magicCurrentActions tr').each(function(){
+			magic_actions.push( $(this).children('td:eq(2)').text() );
+		});
+
+		var magic_descr = tinyMCE.get('magic_descr').getContent();
+
+		//Имитация отправки данных через форму
+		var formData = new FormData();
+		//Наполнение формы
+		formData.append( 'token', token );
+		formData.append( 'title', $('input[name=magic_title]').val().trim());
+		formData.append( 'description', magic_descr );
+		formData.append( 'img_url', $('input[name=magicAddImg]').prop('files')[0] );
+		formData.append( 'race', $('#racesToUse input[name=magic_race_to_use]:checked').val());
+		formData.append( 'magic_actions', '[' + magic_actions + ']');                     // Json-массив "Действий карты"
+		formData.append( 'min_league', $('select[name=min_league]').val());
+		formData.append( 'energyCost', $('input[name=energy_cost]').val());
+		formData.append( 'price_gold', $('input[name=price_gold]').val());
+		formData.append( 'price_silver', $('input[name=price_silver]').val());
+		formData.append( 'usage_count', $('input[name=usage_count]').val());
+
+		$.ajax({
+			url:        '/admin/magic/add',
+			headers:    {'X-CSRF-TOKEN': token},
+			type:       'POST',
+			processData:false,
+			contentType:false,
+			data:       formData,
+			success:    function(data){
+				if(data == 'success') location = '/admin/magic';
+			}
+		});
+	});
+	//Изменение
+	$('input[name=magicEdit]').click(function(){
+		var token = $('input[name=_token]').val();
+
+		 var magic_actions = []; //Действия волшебства
+		 $('#magicCurrentActions tr').each(function(){
+			 magic_actions.push( $(this).children('td:eq(2)').text() );
+		 });
+		//Имитация отправки данных через форму
+		var formData = new FormData();
+		var magic_descr = tinyMCE.get('magic_descr').getContent();
+		console.log(magic_descr)
+		//Наполнение формы
+		formData.append( 'token', token );
+		formData.append( '_method', 'PUT' );
+		formData.append( 'id', $('input[name=effect_id]').val() );
+		formData.append( 'title', $('input[name=magic_title]').val().trim());
+		formData.append( 'description', magic_descr);
+		formData.append( 'img_url', $('input[name=magicAddImg]').prop('files')[0] );
+		formData.append( 'race', $('#racesToUse input[name=magic_race_to_use]:checked').val());
+		formData.append( 'magic_actions', '[' + magic_actions + ']');                     // Json-массив "Действий карты"
+		formData.append( 'min_league', $('select[name=min_league]').val());
+		formData.append( 'energyCost', $('input[name=energy_cost]').val());
+		formData.append( 'price_gold', $('input[name=price_gold]').val());
+		formData.append( 'price_silver', $('input[name=price_silver]').val());
+		formData.append( 'usage_count', $('input[name=usage_count]').val());
+
+		$.ajax({
+			url:		'/admin/magic/edit',
+			headers:	{'X-CSRF-TOKEN': token},
+			type:		'POST',
+			processData:false,
+			contentType:false,
+			data:		formData,
+			success:	function(data){
+				if(data == 'success') location = '/admin/magic';
+			}
+		});
+	});
 });

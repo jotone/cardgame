@@ -227,8 +227,6 @@ class AdminViews extends BaseController
 		return $result;
 	}
 
-
-
 	//Функция возвращает список действий карты
 	public static function cardsViewGetCardActions($actions, $type=''){
 		$actions = unserialize($actions);
