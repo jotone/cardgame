@@ -2599,7 +2599,6 @@ class GwentSocket extends BaseSocket
 								$step_status['added_cards'][$player]['discard'][] = $card;
 								unset($battle_field[$player][$row]['warrior'][$card_iter]);
 							}else{
-								var_dump($battle_field[$player][$row]['warrior']);
 								$battle_field[$player][$row]['warrior'][$card_iter]['strength'] = $card['strength'];
 								$deadless_cards[$player][$battle->round_count][$card_iter] = $card_data['id'];
 							}
