@@ -2599,8 +2599,9 @@ class GwentSocket extends BaseSocket
 								$step_status['added_cards'][$player]['discard'][] = $card;
 								unset($battle_field[$player][$row]['warrior'][$card_iter]);
 							}else{
+								var_dump($battle_field[$player][$row]['warrior']);
 								$battle_field[$player][$row]['warrior'][$card_iter]['strength'] = $card['strength'];
-								$deadless_cards[$player][$battle->round_count][] = $card_data['id'];
+								$deadless_cards[$player][$battle->round_count][$card_iter] = $card_data['id'];
 							}
 						}else{
 							$users_data[$player]['discard'][] = $card_data['id'];
@@ -2609,13 +2610,12 @@ class GwentSocket extends BaseSocket
 							unset($battle_field[$player][$row]['warrior'][$card_iter]);
 						}
 					}
-					$battle_field[$player][$row]['warrior'] = array_values($battle_field[$player][$row]['warrior']);
 				}
 
 				if(!empty($card_to_stay)){
 					foreach($card_to_stay as $key => $value){
 						$destination = explode('_',$key);
-						$battle_field[$destination[0]][$destination[1]]['warrior'][] = $value;
+						$battle_field[$destination[0]][$destination[1]]['warrior'][$destination[2]] = $value;
 						foreach($step_status['dropped_cards'][$destination[0]][$destination[1]]['warrior'] as $card_iter => $card_caption){
 							if($card_caption == $value['caption']){
 								unset($step_status['dropped_cards'][$destination[0]][$destination[1]]['warrior'][$card_iter]);
@@ -2727,12 +2727,13 @@ class GwentSocket extends BaseSocket
 					}
 				}
 				if($allow_to_count){
-					$cards_to_stay[] = [$player.'_'.$row => $card_data];
+					$cards_to_stay[] = [$player.'_'.$row.'_'.$card_iter => $card_data];
 				}
 			}
 		}
 
 		$cards_to_stay = (!empty($cards_to_stay))? $cards_to_stay[mt_rand(0, count($cards_to_stay)-1)]: [];
+		var_dump($cards_to_stay);
 
 		return $cards_to_stay;
 	}
