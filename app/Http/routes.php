@@ -514,10 +514,10 @@ Route::group(['middleware' => 'admin'], function() {
 			'uses'	=> 'Admin\AdminUserController@userEdit'
 		]);
 	//Оплаченые пополнения
-    Route::get('/admin/payments', [
-        'as'    => 'admin-payment',
-        'uses'  => 'Admin\AdminPagesController@usersPayment'
-    ]);
+	Route::get('/admin/payments', [
+		'as'    => 'admin-payment',
+		'uses'  => 'Admin\AdminPagesController@usersPayment'
+	]);
 
 	//Страницы
 	Route::get('/admin/pages', [
