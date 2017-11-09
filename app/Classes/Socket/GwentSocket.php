@@ -2732,7 +2732,6 @@ class GwentSocket extends BaseSocket
 		}
 
 		$cards_to_stay = (!empty($cards_to_stay))? $cards_to_stay[mt_rand(0, count($cards_to_stay)-1)]: [];
-		var_dump($cards_to_stay);
 
 		return $cards_to_stay;
 	}
