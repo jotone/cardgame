@@ -1575,6 +1575,8 @@ function startBattle(){
 					},700);
 				},700);
 
+				moveCardInDeck(result);
+
 				if (result.can_change_cards == 0) {
 					$('.content-card-item-main').removeClass('disactive');
 					$('.content-card-item .change-card').remove();
@@ -2555,4 +2557,16 @@ function checkMagiaUsage(result){
 			}
 		break;
 	}
+}
+
+
+function moveCardInDeck(result){
+	var popupHolder = $('#allies-deck .deck-cards-list');
+
+	var slugWhatNeedDropped = result.dropped_cards.deck.caption;
+
+	popupHolder.find('li[data-slug="'+slugWhatNeedDropped+'"]').first().remove();
+
+	var newCard = createFieldCardView(result.added_cards.deck, result.added_cards.deck.strength);
+	popupHolder.append(newCard);
 }
