@@ -1740,13 +1740,13 @@ function startBattle(){
 					setDecksValues(result.counts, result.images);
 				}else{
 					if(currentRound != result.round_status.round){
-						//setTimeout(function () {
+
 						$('.field-for-cards').removeClass('visible');
 						$('.convert-cards .content-card-item').removeClass('transition');
 						calculateRightMarginCardHands();
 						fieldBuild(result, false);
 						currentRound = result.round_status.round;
-						//},1000)
+
 					}else{
 						fieldBuild(result, true);
 					}
@@ -2527,8 +2527,20 @@ function processingMagicEffectPopup(played_magic){
 function processingMagicEffectButtons(played_magic){
 	for(var player in played_magic){
 		//Выключение юзаных кнопок
+
 		$('[data-player="'+player+'"] .magic-effects-wrap li.active').removeClass('active').addClass('used ');
 		$('[data-player="'+player+'"] .magic-effects-wrap li').addClass('disactive');
+
+		if ($('.user-describer').attr('data-player') !== player) {
+			var img_url = played_magic[player].img_url;
+
+			$('.oponent-describer[data-player="'+player+'"] .magic-effects-wrap li').each(function(i,item){
+				var itemImg = $(item).find('>img').attr('src');
+				if (itemImg.indexOf(img_url) !== -1) {
+					$(item).first().addClass('used');
+				}
+			})
+		}
 	}
 }
 
