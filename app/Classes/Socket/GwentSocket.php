@@ -2614,10 +2614,15 @@ class GwentSocket extends BaseSocket
 				if(!empty($card_to_stay)){
 					foreach($card_to_stay as $key => $value){
 						$destination = explode('_',$key);
-						var_dump($destination);
 						$battle_field[$destination[0]][$destination[1]]['warrior'][$destination[2]] = $value;
 						foreach($step_status['dropped_cards'][$destination[0]][$destination[1]]['warrior'] as $card_iter => $card_caption){
 							if($card_caption == $value['caption']){
+								foreach($step_status['added_cards'][$destination[0]]['discard'] as $added_card_iter => $added_card){
+									if($added_card['caption'] == $step_status['dropped_cards'][$destination[0]][$destination[1]]['warrior'][$card_iter]){
+										unset($step_status['added_cards'][$destination[0]]['discard'][$added_card_iter]);
+										break;
+									}
+								}
 								unset($step_status['dropped_cards'][$destination[0]][$destination[1]]['warrior'][$card_iter]);
 								break;
 							}
@@ -2630,7 +2635,6 @@ class GwentSocket extends BaseSocket
 							}
 						}
 						break;
-						var_dump($step_status['dropped_cards']);
 					}
 				}
 			}else{

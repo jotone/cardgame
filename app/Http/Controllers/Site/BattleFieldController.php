@@ -14,6 +14,7 @@ class BattleFieldController extends BaseController{
 						$card = self::getCardNaturalSetting($card_data['id']);
 						$battle_field[$field][$row]['warrior'][$i]['strength'] = $card['strength'];
 					}
+					$battle_field[$field][$row]['warrior'] = array_values($battle_field[$field][$row]['warrior']);
 				}
 			}
 		}
