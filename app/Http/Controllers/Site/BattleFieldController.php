@@ -263,7 +263,6 @@ class BattleFieldController extends BaseController{
 									}
 								}
 							}
-							var_dump('allow support is '.$allow_support);
 
 							if($allow_support){
 								if(!empty($groups)){
@@ -939,18 +938,16 @@ class BattleFieldController extends BaseController{
 												$allow_inspiration = self::checkForFullImmune($action['inspiration_ignoreImmunity'], $card['actions']);
 
 												if($allow_inspiration){
-													if( (isset($step_status['played_magic'])) && (!empty($step_status['played_magic'])) ){
-														$step_status['actions']['cards'][$player][$row][$card_iter] = [
-															'card'		=> $card_data['caption'],
-															'strength'	=> $card_data['strength'],
-															'strModif'	=> $card_data['strength'] * $action['inspiration_multValue'],
-															'operation'	=> (isset($step_status['actions']['cards'][$player][$row][$card_iter]['operation']))
-																? $step_status['actions']['cards'][$player][$row][$card_iter]['operation']
-																: ''
-														];
-														if(in_array('inspiration', $played_card_actions)){
-															$step_status['actions']['cards'][$player][$row][$card_iter]['operation'] = 'x'.$action_data['inspiration_multValue'];
-														}
+													$step_status['actions']['cards'][$player][$row][$card_iter] = [
+														'card'		=> $card_data['caption'],
+														'strength'	=> $card_data['strength'],
+														'strModif'	=> $card_data['strength'] * $action['inspiration_multValue'],
+														'operation'	=> (isset($step_status['actions']['cards'][$player][$row][$card_iter]['operation']))
+															? $step_status['actions']['cards'][$player][$row][$card_iter]['operation']
+															: ''
+													];
+													if(in_array('inspiration', $played_card_actions)){
+														$step_status['actions']['cards'][$player][$row][$card_iter]['operation'] = 'x'.$action['inspiration_multValue'];
 													}
 
 													if(isset($step_status['played_card']['card']['id']) && !empty($step_status['played_card']['card']['id'])){
@@ -960,7 +957,6 @@ class BattleFieldController extends BaseController{
 															$condition = ($users_data['opponent']['round_passed'] > 0)
 																? ($step_status['round_status']['current_player'] == $users_data[$player]['login'])
 																: ($step_status['round_status']['current_player'] != $users_data[$player]['login']);
-
 															if($condition xor ($is_spy === 1)){
 																$step_status['played_card']['strength'] = $card_data['strength'] * $action['inspiration_multValue'];
 																$step_status['played_card']['card']['buffs'][] = 'inspiration';
