@@ -1065,8 +1065,8 @@ class GwentSocket extends BaseSocket
 					//New card that should be added to hand
 					$card_to_add = $this->users_data['user']['deck'][$rand];
 					//Dropped Cards array is using for animation
-					$this->step_status['dropped_cards'][$this->users_data['user']['player']]['deck'][] = BattleFieldController::getCardNaturalSetting($card_id);
-
+					$this->step_status['dropped_cards']['hand'] = BattleFieldController::getCardNaturalSetting($card_id);
+					$this->step_status['added_cards']['deck'] = BattleFieldController::cardData($card_id);
 					//Drop new card from deck
 					unset($this->users_data['user']['deck'][$rand]);
 					$this->users_data['user']['deck'] = array_values($this->users_data['user']['deck']);
@@ -1076,8 +1076,8 @@ class GwentSocket extends BaseSocket
 						//Chosen card found
 						if($hand_card_data == $card_id){
 							//New card data
-							$this->step_status['added_cards'] = BattleFieldController::cardData($card_to_add);
-
+							$this->step_status['added_cards']['hand'] = BattleFieldController::cardData($card_to_add);
+							$this->step_status['dropped_cards']['deck'] = BattleFieldController::getCardNaturalSetting($card_to_add);
 							//Add chosen card to deck
 							$this->users_data['user']['deck'][] = $this->users_data['user']['hand'][$hand_iter];
 							//Drop chosen card from hand
@@ -2614,6 +2614,7 @@ class GwentSocket extends BaseSocket
 				if(!empty($card_to_stay)){
 					foreach($card_to_stay as $key => $value){
 						$destination = explode('_',$key);
+						var_dump($destination);
 						$battle_field[$destination[0]][$destination[1]]['warrior'][$destination[2]] = $value;
 						foreach($step_status['dropped_cards'][$destination[0]][$destination[1]]['warrior'] as $card_iter => $card_caption){
 							if($card_caption == $value['caption']){
@@ -2629,6 +2630,7 @@ class GwentSocket extends BaseSocket
 							}
 						}
 						break;
+						var_dump($step_status['dropped_cards']);
 					}
 				}
 			}else{

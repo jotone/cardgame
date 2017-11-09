@@ -1567,7 +1567,7 @@ function startBattle(){
 				setTimeout(function(){
 					$('#selecthandCardsPopup #handCards .animator-out').remove();
 					$('#selecthandCardsPopup h5 span').text(result.can_change_cards);
-					$('#selecthandCardsPopup #handCards').append(createFieldCardView(result.added_cards, result.added_cards.strength));
+					$('#selecthandCardsPopup #handCards').append(createFieldCardView(result.added_cards['hand'], result.added_cards['hand'].strength));
 					$('#selecthandCardsPopup #handCards li:last-child').addClass('animator-in');
 					$('#selecthandCardsPopup #handCards li:last-child').addClass('go');
 					setTimeout(function () {
