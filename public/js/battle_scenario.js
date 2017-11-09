@@ -1067,7 +1067,7 @@ function buildBattleField(added, dropped){
 				var type = ($('.convert-right-info .user-describer').attr('data-player') == player)? 'allies': 'enemy';
 				//Add cards to deck popup window in game_header
 				if($('#'+type+'-'+deck).length > 0){
-					$('#'+type+'-'+deck+' .deck-cards-list .jspPane').append(createFieldCardView(card, card.strength));
+					$('#'+type+'-'+deck+' .deck-cards-list').append(createFieldCardView(card, card.strength));
 				}
 			}
 		}
