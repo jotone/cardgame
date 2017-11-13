@@ -1701,7 +1701,6 @@ class GwentSocket extends BaseSocket
 				$cards_can_be_obscured = [];
 				$min_strength = 999;
 				$max_strength = 0;
-
 				//obscure_ActionRow - row that available to steal
 				foreach($action['obscure_ActionRow'] as $row_iter => $row){
 					foreach($battle_field[$users_data['opponent']['player']][$row]['warrior'] as $card_data){
@@ -1761,6 +1760,7 @@ class GwentSocket extends BaseSocket
 					}
 				}
 
+
 				//Apply card steal
 				for($i=0; $i<count($cards_to_obscure); $i++){
 					foreach($battle_field[$users_data['opponent']['player']][$cards_to_obscure[$i]['row']]['warrior'] as $j => $card_data){
@@ -1802,9 +1802,11 @@ class GwentSocket extends BaseSocket
 										$users_data = $temp['users_data'];
 									break;
 									case 'spy':
+										$move_to = $step_status['played_card']['move_to'];
 										$temp = self::makeSpyAction($obscured_card_action, $users_data, $step_status);
 										$step_status = $temp['step_status'];
 										$users_data = $temp['users_data'];
+										$step_status['played_card']['move_to'] = $move_to;
 									break;
 								}
 							}
