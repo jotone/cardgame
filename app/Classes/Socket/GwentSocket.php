@@ -1701,7 +1701,6 @@ class GwentSocket extends BaseSocket
 				$cards_can_be_obscured = [];
 				$min_strength = 999;
 				$max_strength = 0;
-
 				//obscure_ActionRow - row that available to steal
 				foreach($action['obscure_ActionRow'] as $row_iter => $row){
 					foreach($battle_field[$users_data['opponent']['player']][$row]['warrior'] as $card_data){
@@ -1761,6 +1760,7 @@ class GwentSocket extends BaseSocket
 					}
 				}
 
+
 				//Apply card steal
 				for($i=0; $i<count($cards_to_obscure); $i++){
 					foreach($battle_field[$users_data['opponent']['player']][$cards_to_obscure[$i]['row']]['warrior'] as $j => $card_data){
@@ -1802,9 +1802,11 @@ class GwentSocket extends BaseSocket
 										$users_data = $temp['users_data'];
 									break;
 									case 'spy':
+										$move_to = $step_status['played_card']['move_to'];
 										$temp = self::makeSpyAction($obscured_card_action, $users_data, $step_status);
 										$step_status = $temp['step_status'];
 										$users_data = $temp['users_data'];
+										$step_status['played_card']['move_to'] = $move_to;
 									break;
 								}
 							}
@@ -2614,10 +2616,15 @@ class GwentSocket extends BaseSocket
 				if(!empty($card_to_stay)){
 					foreach($card_to_stay as $key => $value){
 						$destination = explode('_',$key);
-						var_dump($destination);
 						$battle_field[$destination[0]][$destination[1]]['warrior'][$destination[2]] = $value;
 						foreach($step_status['dropped_cards'][$destination[0]][$destination[1]]['warrior'] as $card_iter => $card_caption){
 							if($card_caption == $value['caption']){
+								foreach($step_status['added_cards'][$destination[0]]['discard'] as $added_card_iter => $added_card){
+									if($added_card['caption'] == $step_status['dropped_cards'][$destination[0]][$destination[1]]['warrior'][$card_iter]){
+										unset($step_status['added_cards'][$destination[0]]['discard'][$added_card_iter]);
+										break;
+									}
+								}
 								unset($step_status['dropped_cards'][$destination[0]][$destination[1]]['warrior'][$card_iter]);
 								break;
 							}
@@ -2630,7 +2637,6 @@ class GwentSocket extends BaseSocket
 							}
 						}
 						break;
-						var_dump($step_status['dropped_cards']);
 					}
 				}
 			}else{
