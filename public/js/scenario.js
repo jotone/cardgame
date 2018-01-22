@@ -1642,11 +1642,14 @@ function showPopRaseInfo() {
 		if ( ajaxVariable !== null ) {
 			ajaxVariable.abort();
 		}
-
+		
 		ajaxVariable = $.ajax({
 			url:	'/get_fraction_description',
 			type:	'GET',
-			data:	{fraction:$('select.selection-rase-select').val()},
+			data:	{
+				fraction: $('select.selection-rase-select').val()
+			},
+			
 			success:function(data){
 				data = JSON.parse(data);
 				$('#card-info .content-card-info').empty();

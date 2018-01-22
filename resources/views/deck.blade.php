@@ -46,7 +46,7 @@ $errors = $errors->all();
 											</div>
 										</div>
 									</div>
-									<select>
+									<select class="selection-rase-select">
 									@foreach($fractions as $fraction)
 										<?php $selected = ($user['last_user_deck'] == $fraction['slug'])? 'selected="selected"': ''; ?>
 										<option value="{{ $fraction['slug'] }}" {{ $selected }}>{{ $fraction['title'] }}</option>
