@@ -1657,9 +1657,18 @@ class GwentSocket extends BaseSocket
 						$users_data['opponent']['discard'][] = $users_data['opponent']['hand'][$rand];
 						//get card data
 						$card = BattleFieldController::getCardNaturalSetting($users_data['opponent']['hand'][$rand]);
+						$card_data = BattleFieldController::getCardDescription($card['id']);
+						$card['img_url'] = $card_data['img_url'];
+						$card['fraction_img'] = $card_data['fraction_img'];
+						$card['action_images'] = $card_data['action_images'];
+						$card['allowed_row_images'] = $card_data['allowed_row_images'];
+						$card['is_leader'] = $card_data['is_leader'];
+						$card['text'] = $card_data['text'];
 
 						$step_status['dropped_cards'][$users_data['opponent']['player']]['hand'][$rand] = $card['caption'];
+
 						$step_status['added_cards'][$users_data['opponent']['player']]['discard'][] = $card;
+						var_dump($step_status['added_cards'][$users_data['opponent']['player']]['discard']);
 						//Destroy card from hand
 						unset($users_data['opponent']['hand'][$rand]);
 						$users_data['opponent']['hand'] = array_values($users_data['opponent']['hand']);
