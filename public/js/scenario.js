@@ -308,10 +308,11 @@ function infoCardStart() { // dubl from battle_scenario.js
 
 		openTrollPopup(popup);
 		setTimeout(function () {
-			var jsp = popup.find('.jsp-cont-descr');
-			jsp.jScrollPane();
 
-		}, 100);
+			var jsp = popup.find('.jsp-cont-descr');
+			jsp.jScrollPane({autoReinitialise:true});
+
+		}, 300);
 	});
 
 	function infoCardChangeInfoProps(){
@@ -329,7 +330,7 @@ function infoCardStart() { // dubl from battle_scenario.js
 			maxImgWidth = maxImgWidth*2
 		}
 
-		contentCard.css('min-width',maxImgWidth).addClass('new-card-form');
+		contentCard.css('width',maxImgWidth).addClass('new-card-form');
 		var description = contentCard.find('.card-description-hidden').detach();
 		contentCard.append(description);
 
@@ -1642,14 +1643,14 @@ function showPopRaseInfo() {
 		if ( ajaxVariable !== null ) {
 			ajaxVariable.abort();
 		}
-		
+
 		ajaxVariable = $.ajax({
 			url:	'/get_fraction_description',
 			type:	'GET',
 			data:	{
 				fraction: $('select.selection-rase-select').val()
 			},
-			
+
 			success:function(data){
 				data = JSON.parse(data);
 				$('#card-info .content-card-info').empty();
