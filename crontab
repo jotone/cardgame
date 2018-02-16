@@ -15,9 +15,4 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 */3 *   * * *   root    php /var/www/tester/data/www/gwent.sheepfish.pro/artisan gwentServer:init
 */4 *   * * *	root	php /var/www/tester/data/www/gwent.sheepfish.pro/artisan checkOfflineUsers
 */30 *  * * *    root    php /var/www/tester/data/www/gwent.sheepfish.pro/artisan battleCleanUp
-*/3 *   * * *    root    php /var/www/tester/data/www/test8.sheepfish.pro/app/console gos:websocket:server
-*/30 *  * * *    root    php /var/www/tester/data/www/test8.sheepfish.pro/app/console app:clear:garbage
-*/3 *   * * *    root    php /var/www/vjxzebra/data/www/test11.sheepfish.pro/app/console gos:websocket:server
-*/30 *  * * *    root    php /var/www/vjxzebra/data/www/test11.sheepfish.pro/app/console app:clear:garbage
-*/30 *  * * *    root    php /var/www/vjxzebra/data/www/test11.sheepfish.pro/app/console app:rss:parse 
 #
