@@ -105,6 +105,13 @@ class SiteGameController extends BaseController
 
 	//Изменение данных пользовотеля об участии в столах
 	protected static function updateBattleMembers($user_id, $battle_id, $user_deck_race, $user_deck, $user_magic, $user_energy, $league){
+
+		$battle_data = Battle::select('creator_id','opponent_id')->find($battle_id);
+
+		if(($user_id != $battle_data->creator_id) && ($user_id != $battle_data->opponent_id)){
+			return redirect()->route('user-home')->withErrors(['Данный стол уже занят.']);
+		}
+
 		//Создание массива всех карт в колоде по отдельности (без указания колличества)
 		$real_card_array = [];
 		foreach ($user_deck as $card_id => $cards_quantity){
@@ -215,8 +222,11 @@ class SiteGameController extends BaseController
 
 		//Если стол уже занят
 		$users_count_in_battle = BattleMembers::where('battle_id', '=', $battle_data->id)->count();
-		if($users_count_in_battle >= $battle_data->players_quantity) {
-			return json_encode(['message' => 'success']);
+		if($users_count_in_battle >= 2) {
+			return json_encode([
+			    'message' => 'Данный стол уже занят'
+
+            ]);
 		}
 
 		$user_settings = self::battleGetUserSettings($user);

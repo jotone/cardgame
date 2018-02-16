@@ -1668,7 +1668,7 @@ class GwentSocket extends BaseSocket
 						$step_status['dropped_cards'][$users_data['opponent']['player']]['hand'][$rand] = $card['caption'];
 
 						$step_status['added_cards'][$users_data['opponent']['player']]['discard'][] = $card;
-						var_dump($step_status['added_cards'][$users_data['opponent']['player']]['discard']);
+						//var_dump($step_status['added_cards'][$users_data['opponent']['player']]['discard']);
 						//Destroy card from hand
 						unset($users_data['opponent']['hand'][$rand]);
 						$users_data['opponent']['hand'] = array_values($users_data['opponent']['hand']);

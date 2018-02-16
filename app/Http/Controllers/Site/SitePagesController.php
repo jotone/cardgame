@@ -6,13 +6,13 @@ use App\BattleMembers;
 use App\Card;
 use App\Fraction;
 use App\EtcData;
-use Illuminate\Http\Request;
 use App\League;
 use App\Page;
 use App\Payment;
 use App\Rubric;
 use App\User;
 
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
 use Auth;
 use Crypt;
@@ -71,7 +71,7 @@ class SitePagesController extends BaseController
 		$battle_data = Battle::find($id);
 		$battle_members = BattleMembers::where('battle_id','=',$battle_data->id)->get();
 		if(!$battle_data){
-			return view('play')->withErrors(['Данный стол не существует.']);
+			return redirect()->back()->withErrors(['Данный стол не существует.']);
 		}
 
 		$sec = intval(getenv('GAME_SEC_TIMEOUT'));
@@ -80,6 +80,9 @@ class SitePagesController extends BaseController
 		$user = Auth::user();
 
 		$hash = md5(getenv('SECRET_MD5_KEY').$user->id);
+		if( ($user->id != $battle_data['creator_id']) && ($user->id != $battle_data['opponent_id']) ){
+			return redirect()->route('user-home')->withErrors(['Данный стол уже занят.']);
+		}
 
 		$users_data = [];
 		foreach($battle_members as $key => $value){
@@ -319,7 +322,6 @@ class SitePagesController extends BaseController
 	}
 
 	//Рейтинг
-
 	public function ratingPage($login = ''){
 		SiteFunctionsController::updateConnention();
 		$user = Auth::user();
