@@ -31,7 +31,7 @@ $user = Auth::user();
 	<link rel="stylesheet" href="{{ URL::asset('css/zdev_10.css') }}">
 	<link rel="stylesheet" href="{{ URL::asset('css/zdev_10_adapt.css') }}">
 	<!-- endbuild -->
-
+        <script src="{{ URL::asset('js/momentum.js') }}"></script>
 	<script src="{{ URL::asset('js/jquery-2.min.js') }}"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 	<!-- SCRIPTS -->
