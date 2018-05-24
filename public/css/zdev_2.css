@@ -3126,7 +3126,7 @@ input.book-style{
 .input-type-number .increment.clicked:before, .input-type-number .inc.clicked:before{ top:3px; left:10px; }
 .input-type-number .decrement.clicked:before, .input-type-number .dec.clicked:before{ top:-2px; left:9px; }
 #choose-rase-block h5{ font-size:20px; text-transform:uppercase; }
-#choose-rase-block{ width:630px; }
+#choose-rase-block{ width:630px;position: fixed; }
 #choose-rase-block .button-troll:before,
 #choose-rase-block .button-troll:after{ display:none; }
 #choose-rase-block li{ display:inline-block; position:relative;width: 33.33%; }
@@ -3862,7 +3862,7 @@ div.troll-popup.custom-img-and-title{box-shadow: none;}
 .payment-title{color: #fff; padding-right: 20px; font-size: 14px;}
 
 /*попап краткого описания рассы*/
-.chose-rase-popup{width: 500px;}
+.chose-rase-popup{width: 800px;}
 .chose-rase-popup .top-img{background-image: url(../images/super-bg-main.jpg);background-color: transparent;-webkit-border-radius: 50%;-moz-border-radius: 50%;border-radius: 50%;width: 141px;height: 141px;margin: -50px auto 0;box-shadow: 0 0 15px 5px #714026;display: -webkit-flex;display: -moz-flex;display: -ms-flex;display: -o-flex;display: flex;-ms-align-items: center;align-items: center;justify-content: center;}
 .chose-rase-popup .description{max-height: 200px;text-align: left;}
 .chose-rase-popup .description .title-rase{border-bottom: 1px solid #714026;color: #714026;font-weight: 700;font-size: 18px;padding-bottom: 5px;text-transform: uppercase;font-family: 'indisplay', sans-serif;}

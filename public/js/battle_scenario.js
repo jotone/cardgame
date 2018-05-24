@@ -37,11 +37,23 @@ function ajaxErrorMsg(jqXHR, exception) {
 		}
 	}
 
-	function startTimer(login){
+	function startTimer(login,config){
+
+		var time = {'m':0, 's':0};
+		var globalTimerStep = JSON.parse(localStorage.getItem('globalTimerStep'));
+
+		if(globalTimerStep!==null){
+			time['m'] = parseFloat(globalTimerStep.m);
+			time['s'] = parseFloat(globalTimerStep.s);
+
+		}else {
+			var minutes = Math.floor(parseFloat(config.timing) / 60);
+			var seconds = parseFloat(config.timing) - minutes * 60;
+			time['m'] = minutes;
+			time['s'] = seconds;
+		}
+
 		TimerInterval = setInterval(function (){
-			var time = {'m':0, 's':0};
-			time['m'] = parseInt($('.info-block-with-timer span[data-time=minute]').text());
-			time['s'] = parseInt($('.info-block-with-timer span[data-time=seconds]').text());
 
 			if(time['s'] == 0){
 				time['m']--;
@@ -50,8 +62,10 @@ function ajaxErrorMsg(jqXHR, exception) {
 				time['s']--;
 			}
 
+			localStorage.setItem('globalTimerStep',JSON.stringify(time))
+
 			if( (time['m']<=0) && (time['s'] <= 0) ){
-				clearInterval(TimerInterval);
+				clearTimerInterval();
 				if($('#selecthandCardsPopup').hasClass('show')){
 					userChangeCards();
 				}else{
@@ -67,13 +81,15 @@ function ajaxErrorMsg(jqXHR, exception) {
 					}
 				}
 			}
-			for(var i in time){
-				if(time[i] < 10) time[i] = '0'+time[i];
-			}
 
-			$('.troll-popup .timer-in-popup, .info-block-with-timer').find('span[data-time=minute]').text(time['m']);
-			$('.troll-popup .timer-in-popup, .info-block-with-timer').find('span[data-time=seconds]').text(time['s']);
+			$('.troll-popup .timer-in-popup, .info-block-with-timer').find('span[data-time=minute]').text(time['m'] < 10 ? '0'+time['m'] : time['m']);
+			$('.troll-popup .timer-in-popup, .info-block-with-timer').find('span[data-time=seconds]').text(time['s'] < 10 ? '0'+time['s'] : time['s']);
 		}, 1000);
+	}
+
+	function clearTimerInterval(){
+		clearInterval(TimerInterval);
+		localStorage.removeItem('globalTimerStep');
 	}
 // /Timer Functions
 
@@ -496,7 +512,7 @@ function setDecksValues(counts, images){
 		$('#selecthandCardsPopup .acceptHandDeck').click(function(e){
 			e.preventDefault();
 			userChangeCards();
-			clearInterval(TimerInterval);
+			clearTimerInterval();
 		});
 	}
 
@@ -748,7 +764,7 @@ function userMakeAction(conn, cardSource, allowToAction){
 	$('.convert-battle-front .convert-stuff, .mezhdyblock .bor-beutifull-box').unbind();
 	if(allowToAction){
 		$('.convert-battle-front .convert-stuff, .mezhdyblock .bor-beutifull-box').on('click', '.active', function(){
-			clearInterval(TimerInterval);
+			clearTimerInterval();
 			var time = parseInt($('.info-block-with-timer span[data-time=minute]').text()) * 60 + parseInt($('.info-block-with-timer span[data-time=seconds]').text());
 			if( $('.summonCardPopup').hasClass('show') ){
 				var card = $('#summonWrap li').attr('data-cardid');
@@ -787,7 +803,7 @@ function userMakeAction(conn, cardSource, allowToAction){
 		$('.buttons-block-play button[name=userPassed]').unbind();
 		$('.buttons-block-play button[name=userPassed]').click(function(){
 			if(allowToAction){
-				clearInterval(TimerInterval);
+				clearTimerInterval();
 				var time = parseInt($('.info-block-with-timer span[data-time=minute]').text()) * 60 + parseInt($('.info-block-with-timer span[data-time=seconds]').text());
 				conn.send(
 					JSON.stringify({
@@ -1141,7 +1157,7 @@ function popupActivation(result){
 				openTrollPopup($('#selectCurrentTurn'));
 				$('#selectCurrentTurn button').unbind();
 				$('#selectCurrentTurn button').click(function(){
-					clearInterval(TimerInterval);
+					clearTimerInterval();
 					var time = parseInt($('.info-block-with-timer span[data-time=minute]').text()) * 60 + parseInt($('.info-block-with-timer span[data-time=seconds]').text());
 					var userTurn = $('#selectCurrentTurn input[name=usersTurn]:checked').val();
 
@@ -1568,7 +1584,8 @@ function startBattle(){
 
 						convertTimeToStr(result.timing);
 						if( (result.timing > 0) && (!timerStarted) ){
-							startTimer(result.round_status.current_player);
+
+							startTimer(result.round_status.current_player,{timing:result.timing});
 							timerStarted = true;
 						}
 					}
@@ -1658,9 +1675,9 @@ function startBattle(){
 					checkMagiaUsage(result);
 
 					convertTimeToStr(result.timing);
-					clearInterval(TimerInterval);
+					clearTimerInterval();
 					if(result.timing > 0){
-						startTimer(result.round_status.current_player);
+						startTimer(result.round_status.current_player,{timing:result.timing});
 					}
 
 					allowToAction = (result.round_status.current_player == $('.user-describer').attr('id'))? true: false;
@@ -1727,6 +1744,7 @@ function startBattle(){
 
 			//Пользователь сделал действие
 			case 'userMadeAction':
+				clearTimerInterval();
 				if( (result.round_status.status.length > 0) || (!$.isEmptyObject(result.round_status.status)) ){
 
 					if(result.round_status.current_player == $('.user-describer').attr('id')){
@@ -1796,9 +1814,9 @@ function startBattle(){
 			}
 
 			convertTimeToStr(result.timing);
-			clearInterval(TimerInterval);
+			//clearTimerInterval();
 			if(result.timing > 0){
-				startTimer(result.round_status.current_player);
+				startTimer(result.round_status.current_player,{timing:result.timing});
 			}
 
 			//Разбор активации попапов
