@@ -1664,7 +1664,7 @@ function showPopRaseInfo() {
 									'<div class="top-img"><img src="'+data.img_url+'" alt="" ></div>'+
 									'<div class="description">'+
 										'<div class="title-rase">'+data.title+'</div>'+
-										'<div class="des-text">'+popupText+'</div>'+
+										'<div class="des-text ctext">'+popupText+'</div>'+
 									'</div>'+
 								'</div>';
 

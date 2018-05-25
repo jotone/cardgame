@@ -1648,11 +1648,13 @@
 .market-buy-popup .popup-content-wrap, .hand-select-popup .popup-content-wrap{
 	padding: 20px 40px;
 	color: #714026;
-	font-size: 14px;
+	font-size: 18px;
 	font-weight: 400;
 	font-family: 'indisplay', sans-serif;
 	line-height: 1;
 }
+
+.market-buy-popup .input-type-number input{font-size: 18px;}
 .popup-content-wrap .switch-user-turn-wrap label{ font-size:20px; font-weight: 900;padding: 10px 0; margin-right: 50px; display: inline-block; position: relative; cursor:pointer;}
 .popup-content-wrap .switch-user-turn-wrap label:after{ content: ''; display: block; position: absolute; bottom: 0; background-image: url(../images/hov-ch.png); height: 7px; width: 100%; background-position: 50%; background-repeat: no-repeat; opacity: 0;}
 .popup-content-wrap .switch-user-turn-wrap label:hover:after{ opacity: 1;}
@@ -1684,6 +1686,7 @@
 	-ms-flex-pack: center;
 	justify-content: center;
 	font-weight: 700;
+	font-size: 25px;
 }
 .popup-content-wrap .switch-user-turn-wrap input{ display: none;}
 .popup-content-wrap .switch-user-turn-wrap label{ vertical-align: top; }
@@ -1697,7 +1700,7 @@
 
 .market-buy-popup .popup-content-wrap p{
 	line-height: 24px;
-	font-size: 18px;
+	font-size: 24px;
 	padding: 5px 30px;
 }
 .market-buy-popup .popup-content-wrap a{

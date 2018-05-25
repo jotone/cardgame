@@ -3041,7 +3041,7 @@ input.book-style{
 .pop-row strong{ font-weight:bold; }
 .pop-row.hr-bot{ padding-top:5px; }
 #buySomeEnergy .pop-row span,
-#buySomeEnergy .pop-row img{ vertical-align:top; }
+#buySomeEnergy .pop-row img{ vertical-align:top;font-size: 21px;}
 .change-card-start,
 .button-troll{ border:2px solid #714026; background-color:transparent; cursor:pointer; display:inline-block; padding:0 10px; height:33px; line-height:31px; border-radius:5px; margin:0 auto; position:relative; transition:all 300ms; }
 .change-card-start b,
@@ -3622,7 +3622,7 @@ align-items: center;justify-content: center;max-height: 90vh;}
 #sortable-cards-field-more .content-card-item-main .card-action-description{ display:none; }
 #sortable-cards-field-more .content-card-item{ width:82px; display:inline-block; }
 #sortable-cards-field-more .content-card-item .content-card-item-main{ width:100%; height:120px; }
-.summonCardPopup{ position:absolute; opacity:0; left:50%; top:50%; z-index:1200;
+.summonCardPopup{ position:absolute; opacity:0; left:50%; top:50%; z-index:998;
 	-webkit-transform:translate(-50%, -50%) scale(0) rotate(720deg);
 	-ms-transform:translate(-50%, -50%) scale(0) rotate(720deg);
 	-moz-transform:translate(-50%, -50%) scale(0) rotate(720deg);

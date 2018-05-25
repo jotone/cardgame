@@ -180,6 +180,60 @@ p {
 .ctext blockquote, .ctext q {
 	quotes: inherit; }
 
+.ctext em,.ctext i{font-style: italic;}
+
+.ctext h1 {
+    display: block;
+    font-size: 2em;
+    margin-top: 0.67em;
+    margin-bottom: 0.67em;
+    font-weight: bold;
+}
+.ctext h2 {
+    display: block;
+    font-size: 1.5em;
+    margin-top: 0.83em;
+    margin-bottom: 0.83em;
+    font-weight: bold;
+}
+.ctext h3 {
+    display: block;
+    font-size: 1.17em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    font-weight: bold;
+}
+.ctext h4 {
+    display: block;
+    margin-top: 1.33em;
+    margin-bottom: 1.33em;
+    font-weight: bold;
+}
+.ctext h5 {
+    display: block;
+    font-size: .83em;
+    margin-top: 1.67em;
+    margin-bottom: 1.67em;
+    font-weight: bold;
+}
+.ctext h6 {
+    display: block;
+    font-size: .67em;
+    margin-top: 2.33em;
+    margin-bottom: 2.33em;
+    font-weight: bold;
+}
+
+.ctext sup {
+    vertical-align: super;
+    font-size: smaller;
+}
+
+.ctext code{
+	font-family: monospace;
+}
+
+
 /* /base typo*/
 /* wraps styling*/
 .mbox {
