@@ -233,7 +233,7 @@ function setDecksValues(counts, images){
 			switch(deck){
 				case 'deck':
 				case 'discard':
-					var initClass = ($('.user-describer').attr('data-player') == player)? 'card-my-init cards-take-more': 'card-init';
+					var initClass = ($('.user-describer').attr('data-player') == player) ? 'card-my-init cards-take-more' : 'card-init';
 					if(parseInt(counts[player][deck]) > 0){
 						if($('.convert-left-info div[data-type='+player+'] li[data-field='+deck+'] .counter').length > 0){
 							$('.convert-left-info div[data-type='+player+'] li[data-field='+deck+'] .counter').text(counts[player][deck])
