@@ -38,4 +38,6 @@
 @media screen and (max-width: 1024px) {
 	body{min-width: 1024px;}
 	div.troll-popup#selecthandCardsPopup{width: 945px;}
+	div.troll-popup#card-info{zoom: 1.1;}
+
 }
